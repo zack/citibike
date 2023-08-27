@@ -1,11 +1,16 @@
 "use client";
 import React from "react";
 
+type Player = {
+  name: string;
+  id: string;
+};
+
 export default function Players() {
-  const [players, setPlayers] = React.useState([]);
+  const [players, setPlayers] = React.useState<Player[]>([]);
   const [playerName, setPlayerName] = React.useState("");
 
-  const addPlayer = (e) => {
+  const addPlayer = (e: React.SyntheticEvent) => {
     e.preventDefault();
 
     const newPlayer = {
@@ -17,7 +22,7 @@ export default function Players() {
     setPlayerName("");
   };
 
-  const deletePlayer = (id) => {
+  const deletePlayer = (id: string) => {
     const newPlayers = players.filter((p) => id !== p.id);
     setPlayers(newPlayers);
   };
@@ -43,7 +48,7 @@ export default function Players() {
           <tr key={player.id}>
             <td> {player.name} </td>
             <td>
-              <button onClick={() => deletePlayer(player.id)}>Delete </button>{" "}
+              <button onClick={() => deletePlayer(player.id)}>Delete </button>
             </td>
           </tr>
         ))}
