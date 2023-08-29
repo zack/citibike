@@ -100,7 +100,7 @@ export default function PlayersList({ initPlayers }: AppProps) {
     setNameIsInvalid(players.some((p) => p.name === name));
   };
 
-  const sortedPlayers = players.toSorted((a, b) => (a.name > b.name ? 1 : 0));
+  const sortedPlayers = [...players].sort((a, b) => (a.name > b.name ? 1 : 0));
 
   return (
     <main>
