@@ -1,6 +1,6 @@
-import React from "react";
-
 import PlayersList from "./PlayersList";
+
+import React from "react";
 
 import { getPlayers } from "./action";
 

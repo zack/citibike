@@ -1,6 +1,13 @@
 {
-  "extends": "next/core-web-vitals",
-  "linteroptions": {
-    "exclude": ["*.json", "**.*.json"]
+  "extends": [
+    "eslint:recommended",
+    "next/core-web-vitals",
+    "plugin:react-hooks/recommended",
+    "plugin:react/recommended"
+  ],
+  "rules": {
+    "sort-imports": ["error", {
+      "memberSyntaxSortOrder": ["none", "all", "single", "multiple"]
+    }]
   }
 }

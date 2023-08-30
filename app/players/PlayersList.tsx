@@ -1,11 +1,11 @@
 "use client";
 
+import { Delete } from "@mui/icons-material";
+
 import React from "react";
 
-import { styled } from "@mui/system";
 import {
   Alert,
-  Box,
   Container,
   Paper,
   Snackbar,
@@ -13,13 +13,11 @@ import {
   TableBody,
   TableCell,
   TableContainer,
-  TableHead,
   TableRow,
   TextField,
 } from "@mui/material";
-import { Delete } from "@mui/icons-material";
 
-import { createPlayer, getPlayers, deletePlayer } from "./action";
+import { createPlayer, deletePlayer } from "./action";
 
 type PlayerName = string;
 type PlayerId = number;
@@ -57,7 +55,6 @@ export default function PlayersList({ initPlayers }: AppProps) {
 
     try {
       const ret = await createPlayer(pendingPlayer.name);
-      let foundPendingPlayer = false;
 
       // Replace the pending player with the one we get back from the database
       setPlayers([...players.filter((p) => p.id !== pendingId), ret]);
@@ -73,8 +70,8 @@ export default function PlayersList({ initPlayers }: AppProps) {
     );
 
     if (pendingDeletedPlayer === undefined) {
-      return;
       setIsError(true);
+      return;
     }
 
     const newPlayers = players.filter((p) => p.id !== id);
