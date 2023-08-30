@@ -1,5 +1,7 @@
 "use client";
 
+import { Delete } from "@mui/icons-material";
+
 import React from "react";
 
 import { produce } from "immer";
@@ -8,27 +10,23 @@ import { styled } from "@mui/system";
 
 import {
   Alert,
+  Button,
   Container,
   Paper,
   Snackbar,
-  Switch,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableRow,
   TextField,
+  Typography,
 } from "@mui/material";
-
-import {
-  Delete,
-  ReportProblem
-} from "@mui/icons-material";
 
 import {
   createPlayer,
   deletePlayer,
-  setFact
+  updateFactContent,
 } from "./action";
 
 type FactId = number;
@@ -56,7 +54,8 @@ type PlayersListProps = {
 export default function PlayersList({ initPlayers }: PlayersListProps) {
   const [players, setPlayers] = React.useState<Player[]>(initPlayers);
   const [playerName, setPlayerName] = React.useState("");
-  const [isError, setIsError] = React.useState(false);
+  const [isGenericError, setIsGenericError] = React.useState(false);
+  const [isNameError, setIsNameError] = React.useState(false);
   const [nameIsInvalid, setNameIsInvalid] = React.useState(false);
   const [openPlayerId, setOpenPlayerId] = React.useState<PlayerId|undefined>(undefined);
 
@@ -64,6 +63,7 @@ export default function PlayersList({ initPlayers }: PlayersListProps) {
     e.preventDefault();
 
     if (nameIsInvalid) {
+      setIsNameError(true);
       return;
     }
 
@@ -81,10 +81,10 @@ export default function PlayersList({ initPlayers }: PlayersListProps) {
       const ret = await createPlayer(pendingPlayer.name);
 
       // Replace the pending player with the one we get back from the database
-      setPlayers([...players.filter((p) => p.id !== pendingId), ret ]);
+      setPlayers(playerState => [...playerState.filter((p) => p.id !== pendingId), ret ]);
     } catch {
-      setIsError(true);
-      setPlayers(players.filter((p) => p.id !== pendingPlayer.id));
+      setIsGenericError(true);
+      setPlayers(playerState => playerState.filter((p) => p.id !== pendingPlayer.id));
     }
   };
 
@@ -94,22 +94,21 @@ export default function PlayersList({ initPlayers }: PlayersListProps) {
     );
 
     if (pendingDeletedPlayer === undefined) {
-      setIsError(true);
+      setIsGenericError(true);
       return;
     }
 
-    const newPlayers = players.filter((p) => p.id !== id);
 
-    setPlayers(newPlayers);
+    setPlayers(playerState => playerState.filter((p) => p.id !== id));
 
     try {
       await deletePlayer(id);
     } catch {
-      setIsError(true);
+      setIsGenericError(true);
       // This looks very weird, but is necessary in the case that the error
       // comes back before the (asynchronous) `setPlayers` call is handled by
       // React. Otherwise we'll end up with a duplicate.
-      setPlayers([...players.filter((p) => p.id !== id), pendingDeletedPlayer]);
+      setPlayers(playerState => [...playerState.filter((p) => p.id !== id), pendingDeletedPlayer]);
     }
   };
 
@@ -122,58 +121,11 @@ export default function PlayersList({ initPlayers }: PlayersListProps) {
     }
   };
 
-  const handleSnackbarClose = () => {
-    setIsError(false);
-  };
-
   const validatePlayerName = (name: PlayerName) => {
     setNameIsInvalid(players.some((p) => p.name === name));
   };
 
-  const handleFactToggle = async (id: FactId, playerId: PlayerId, real: boolean) => {
-    let factContent = '';
-
-    // Find and toggle this one specific fact
-    setPlayers(
-      produce((draft) => {
-        draft.map((player: Player) => {
-          if (player.id === playerId) {
-            player.facts.map((fact) => {
-              if (fact.id === id) {
-                factContent = fact.content;
-                fact.real = real;
-              }
-            });
-          }
-        });
-      })
-    );
-
-    try {
-      await setFact(id, factContent, real);
-    } catch {
-      setIsError(true);
-
-      // Oops, revert it
-      setPlayers(
-        produce((draft) => {
-          draft.map((player: Player) => {
-            if (player.id === playerId) {
-              player.facts.map((fact) => {
-                if (fact.id === id) {
-                  fact.real = !real;
-                }
-              });
-            }
-          });
-        })
-      );
-    }
-  };
-
   const handleFactChange = (id: FactId, playerId: PlayerId, content: string) => {
-    let factReality = true;
-
     // Find and update this one specific fact
     setPlayers(
       produce((draft) => {
@@ -181,7 +133,6 @@ export default function PlayersList({ initPlayers }: PlayersListProps) {
           if (player.id === playerId) {
             player.facts.map((fact) => {
               if (fact.id === id) {
-                factReality = fact.real;
                 fact.content = content;
               }
             });
@@ -190,26 +141,17 @@ export default function PlayersList({ initPlayers }: PlayersListProps) {
       })
     );
 
-    setFact(id, content, factReality);
+    updateFactContent(id, content);
   };
 
   const renderFactCountTableCell = (facts: Fact[]) => {
     const factsCount = facts.filter((f: Fact) => f.content !== '').length;
-    const realFacts = facts.filter((f: Fact) => f.real === true).length;
 
     return (
       <FactCountTableCell sx={{ width: '10%' }} iserror={`${factsCount < 3}`}>
-        {factsCount}/3
-        {facts.length > 0 && realFacts !== 2 && // length == 0 => placeholder
-        <ReportProblem
-          sx={{
-            color: '#FFCA28',
-            height: '18px',
-            width: '18px',
-            transform: 'translate(4px,3px)'
-          }}
-        />
-        }
+        <Typography sx={{ fontSize: '1.25rem' }} >
+          {factsCount}/3
+        </Typography>
       </FactCountTableCell>
     );
   };
@@ -219,7 +161,9 @@ export default function PlayersList({ initPlayers }: PlayersListProps) {
   return (
     <main>
       <Container maxWidth="lg">
-        <h1>Player List</h1>
+        <Typography variant="h4" component="h1" sx={{ pb: 2 }} >
+          Players
+        </Typography>
 
         <Paper sx={{ p: 3 }}>
           <form onSubmit={handleSubmit}>
@@ -243,31 +187,34 @@ export default function PlayersList({ initPlayers }: PlayersListProps) {
                   <React.Fragment key={playerId}>
                     <PlayerTableRow onClick={() => handleRowClick(playerId)}>
                       {renderFactCountTableCell(facts)}
-                      <TableCell> {name} </TableCell>
-                      <TableCell align="right">
-                        <button
+                      <TableCell> <Typography sx={{ fontSize: '1.75rem' }} > {name} </Typography> </TableCell>
+                      <TableCell className="delete-player" align="right">
+                        <Button
+                          sx = {{
+                            'minWidth': '30px',
+                            'width': '30px',
+                            'padding': '8px 23px',
+                          }}
+                          variant="contained"
                           onClick={() => handleDelete(playerId)}
                           disabled={playerId > 9999} // player is pending
                         >
                           <Delete />
-                        </button>
+                        </Button>
                       </TableCell>
                     </PlayerTableRow>
 
+                    {/* fact rows */}
                     { (playerId === openPlayerId) ? (
                       facts.map((fact: Fact) => (
                         <TableRow key={fact.id}>
-                          <TableCell>
-                            <StyledSwitch
-                              checked={fact.real}
-                              onChange={() => handleFactToggle(fact.id, playerId, !fact.real)}
-                            />
-                          </TableCell>
-
+                          <TableCell />
                           <TableCell colSpan={2}>
                             <TextField
+                              color={fact.real ? "success" : "error"}
+                              focused
                               size="small"
-                              label="fact"
+                              label={fact.real ? "true" : "false" }
                               id={`fact-${fact.id}`}
                               sx={{ width: '100%' }}
                               value={fact.content}
@@ -288,36 +235,35 @@ export default function PlayersList({ initPlayers }: PlayersListProps) {
       </Container>
 
       <Snackbar
-        open={isError}
+        open={isGenericError}
         autoHideDuration={3000}
-        onClose={handleSnackbarClose}
+        onClose={() => setIsGenericError(false)}
       >
         <Alert
-          onClose={handleSnackbarClose}
+          onClose={() => setIsGenericError(false)}
           severity="error"
           sx={{ width: "100%" }}
         >
           Uh oh! Something went wrong. Your change was not saved.
         </Alert>
       </Snackbar>
+
+      <Snackbar
+        open={isNameError}
+        autoHideDuration={3000}
+        onClose={() => setIsNameError(false)}
+      >
+        <Alert
+          onClose={() => setIsNameError(false)}
+          severity="error"
+          sx={{ width: "100%" }}
+        >
+          That name is already taken. Pick something else!
+        </Alert>
+      </Snackbar>
     </main>
   );
 }
-
-const StyledSwitch = styled(Switch)({
-  '& .MuiSwitch-switchBase': {
-    color: "#B71C1C",
-    '& + .MuiSwitch-track': {
-      backgroundColor: "#E53935",
-    },
-    '&.Mui-checked': {
-      color: "#1B5E20",
-      '& + .MuiSwitch-track': {
-        backgroundColor: "#43A047",
-      },
-    },
-  },
-});
 
 const PlayerTableRow = styled(TableRow)({
   '&:hover': {

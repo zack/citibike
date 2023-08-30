@@ -17,8 +17,6 @@ export async function createPlayer(name: string) {
     include: { facts: true },
   });
 
-  console.log(ret);
-
   return ret;
 }
 
@@ -43,10 +41,10 @@ export async function deletePlayer(id: number) {
   return ret;
 }
 
-export async function setFact(id: number, content: string, real: boolean) {
+export async function updateFactContent(id: number, content: string) {
   const ret = await prisma.fact.update({
     where: { id },
-    data: { content, real },
+    data: { content },
   });
 
   return ret;
