@@ -4,8 +4,20 @@ import prisma from "@/lib/db";
 
 export async function createPlayer(name: string) {
   const ret = await prisma.player.create({
-    data: { name },
+    data: {
+      name,
+      facts: {
+        create: [
+          { content: '', real: true },
+          { content: '', real: true },
+          { content: '', real: false },
+        ],
+      }
+    },
+    include: { facts: true },
   });
+
+  console.log(ret);
 
   return ret;
 }
@@ -31,10 +43,10 @@ export async function deletePlayer(id: number) {
   return ret;
 }
 
-export async function setFact(id: number, real: boolean) {
+export async function setFact(id: number, content: string, real: boolean) {
   const ret = await prisma.fact.update({
     where: { id },
-    data: { real },
+    data: { content, real },
   });
 
   return ret;

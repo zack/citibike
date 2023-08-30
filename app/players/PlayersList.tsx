@@ -1,7 +1,5 @@
 "use client";
 
-import { Delete } from "@mui/icons-material";
-
 import React from "react";
 
 import { produce } from "immer";
@@ -22,7 +20,16 @@ import {
   TextField,
 } from "@mui/material";
 
-import { createPlayer, deletePlayer, setFact } from "./action";
+import {
+  Delete,
+  ReportProblem
+} from "@mui/icons-material";
+
+import {
+  createPlayer,
+  deletePlayer,
+  setFact
+} from "./action";
 
 type FactId = number;
 
@@ -74,7 +81,7 @@ export default function PlayersList({ initPlayers }: PlayersListProps) {
       const ret = await createPlayer(pendingPlayer.name);
 
       // Replace the pending player with the one we get back from the database
-      setPlayers([...players.filter((p) => p.id !== pendingId), { ...ret, facts: [] }]);
+      setPlayers([...players.filter((p) => p.id !== pendingId), ret ]);
     } catch {
       setIsError(true);
       setPlayers(players.filter((p) => p.id !== pendingPlayer.id));
@@ -107,7 +114,8 @@ export default function PlayersList({ initPlayers }: PlayersListProps) {
   };
 
   const handleRowClick = (id: PlayerId) => {
-    if (openPlayerId === id) {
+    // Don't open pending players
+    if (openPlayerId === id && id < 9999) {
       setOpenPlayerId(undefined);
     } else {
       setOpenPlayerId(id);
@@ -123,6 +131,8 @@ export default function PlayersList({ initPlayers }: PlayersListProps) {
   };
 
   const handleFactToggle = async (id: FactId, playerId: PlayerId, real: boolean) => {
+    let factContent = '';
+
     // Find and toggle this one specific fact
     setPlayers(
       produce((draft) => {
@@ -130,32 +140,78 @@ export default function PlayersList({ initPlayers }: PlayersListProps) {
           if (player.id === playerId) {
             player.facts.map((fact) => {
               if (fact.id === id) {
+                factContent = fact.content;
                 fact.real = real;
               }
             });
           }
         });
-      }));
+      })
+    );
 
-      try {
-        await setFact(id, real);
-      } catch {
-        setIsError(true);
+    try {
+      await setFact(id, factContent, real);
+    } catch {
+      setIsError(true);
 
-        // Oops, revert it
-        setPlayers(
-          produce((draft) => {
-            draft.map((player: Player) => {
-              if (player.id === playerId) {
-                player.facts.map((fact) => {
-                  if (fact.id === id) {
-                    fact.real = !real;
-                  }
-                });
+      // Oops, revert it
+      setPlayers(
+        produce((draft) => {
+          draft.map((player: Player) => {
+            if (player.id === playerId) {
+              player.facts.map((fact) => {
+                if (fact.id === id) {
+                  fact.real = !real;
+                }
+              });
+            }
+          });
+        })
+      );
+    }
+  };
+
+  const handleFactChange = (id: FactId, playerId: PlayerId, content: string) => {
+    let factReality = true;
+
+    // Find and update this one specific fact
+    setPlayers(
+      produce((draft) => {
+        draft.map((player: Player) => {
+          if (player.id === playerId) {
+            player.facts.map((fact) => {
+              if (fact.id === id) {
+                factReality = fact.real;
+                fact.content = content;
               }
             });
-          }));
-      }
+          }
+        });
+      })
+    );
+
+    setFact(id, content, factReality);
+  };
+
+  const renderFactCountTableCell = (facts: Fact[]) => {
+    const factsCount = facts.filter((f: Fact) => f.content !== '').length;
+    const realFacts = facts.filter((f: Fact) => f.real === true).length;
+
+    return (
+      <FactCountTableCell sx={{ width: '10%' }} iserror={`${factsCount < 3}`}>
+        {factsCount}/3
+        {facts.length > 0 && realFacts !== 2 && // length == 0 => placeholder
+        <ReportProblem
+          sx={{
+            color: '#FFCA28',
+            height: '18px',
+            width: '18px',
+            transform: 'translate(4px,3px)'
+          }}
+        />
+        }
+      </FactCountTableCell>
+    );
   };
 
   const sortedPlayers = [...players].sort((a, b) => (a.name > b.name ? 1 : 0));
@@ -185,8 +241,8 @@ export default function PlayersList({ initPlayers }: PlayersListProps) {
               <TableBody>
                 {sortedPlayers.map(({ id: playerId, name, facts }) => (
                   <React.Fragment key={playerId}>
-                    <TableRow onClick={() => handleRowClick(playerId)}>
-                      <TableCell> {facts.length}/3 </TableCell>
+                    <PlayerTableRow onClick={() => handleRowClick(playerId)}>
+                      {renderFactCountTableCell(facts)}
                       <TableCell> {name} </TableCell>
                       <TableCell align="right">
                         <button
@@ -196,7 +252,7 @@ export default function PlayersList({ initPlayers }: PlayersListProps) {
                           <Delete />
                         </button>
                       </TableCell>
-                    </TableRow>
+                    </PlayerTableRow>
 
                     { (playerId === openPlayerId) ? (
                       facts.map((fact: Fact) => (
@@ -207,7 +263,19 @@ export default function PlayersList({ initPlayers }: PlayersListProps) {
                               onChange={() => handleFactToggle(fact.id, playerId, !fact.real)}
                             />
                           </TableCell>
-                          <TableCell colSpan={2}> {fact.content} </TableCell>
+
+                          <TableCell colSpan={2}>
+                            <TextField
+                              size="small"
+                              label="fact"
+                              id={`fact-${fact.id}`}
+                              sx={{ width: '100%' }}
+                              value={fact.content}
+                              onChange={(event) => {
+                                handleFactChange(fact.id, playerId, event.target.value);
+                              }}
+                            />
+                          </TableCell>
                         </TableRow>
                       ))
                     ) : null }
@@ -250,3 +318,15 @@ const StyledSwitch = styled(Switch)({
     },
   },
 });
+
+const PlayerTableRow = styled(TableRow)({
+  '&:hover': {
+    'backgroundColor': '#E3F2FD',
+    'cursor': 'pointer',
+  },
+});
+
+const FactCountTableCell = styled(TableCell)(({ iserror }: { iserror: string }) => ({
+  color: iserror === 'true' ? '#FF0000' : '#000',
+}));
+

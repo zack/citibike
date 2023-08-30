@@ -17,7 +17,7 @@ model Player {
 model Fact {
     id          Int      @id @default(autoincrement())
     real        Boolean
-    content     String   @unique
+    content     String
     player      Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
     playerId    Int
 }
