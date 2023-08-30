@@ -5,9 +5,19 @@ generator client {
 datasource db {
     provider             = "mysql"
     url                  = env("DATABASE_URL")
+    relationMode         = "prisma"
 }
 
 model Player {
     id          Int      @id @default(autoincrement())
     name        String   @unique
+    facts       Fact[]
+}
+
+model Fact {
+    id          Int      @id @default(autoincrement())
+    real        Boolean
+    content     String   @unique
+    player      Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+    playerId    Int
 }
