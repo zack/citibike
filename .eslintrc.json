@@ -2,12 +2,19 @@
   "extends": [
     "eslint:recommended",
     "next/core-web-vitals",
+    "plugin:@typescript-eslint/recommended",
     "plugin:react-hooks/recommended",
-    "plugin:react/recommended"
+    "plugin:react/recommended",
   ],
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint"],
   "rules": {
     "sort-imports": ["error", {
       "memberSyntaxSortOrder": ["none", "all", "single", "multiple"]
-    }]
+    }],
+    // The following two lines, combined, prevent eslint from throwing a
+    // "no-unused-var" error in type definitions for function types
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": "error"
   }
 }
