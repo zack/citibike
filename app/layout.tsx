@@ -4,7 +4,7 @@ import type { Metadata } from 'next'
 
 import React from 'react';
 
-import ThemeProvider, { ubuntuMonoClassName } from './ThemeProvider';
+import ThemeProvider from './ThemeProvider';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -18,7 +18,7 @@ type RootLayoutProps = {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en">
-      <body className={ubuntuMonoClassName}>
+      <body>
         <ThemeProvider>
           {children}
         </ThemeProvider>

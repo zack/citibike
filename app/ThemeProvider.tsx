@@ -2,13 +2,15 @@
 
 import React from 'react';
 
-import { Ubuntu_Mono } from 'next/font/google'
+import { Exo, Ubuntu_Mono } from 'next/font/google'
 
 import { ThemeProvider as TP, createTheme } from '@mui/material/styles';
 
 const ubuntuMono = Ubuntu_Mono({ subsets: ["latin"], weight: "400" })
+const exo = Exo({ subsets: ["latin"], weight: "700" })
 
 export const ubuntuMonoClassName = ubuntuMono.className;
+export const exoFontFamily = exo.style.fontFamily;
 
 const theme = createTheme({
   typography: {

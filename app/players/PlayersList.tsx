@@ -4,6 +4,8 @@ import { Delete } from "@mui/icons-material";
 
 import React from "react";
 
+import { exoFontFamily } from '../ThemeProvider';
+
 import { produce } from "immer";
 
 import { styled } from "@mui/system";
@@ -161,7 +163,7 @@ export default function PlayersList({ initPlayers }: PlayersListProps) {
   return (
     <main>
       <Container maxWidth="lg">
-        <Typography variant="h4" component="h1" sx={{ pb: 2 }} >
+        <Typography variant="h4" component="h1" sx={{ fontFamily: exoFontFamily, pb: 2 }} >
           Players
         </Typography>
 
