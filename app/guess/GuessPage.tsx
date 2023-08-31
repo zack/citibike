@@ -1,20 +1,17 @@
 "use client";
 
-import React from "react";
-
 import GuessTable from "./GuessTable";
+
 import PlayerTable from "./PlayerTable";
+
+import React from "react";
 
 import { exoFontFamily } from '../ThemeProvider';
 
 import {
+  Box,
+  Button,
   Container,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableRow,
   Typography,
 } from "@mui/material";
 
@@ -41,10 +38,6 @@ type GuessPageProps = {
 export default function GuessPage({ facts, players }: GuessPageProps) {
   const [selectedPlayer, setSelectedPlayer] = React.useState<PlayerId | undefined>(undefined);
 
-  const handleRowClick = (id: PlayerId) => {
-    console.log({ id });
-  };
-
   const selectPlayer = (id: PlayerId) => {
     setSelectedPlayer(id);
   }
@@ -53,21 +46,32 @@ export default function GuessPage({ facts, players }: GuessPageProps) {
     if (selectedPlayer === undefined) {
       return 'Select Player';
     } else {
-      return 'Select Your Guesses';
+      const selectedPlayerName = players.find(p => p.id === selectedPlayer)?.name;
+      return `Select Guesses for ${selectedPlayerName}`;
+    }
+  }
+
+  const handleSubmitGuesses = () => {
+    // conditional keeps typescript happy. It shouldn't ever matter.
+    if (selectedPlayer !== undefined) {
+      setSelectedPlayer(undefined);
     }
   }
 
   return (
     <main>
       <Container maxWidth="lg">
-        <Typography variant="h4" component="h1" sx={{ fontFamily: exoFontFamily, pb: 2 }} >
-          {getTitle()}
-        </Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Typography variant="h4" component="h1" sx={{ fontFamily: exoFontFamily, pb: 2 }} >
+            {getTitle()}
+          </Typography>
+          { selectedPlayer !== undefined ? <Button variant="contained" onClick={handleSubmitGuesses}> Back </Button> : null }
+        </Box>
 
         {
           selectedPlayer === undefined
           ? <PlayerTable players={players} handleClick={selectPlayer}/>
-          : <GuessTable facts={facts} />
+          : <GuessTable facts={facts} playerId={selectedPlayer} onSubmit={handleSubmitGuesses}/>
         }
       </Container>
     </main>

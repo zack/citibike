@@ -1,13 +1,19 @@
 import React from 'react';
 
+import { getFactIdsOfFalseGuessesForPlayer } from './action';
+
 import { red } from '@mui/material/colors';
 
 import { styled } from "@mui/system";
 
+import { submitGuesses } from './action';
+
 import {
+  Alert,
   Button,
   Checkbox,
   Paper,
+  Snackbar,
   Table,
   TableBody,
   TableCell,
@@ -28,13 +34,40 @@ type Fact = {
 
 type GuessTableProps = {
   facts: Fact[];
+  playerId: PlayerId;
+  onSubmit: () => void;
 };
 
-export default function GuessTable({ facts }: GuessTableProps) {
-  const [selectedFacts, setSelectedFacts] = React.useState<FactId[]>([]);
+export default function GuessTable({ facts, playerId, onSubmit }: GuessTableProps) {
+  const [isError, setIsError] = React.useState(false);
+  const [selectedFacts, setSelectedFacts] = React.useState<FactId[]>([])
+  const [submitted, setSubmitted] = React.useState(false);
 
-  const handleLockIn = () => {
-    console.log('Locking it in');
+  React.useEffect(() => {
+    // We need to insulate the async call from the component
+    const callback = async () => {
+      const factIds = await getFactIdsOfFalseGuessesForPlayer(playerId);
+      console.log({ factIds });
+      setSelectedFacts(factIds);
+    };
+
+    callback();
+  }, [playerId]);
+
+  const handleLockIn = async () => {
+    const guesses = facts.map((fact) => ({
+      factId: fact.id,
+      real: !selectedFacts.includes(fact.id),
+    }));
+
+    try {
+      setSubmitted(true);
+      await submitGuesses(playerId, guesses);
+      onSubmit();
+    } catch {
+      setIsError(true);
+      setSubmitted(false);
+    }
   }
 
   const handleClick = (id: FactId) => {
@@ -48,7 +81,6 @@ export default function GuessTable({ facts }: GuessTableProps) {
   const guessCountText = () => {
     const guessCount = selectedFacts.length;
     const requiredCount = facts.length/3;
-    const color = guessCount === requiredCount ? 'green' : 'red';
 
     if (guessCount !== requiredCount) {
       return (
@@ -58,12 +90,21 @@ export default function GuessTable({ facts }: GuessTableProps) {
       );
     } else {
       return (
-        <Button variant="contained" color="success" sx={{ height: '2.1rem' }} > Perfect! Click here to lock it in. </Button>
+        <Button
+          disabled={submitted}
+          variant="contained"
+          color="success"
+          sx={{ height: '2.1rem' }}
+          onClick={handleLockIn}
+        >
+          Perfect! Click here to lock it in.
+        </Button>
       );
     }
   }
 
   return (
+    <>
     <TableContainer component={Paper}>
       <Table>
         <TableHead>
@@ -80,7 +121,7 @@ export default function GuessTable({ facts }: GuessTableProps) {
           {facts.map(({ id, content }, index) => (
             <FactTableRow key={id}  onClick={() => handleClick(id)} isselected={`${selectedFacts.includes(id)}`}>
               <TableCell>
-                {index}.
+                {index + 1}.
               </TableCell>
 
               <TableCell>
@@ -92,16 +133,31 @@ export default function GuessTable({ facts }: GuessTableProps) {
               </TableCell>
             </FactTableRow>
           ))}
-        </TableBody>
-        <TableRow>
-          <TableCell />
+          <TableRow>
+            <TableCell />
             <TableCell align="center">
               { guessCountText() }
             </TableCell>
-          <TableCell />
-        </TableRow>
+            <TableCell />
+          </TableRow>
+        </TableBody>
       </Table>
     </TableContainer>
+
+    <Snackbar
+      open={isError}
+      autoHideDuration={3000}
+      onClose={() => setIsError(false)}
+    >
+      <Alert
+        onClose={() => setIsError(false)}
+        severity="error"
+        sx={{ width: "100%" }}
+      >
+        Uh oh! Something went wrong. Your change was not saved.
+      </Alert>
+    </Snackbar>
+    </>
   );
 }
 
