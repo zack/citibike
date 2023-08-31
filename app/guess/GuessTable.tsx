@@ -47,7 +47,6 @@ export default function GuessTable({ facts, playerId, onSubmit }: GuessTableProp
     // We need to insulate the async call from the component
     const callback = async () => {
       const factIds = await getFactIdsOfFalseGuessesForPlayer(playerId);
-      console.log({ factIds });
       setSelectedFacts(factIds);
     };
 

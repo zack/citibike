@@ -41,13 +41,10 @@ export async function getFactIdsOfFalseGuessesForPlayer(playerId) {
     },
   });
 
-  console.log({ facts });
-
   return facts.map(f => f.factId);
 }
 
 export async function submitGuesses(playerId, guesses) {
-  console.log('submitGuesses');
   await clearGuesses(playerId);
 
   const guessObjects = guesses.map((guess) => ({
@@ -55,8 +52,6 @@ export async function submitGuesses(playerId, guesses) {
     playerId,
     real: guess.real,
   }));
-
-  console.log({ guessObjects });
 
   const ret = await prisma.guess.createMany({ data: guessObjects });
   return ret;
