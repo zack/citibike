@@ -30,7 +30,7 @@ export async function getFacts() {
   return facts;
 }
 
-export async function getFactIdsOfFalseGuessesForPlayer(playerId) {
+export async function getFactIdsOfFalseGuessesForPlayer(playerId: PlayerId) {
   const facts = await prisma.guess.findMany({
     where: {
       playerId,
@@ -44,7 +44,7 @@ export async function getFactIdsOfFalseGuessesForPlayer(playerId) {
   return facts.map(f => f.factId);
 }
 
-export async function submitGuesses(playerId, guesses) {
+export async function submitGuesses(playerId: PlayerId, guesses: { factId: FactId, real: boolean }[]) {
   await clearGuesses(playerId);
 
   const guessObjects = guesses.map((guess) => ({
@@ -57,7 +57,7 @@ export async function submitGuesses(playerId, guesses) {
   return ret;
 }
 
-export async function clearGuesses(playerId) {
+export async function clearGuesses(playerId: PlayerId) {
   const ret = await prisma.guess.deleteMany({
     where: { playerId }
   });

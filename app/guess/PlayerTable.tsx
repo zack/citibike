@@ -18,14 +18,6 @@ import {
 
 import { blue, green } from '@mui/material/colors';
 
-type PlayerName = string;
-type PlayerId = number;
-
-type Player = {
-  name: PlayerName;
-  id: PlayerId;
-};
-
 type PlayerTableProps = {
   handleClick: (id: PlayerId) => void;
   players: Player[];

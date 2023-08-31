@@ -15,15 +15,6 @@ import {
   Typography,
 } from "@mui/material";
 
-type FactId = number;
-type PlayerId = number;
-type Fact = {
-  id: FactId;
-  real: boolean;
-  content: string;
-  playerId: PlayerId;
-}
-
 type GuessTableProps = {
   facts: Fact[];
   onSubmit: (ids: FactId[]) => void;

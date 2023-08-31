@@ -19,21 +19,6 @@ import {
   Typography,
 } from "@mui/material";
 
-type PlayerName = string;
-type PlayerId = number;
-type Player = {
-  name: PlayerName;
-  id: PlayerId;
-};
-
-type FactId = number;
-type Fact = {
-  id: FactId;
-  real: boolean;
-  content: string;
-  playerId: PlayerId;
-}
-
 type GuessPageProps = {
   facts: Fact[];
   players: Player[];

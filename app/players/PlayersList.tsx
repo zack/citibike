@@ -31,24 +31,6 @@ import {
   updateFactContent,
 } from "./action";
 
-type FactId = number;
-
-type PlayerName = string;
-type PlayerId = number;
-
-type Fact = {
-  id: FactId;
-  real: boolean;
-  content: string;
-  playerId: PlayerId;
-}
-
-type Player = {
-  name: PlayerName;
-  id: PlayerId;
-  facts: Fact[];
-};
-
 type PlayersListProps = {
   initPlayers: Player[];
 };
@@ -133,7 +115,7 @@ export default function PlayersList({ initPlayers }: PlayersListProps) {
       produce((draft) => {
         draft.map((player: Player) => {
           if (player.id === playerId) {
-            player.facts.map((fact) => {
+            player.facts?.map((fact) => {
               if (fact.id === id) {
                 fact.content = content;
               }
@@ -146,7 +128,7 @@ export default function PlayersList({ initPlayers }: PlayersListProps) {
     updateFactContent(id, content);
   };
 
-  const renderFactCountTableCell = (facts: Fact[]) => {
+  const renderFactCountTableCell = (facts: Fact[] = []) => {
     const factsCount = facts.filter((f: Fact) => f.content !== '').length;
 
     return (
@@ -208,7 +190,7 @@ export default function PlayersList({ initPlayers }: PlayersListProps) {
 
                     {/* fact rows */}
                     { (playerId === openPlayerId) ? (
-                      facts.map((fact: Fact) => (
+                      facts?.map((fact: Fact) => (
                         <TableRow key={fact.id}>
                           <TableCell />
                           <TableCell colSpan={2}>
