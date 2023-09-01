@@ -4,8 +4,6 @@ import React from "react";
 
 import { exoFontFamily } from '../ThemeProvider';
 
-import { styled } from "@mui/system";
-
 import {
   Box,
   Container,
@@ -59,20 +57,6 @@ function Audit({ problems, players }: AuditProps) {
       </Box>
     </>
   );
-}
-
-function createGuessHeatmapData( guesses: Guess[]) {
-  const data: {[index: number]: {[index: number]: boolean}} = {};
-
-  guesses.forEach(({playerId, factId, guess}) => {
-    if (!Object.hasOwn(data, playerId)) {
-      data[playerId] = {};
-    }
-
-    data[playerId][factId] = guess;
-  });
-
-  return data;
 }
 
 function generateGuessAudit(guesses: Guess[], players: Player[]) {
