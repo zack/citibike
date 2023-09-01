@@ -1,6 +1,6 @@
 "use server";
 
-import prisma from "@/lib/db";
+import prisma from "@/prisma/db";
 
 export async function getPlayers() {
   const players = await prisma.player.findMany({
@@ -34,7 +34,7 @@ export async function getFactIdsOfFalseGuessesForPlayer(playerId: PlayerId) {
   const facts = await prisma.guess.findMany({
     where: {
       playerId,
-      real: false,
+      guess: false,
     },
     select: {
       factId: true,
@@ -44,13 +44,13 @@ export async function getFactIdsOfFalseGuessesForPlayer(playerId: PlayerId) {
   return facts.map(f => f.factId);
 }
 
-export async function submitGuesses(playerId: PlayerId, guesses: { factId: FactId, real: boolean }[]) {
+export async function submitGuesses(playerId: PlayerId, guesses: { factId: FactId, guess: boolean }[]) {
   await clearGuesses(playerId);
 
   const guessObjects = guesses.map((guess) => ({
     factId: guess.factId,
     playerId,
-    real: guess.real,
+    guess: guess.guess,
   }));
 
   const ret = await prisma.guess.createMany({ data: guessObjects });

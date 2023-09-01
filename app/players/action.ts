@@ -1,6 +1,6 @@
 "use server";
 
-import prisma from "@/lib/db";
+import prisma from "@/prisma/db";
 
 export async function createPlayer(name: string) {
   const ret = await prisma.player.create({
@@ -8,9 +8,9 @@ export async function createPlayer(name: string) {
       name,
       facts: {
         create: [
-          { content: '', real: true },
-          { content: '', real: true },
-          { content: '', real: false },
+          { content: '', answer: true },
+          { content: '', answer: true },
+          { content: '', answer: false },
         ],
       }
     },

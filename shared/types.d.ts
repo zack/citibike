@@ -1,15 +1,23 @@
 declare type FactId = number;
 declare type Fact = {
-  id: FactId;
-  real: boolean;
   content: string;
+  id: FactId;
   playerId: PlayerId;
+  answer: boolean;
 }
 
 declare type PlayerName = string;
 declare type PlayerId = number;
 declare type Player = {
-  name: PlayerName;
-  id: PlayerId;
   facts?: Fact[];
+  id: PlayerId;
+  name: PlayerName;
 };
+
+declare type GuessId = number;
+declare type Guess = {
+  factId: FactId,
+  id: GuessId,
+  playerId: PlayerId,
+  guess: boolean,
+}

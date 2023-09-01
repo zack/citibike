@@ -78,8 +78,8 @@ export default function GuessPage({ facts, players }: GuessPageProps) {
 
   const authenticationChoicesAreValid = (selectedLie: FactId) => {
     const playersFacts = facts.filter(f => f.playerId === selectedPlayer);
-    const playersTruths = playersFacts.filter(f => f.real === true).map(f => f.id);
-    const playersLies = playersFacts.filter(f => f.real === false).map(f => f.id);
+    const playersTruths = playersFacts.filter(f => f.answer === true).map(f => f.id);
+    const playersLies = playersFacts.filter(f => f.answer === false).map(f => f.id);
 
     return (
       playersLies[0] === selectedLie

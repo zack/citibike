@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import React from 'react';
 
 export const metadata: Metadata = {
-  title: "Player Guessing | Facts Party",
+  title: "Score Management | Facts Party",
   description: "An app for managing a Facts Party",
 };
 

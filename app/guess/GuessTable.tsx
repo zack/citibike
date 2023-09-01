@@ -47,7 +47,7 @@ export default function GuessTable({ facts, playerId, onSubmit }: GuessTableProp
   const handleLockIn = async () => {
     const guesses = facts.map((fact) => ({
       factId: fact.id,
-      real: !selectedFacts.includes(fact.id),
+      guess: !selectedFacts.includes(fact.id),
     }));
 
     try {

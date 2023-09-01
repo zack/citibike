@@ -132,7 +132,7 @@ export default function PlayersList({ initPlayers }: PlayersListProps) {
     const factsCount = facts.filter((f: Fact) => f.content !== '').length;
 
     return (
-      <FactCountTableCell sx={{ width: '10%' }} iserror={`${factsCount < 3}`}>
+      <FactCountTableCell sx={{ width: '10%' }} iserror={`${factsCount !== 3}`}>
         <Typography sx={{ fontSize: '1.25rem' }} >
           {factsCount}/3
         </Typography>
@@ -195,10 +195,10 @@ export default function PlayersList({ initPlayers }: PlayersListProps) {
                           <TableCell />
                           <TableCell colSpan={2}>
                             <TextField
-                              color={fact.real ? "success" : "error"}
+                              color={fact.answer ? "success" : "error"}
                               focused
                               size="small"
-                              label={fact.real ? "true" : "false" }
+                              label={fact.answer ? "true" : "false" }
                               id={`fact-${fact.id}`}
                               sx={{ width: '100%' }}
                               value={fact.content}
@@ -257,6 +257,6 @@ const PlayerTableRow = styled(TableRow)({
 });
 
 const FactCountTableCell = styled(TableCell)(({ iserror }: { iserror: string }) => ({
-  color: iserror === 'true' ? '#FF0000' : '#000',
+  color: iserror === 'true' ? 'red' : 'black',
 }));
 

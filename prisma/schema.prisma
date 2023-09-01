@@ -17,7 +17,7 @@ model Player {
 
 model Fact {
   id       Int     @id @default(autoincrement())
-  real     Boolean
+  answer   Boolean
   content  String
   player   Player  @relation(fields: [playerId], references: [id], onDelete: Cascade)
   playerId Int
@@ -26,9 +26,11 @@ model Fact {
 
 model Guess {
   id       Int     @id @default(autoincrement())
-  real     Boolean
+  guess    Boolean
   player   Player  @relation(fields: [playerId], references: [id], onDelete: Cascade)
   playerId Int
   fact     Fact    @relation(fields: [factId], references: [id], onDelete: Cascade)
   factId   Int
+
+  @@unique(fields: [playerId, factId])
 }

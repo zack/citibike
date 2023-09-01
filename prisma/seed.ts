@@ -1,31 +1,15 @@
-import { LoremIpsum } from "lorem-ipsum";
 import { PrismaClient } from '@prisma/client'
+import fs from 'fs';
+import { parse } from 'csv-parse';
+
+const FACTS_FILE = 'prisma/seeds/facts.csv';
+const GUESSES_FILE = 'prisma/seeds/guesses.csv';
+const PLAYERS_FILE = 'prisma/seeds/players.csv';
 
 const prisma = new PrismaClient()
 
-const lorem = new LoremIpsum({
-  wordsPerSentence: {
-    min: 10,
-    max: 20
-  },
-});
-
-function pickNRandomElements(array: number[], n: number) {
-  const localArray = [...array];
-  if (n >= array.length) {
-    return array;
-  }
-
-  const picked = new Set();
-
-  while (picked.size < n) {
-    const randInt = Math.floor(Math.random() * (n-1));
-    localArray.splice(randInt, 1);
-    picked.add(localArray[randInt]);
-  }
-
-  return Array.from(picked);
-}
+// All of the data for the seeds comes from the first facts party. Please take
+// up any quetsions of voracity with the original players. Thanks, players!
 
 async function main() {
   console.log('Clearing database...');
@@ -33,53 +17,52 @@ async function main() {
   // cascade from the player model
   await prisma.player.deleteMany({});
 
-  const players = [ "Bashful", "Doc", "Dopey", "Grumpy", "Happy", "Sleepy", "Sneezy" ];
-
-  // We will collect these as we create them to use later to seed guesses
-  const factIds: number[] = [];
-  const playerIds: number[] = [];
-
-  console.log('Creating players...');
-  const playerPromises = players.map((name) => {
-    return prisma.player.create({
-      data: {
-        name,
-        facts: {
-          create: [
-            { content: lorem.generateSentences(1), real: true },
-            { content: lorem.generateSentences(1), real: true },
-            { content: lorem.generateSentences(1), real: false },
-          ],
-        }
-      },
-      include: { facts: true },
-    }).then(ret => {
-      // Add the newly created fact ids to our array
-      factIds.push(...ret.facts.map(f => f.id));
-      playerIds.push(ret.id);
-      return ret;
-    }).then(ret => {
-      // Let the user know what's going on
-      console.log(`  ...created ${ret.name}`);
+  console.log('Seeding players...');
+  fs.readFile(PLAYERS_FILE, (err, fileData) => {
+    parse(fileData, { columns: true, trim: true }, (err, rows) => {
+      rows.forEach(async ({id, name} : { id: string, name: string }) => {
+        await prisma.player.create({
+          data: {
+            id: parseInt(id, 10),
+            name,
+          },
+        });
+      });
     });
   });
 
-  await Promise.all(playerPromises);
-
-  console.log('Creating guesses...');
-  const guessPromises = playerIds.map((playerId) => {
-    const falseGuesses = pickNRandomElements(factIds, factIds.length / 3);
-
-    return prisma.guess.createMany({
-      data: factIds.map(factId => ({
-        factId,
-        playerId,
-        real: !falseGuesses.includes(factId),
-      })),
+  console.log('Seeding facts...');
+  fs.readFile(FACTS_FILE, (err, fileData) => {
+    parse(fileData, { columns: true, trim: true }, (err, rows) => {
+      if (err) { console.log(err); }
+      rows.forEach(async ({id, player_id, content, answer} : { id: string, player_id: string, content: string, answer: string }) => {
+        await prisma.fact.create({
+          data: {
+            answer: answer === '1' ? true : false,
+            id: parseInt(id, 10),
+            playerId: parseInt(player_id, 10),
+            content,
+          },
+        });
+      });
     });
   });
 
-  await Promise.all(guessPromises);
+  console.log('Seeding guesses...');
+  fs.readFile(GUESSES_FILE, (err, fileData) => {
+    parse(fileData, { columns: true, trim: true }, (err, rows) => {
+      if (err) { console.log(err); }
+      rows.forEach(async ({player_id, fact_id, guess} : { player_id: string, fact_id: string, guess: string }) => {
+        await prisma.guess.create({
+          data: {
+            playerId: parseInt(player_id, 10),
+            factId: parseInt(fact_id, 10),
+            guess: guess === '1' ? true : false,
+          },
+        });
+      });
+    });
+  });
 }
 
 main()
