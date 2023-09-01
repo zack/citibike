@@ -75,29 +75,6 @@ function createGuessHeatmapData( guesses: Guess[]) {
   return data;
 }
 
-function GuessHeatmap({ guesses }: { guesses: Guess[] }) {
-  type Data = {[index: number]: {[index: number]: boolean}};
-  const data: Data = createGuessHeatmapData(guesses);
-
-  return(
-    <Box sx={{ p: 0, m: 0, height: '20xp' }}>
-      {Object.keys(data).map(playerId => {
-        const pId = parseInt(playerId, 10);
-
-        return (
-          <Box key={pId} sx={{ p: 0, m: 0, height: '9px' }}>
-            {Object.keys(data[pId]).map(factId => {
-              const fId = parseInt(factId, 10);
-
-              return data[pId][fId] ? <GreenTableCell key={factId} /> : <RedTableCell key={factId}/>
-            })}
-          </Box>
-        );
-      })}
-    </Box>
-  );
-}
-
 function generateGuessAudit(guesses: Guess[], players: Player[]) {
   type Data = { [index: PlayerId]: { truth: number, lie: number } };
   const data: Data = {};
@@ -136,11 +113,6 @@ function generateGuessAudit(guesses: Guess[], players: Player[]) {
 export default function GuessPage({ facts, players, guesses }: ScorePageProps) {
   const guessAudit = generateGuessAudit(guesses, players);
   const problems = Object.keys(guessAudit).length;
-  const [rendered, setRendered] = React.useState(false);
-
-  React.useEffect(() => {
-    setRendered(true);
-  }, []);
 
   return (
     <main>
@@ -174,7 +146,6 @@ export default function GuessPage({ facts, players, guesses }: ScorePageProps) {
           { problems === 0 ?
             <Typography variant="h5" component="h2" sx={{ pb: 2 }} >
               Everything looks good. Hit the big button.
-              { rendered ? <GuessHeatmap guesses={guesses} /> : null }
             </Typography>
             : null }
         </Box>
@@ -182,25 +153,3 @@ export default function GuessPage({ facts, players, guesses }: ScorePageProps) {
     </main>
   );
 }
-
-const GreenTableCell = styled('div')({
-  aspectRatio: 1,
-  backgroundColor: green[800],
-  color: green[800],
-  display: 'inline-block',
-  height: '9px',
-  margin: 0,
-  padding: 0,
-  width: '9px',
-});
-
-const RedTableCell = styled('div')({
-  aspectRatio: 1,
-  backgroundColor: red[800],
-  color: red[800],
-  display: 'inline-block',
-  height: '9px',
-  margin: 0,
-  padding: 0,
-  width: '9px',
-});
