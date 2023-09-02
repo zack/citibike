@@ -15,6 +15,12 @@
     // The following two lines, combined, prevent eslint from throwing a
     // "no-unused-var" error in type definitions for function types
     "no-unused-vars": "off",
-    "@typescript-eslint/no-unused-vars": "error"
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_"
+      }
+    ]
   }
 }
