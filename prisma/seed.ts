@@ -3,9 +3,7 @@ import { ProgressBar } from 'ascii-progress';
 import fs from 'fs';
 import { parse } from 'csv-parse';
 
-const FACTS_FILE = 'prisma/seeds/facts.csv';
-const GUESSES_FILE = 'prisma/seeds/guesses.csv';
-const PLAYERS_FILE = 'prisma/seeds/players.csv';
+const SEED_FILE = 'prisma/seeds/seeds.csv';
 
 const prisma = new PrismaClient()
 
@@ -20,82 +18,71 @@ function createProgressBarSchema(title: string) {
   );
 }
 
-
-// All of the data for the seeds comes from the first facts party. Please take
-// up any quetsions of voracity with the original players. Thanks, players!
-
 async function main() {
   console.log('Clearing database...');
-  // It isn't usually necessary to delete all of the models independently, but
-  // sometimes if things get in a weird state while testing it might be. The
-  // order here is important too, as it's in reverse-dependent order.
-  await prisma.guess.deleteMany({});
-  await prisma.fact.deleteMany({});
-  await prisma.player.deleteMany({});
+  await prisma.trip.deleteMany({});
+  await prisma.dock.deleteMany({});
 
   console.log('Seeding database...');
-  fs.readFile(PLAYERS_FILE, (err, fileData) => {
+  fs.readFile(SEED_FILE, (err, fileData) => {
     parse(fileData, { columns: true, trim: true }, (err, rows) => {
       const progressBar = new ProgressBar({
-        schema: createProgressBarSchema('Players'),
+        schema: createProgressBarSchema('Trips'),
         total: rows.length,
       });
 
-      rows.forEach(async ({id, name} : { id: string, name: string }) => {
-        await prisma.player.create({
-          data: {
-            id: parseInt(id, 10),
-            name,
-          },
-        });
+      rows.forEach(async ({
+        end_station_name,
+        ended_at,
+        start_station_name,
+        started_at,
+      } : {
+        [index: string]: string
+      }) => {
+        let success = false;
+
+        while (!success) {
+          // connectOrCreate in an async loop can error out due to race
+          // conditions, so we need to keep retrying it until it passes.
+          success = true;
+
+          try {
+            await prisma.trip.create({
+              data: {
+                startedAt: new Date(started_at),
+                endedAt: new Date(ended_at),
+                startDock: {
+                  connectOrCreate: {
+                    where: {
+                      name: start_station_name
+                    },
+                    create: {
+                      name: start_station_name,
+                    },
+                  },
+                },
+                endDock: {
+                  connectOrCreate: {
+                    where: {
+                      name: end_station_name
+                    },
+                    create: {
+                      name: end_station_name,
+                    },
+                  },
+                },
+              },
+            })
+          } catch (e) {
+            success = false;
+          }
+        }
 
         progressBar.tick();
       });
     });
   });
 
-  fs.readFile(FACTS_FILE, (err, fileData) => {
-    parse(fileData, { columns: true, trim: true }, (err, rows) => {
-      const progressBar = new ProgressBar({
-        schema: createProgressBarSchema('Facts'),
-        total: rows.length,
-      });
-
-      rows.forEach(async ({id, player_id, content, answer} : { id: string, player_id: string, content: string, answer: string }) => {
-        await prisma.fact.create({
-          data: {
-            answer: answer === '1' ? true : false,
-            id: parseInt(id, 10),
-            playerId: parseInt(player_id, 10),
-            content,
-          },
-        });
-
-        progressBar.tick();
-      });
-    });
-  });
-
-  fs.readFile(GUESSES_FILE, (err, fileData) => {
-    parse(fileData, { columns: true, trim: true }, (err, rows) => {
-      const progressBar = new ProgressBar({
-        schema: createProgressBarSchema('Guesses'),
-        total: rows.length,
-      });
-
-      rows.forEach(async ({player_id, fact_id, guess} : { player_id: string, fact_id: string, guess: string }) => {
-        await prisma.guess.create({
-          data: {
-            playerId: parseInt(player_id, 10),
-            factId: parseInt(fact_id, 10),
-            guess: guess === '1' ? true : false,
-          },
-        });
-
-        progressBar.tick();
-      });
-    });
-  });
 }
 
 main()

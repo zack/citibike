@@ -1,5 +1,5 @@
 {
-  "name": "facts-party",
+  "name": "citibike-dock-data",
   "version": "0.1.0",
   "private": true,
   "prisma": {

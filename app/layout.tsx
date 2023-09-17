@@ -7,8 +7,8 @@ import React from 'react';
 import ThemeProvider from './ThemeProvider';
 
 export const metadata: Metadata = {
-  title: 'Facts Party',
-  description: 'An application for running a Facts Party',
+  title: 'CitiBike Dock Data',
+  description: 'Explore trip data for your favorite Citibike docks',
 }
 
 type RootLayoutProps = {

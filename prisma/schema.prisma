@@ -3,43 +3,30 @@ generator client {
 }
 
 datasource db {
-  provider     = "mysql"
+  provider     = "postgresql"
   url          = env("DATABASE_URL")
   relationMode = "prisma"
 }
 
-model Player {
-  id          Int          @id @default(autoincrement())
-  name        String       @unique
-  facts       Fact[]
-  guesses     Guess[]
-  bonusPoints BonusPoint[]
+// Turns out one real life dock can have multiple IDs, but all of those IDs
+// will share a name
+
+model Dock {
+  id        Int    @id @default(autoincrement())
+  name      String @unique
+  startDock Trip[] @relation("startDock")
+  endDock   Trip[] @relation("endDock")
 }
 
-model Fact {
-  id       Int     @id @default(autoincrement())
-  answer   Boolean
-  content  String
-  player   Player  @relation(fields: [playerId], references: [id], onDelete: Cascade)
-  playerId Int
-  Guess    Guess[]
-}
+model Trip {
+  id          Int      @id @default(autoincrement())
+  startDock   Dock     @relation("startDock", fields: [startDockId], references: [id])
+  startDockId Int
+  endDock     Dock     @relation("endDock", fields: [endDockId], references: [id])
+  endDockId   Int
+  startedAt   DateTime
+  endedAt     DateTime
 
-model Guess {
-  id       Int     @id @default(autoincrement())
-  guess    Boolean
-  player   Player  @relation(fields: [playerId], references: [id], onDelete: Cascade)
-  playerId Int
-  fact     Fact    @relation(fields: [factId], references: [id], onDelete: Cascade)
-  factId   Int
-
-  @@unique(fields: [playerId, factId])
-}
-
-model BonusPoint {
-  id       Int    @id @default(autoincrement())
-  reason   String
-  points   Int
-  player   Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
-  playerId Int
+  @@index([endDockId], type: Hash)
+  @@index([startDockId], type: Hash)
 }
