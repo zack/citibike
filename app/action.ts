@@ -2,28 +2,45 @@
 
 import prisma from "@/prisma/db";
 
-export async function getDockData(dockName: string) {
-  console.log('called');
-  const trips = await prisma.trip.findMany({
+export type DockData = {
+  countsAsStartDock: { month: number, count: number }[],
+  countsAsEndDock: { month: number, count: number }[],
+};
+
+export async function getDockData(dockId: number) {
+  const queryResultAsStartDock = await prisma.trip.groupBy({
     where: {
-      OR: [
-        { startDockName: dockName },
-        { endDockName: dockName },
-      ],
+      startDockId: dockId,
     },
-    select: {
-      startDockName: true,
+    by: ['month'],
+    _count: {
+      month: true,
     },
   });
 
-  const cleanedTrips = trips.map(trip => ({
-    isStartDock: trip.startDockName === dockName,
+  const queryResultAsEndDock = await prisma.trip.groupBy({
+    where: {
+      endDockId: dockId,
+    },
+    by: ['month'],
+    _count: {
+      month: true,
+    },
+  });
+
+  const countsAsStartDock = queryResultAsStartDock.map(r => ({
+    month: r.month,
+    count: r._count.month,
   }));
 
-  return cleanedTrips;
+  const countsAsEndDock = queryResultAsEndDock.map(r => ({
+    month: r.month,
+    count: r._count.month,
+  }));
+
+  return { countsAsStartDock, countsAsEndDock };
 }
 
 export async function getDocks() {
-  const docks = await prisma.dock.findMany({});
-  return docks.map(({name}) => name).sort((a,b) => a > b ? 1 : -1);
+  return await prisma.dock.findMany({});
 }

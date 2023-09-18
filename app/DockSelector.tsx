@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { getDockData } from './action';
 import {
   Autocomplete,
   Box,
@@ -9,32 +8,37 @@ import {
   Container,
   TextField,
 } from "@mui/material";
+/*
+ * import {
+ *   Bar,
+ *   BarChart,
+ *   CartesianGrid,
+ *   Legend,
+ *   Tooltip,
+ *   XAxis,
+ *   YAxis,
+ * } from 'recharts';
+ */
+import { DockData, getDockData } from './action';
 
-{/*
-  * import {
-  *   Bar,
-  *   BarChart,
-  *   CartesianGrid,
-  *   Legend,
-  *   Tooltip,
-  *   XAxis,
-  *   YAxis,
-  * } from 'recharts';
-  */}
-
-export default function DockSelector({ docks } : { docks: string[] }) {
-  const [dock, setDock] = React.useState<string>('');
-  const [_dockData, setDockData] = React.useState<{ isStartDock: boolean }[]|undefined>(undefined);
-  console.log(docks);
+export default function DockSelector({ docks } : { docks: { id: number, name: string }[] }) {
+  const [dockName, setDockName] = React.useState<string>('');
+  const [dockData, setDockData] = React.useState<DockData|undefined>(undefined);
+  const dockNames = docks.map(d => d.name);
 
   const handleDockChange = async (_event: unknown, newValue: string | null) => {
     const newDockName = newValue ?? '';
-    setDock(newDockName);
+    setDockName(newDockName);
     if (newDockName !== '') {
-      const newDockData = await getDockData(newDockName);
-      setDockData(newDockData);
+      const newDock = docks.find(d => d.name === newDockName);
+      if (newDock !== undefined) {
+        const newDockData = await getDockData(newDock.id);
+        setDockData(newDockData);
+      }
     }
   }
+
+  console.log(dockData);
 
   return (
     <Container>
@@ -42,8 +46,8 @@ export default function DockSelector({ docks } : { docks: string[] }) {
         <Autocomplete
           sx={{ flexGrow: 2, pr: 2 }}
           id="player"
-          options={docks}
-          value={dock}
+          options={dockNames}
+          value={dockName}
           onChange={handleDockChange}
           renderInput={(p) => <TextField {...p} label="Dock" />}
           renderOption={(props, option) => {
