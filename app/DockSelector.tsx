@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { getDockTrips } from './action';
+import { getDockData } from './action';
 import {
   Autocomplete,
   Box,
@@ -10,22 +10,29 @@ import {
   TextField,
 } from "@mui/material";
 
+{/*
+  * import {
+  *   Bar,
+  *   BarChart,
+  *   CartesianGrid,
+  *   Legend,
+  *   Tooltip,
+  *   XAxis,
+  *   YAxis,
+  * } from 'recharts';
+  */}
 
-export default function DockSelector({ docks } : { docks: Dock[] }) {
-  const [dock, setDock] = React.useState<Dock|undefined>(undefined);
-  const [dockTrips, setDockTrips] = React.useState(0);
-  const dockNames = docks.map((d: Dock) => d.name);
+export default function DockSelector({ docks } : { docks: string[] }) {
+  const [dock, setDock] = React.useState<string>('');
+  const [_dockData, setDockData] = React.useState<{ startedAt: Date, isStartDock: boolean }[]|undefined>(undefined);
+  console.log(docks);
 
   const handleDockChange = async (_event: unknown, newValue: string | null) => {
-    if (newValue !== null) {
-      const newDock = docks.find(d => d.name === newValue);
-      if (newDock !== undefined) {
-        setDock(newDock);
-        const trips = await getDockTrips(newDock.id);
-        setDockTrips(trips);
-      }
-    } else {
-      setDock(undefined);
+    const newDockName = newValue ?? '';
+    setDock(newDockName);
+    if (newDockName !== '') {
+      const newDockData = await getDockData(newDockName);
+      setDockData(newDockData);
     }
   }
 
@@ -35,8 +42,8 @@ export default function DockSelector({ docks } : { docks: Dock[] }) {
         <Autocomplete
           sx={{ flexGrow: 2, pr: 2 }}
           id="player"
-          options={dockNames}
-          value={dock?.name || ''}
+          options={docks}
+          value={dock}
           onChange={handleDockChange}
           renderInput={(p) => <TextField {...p} label="Dock" />}
           renderOption={(props, option) => {
@@ -54,10 +61,30 @@ export default function DockSelector({ docks } : { docks: Dock[] }) {
         />
       </Box>
 
-      {dock !== undefined ?
-        <Box> Trips: {dockTrips} </Box>
+      {/*dock !== undefined ?
+        <Box>
+          <BarChart
+            width={500}
+            height={300}
+            data={dockData}
+            margin={{
+              top: 20,
+              right: 30,
+              left: 20,
+              bottom: 5,
+            }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Bar dataKey='start' stackId='a' fill='#8884D8' />
+            <Bar dataKey='end' stackId='a' fill='#82CA9d' />
+          </BarChart>
+        </Box>
         : null
-      }
+        */}
     </Container>
   );
 }

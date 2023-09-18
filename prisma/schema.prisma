@@ -8,25 +8,18 @@ datasource db {
   relationMode = "prisma"
 }
 
-// Turns out one real life dock can have multiple IDs, but all of those IDs
-// will share a name
-
 model Dock {
-  id        Int    @id @default(autoincrement())
-  name      String @unique
-  startDock Trip[] @relation("startDock")
-  endDock   Trip[] @relation("endDock")
+  id   Int    @id @default(autoincrement())
+  name String @unique
 }
 
 model Trip {
-  id          Int      @id @default(autoincrement())
-  startDock   Dock     @relation("startDock", fields: [startDockId], references: [id])
-  startDockId Int
-  endDock     Dock     @relation("endDock", fields: [endDockId], references: [id])
-  endDockId   Int
-  startedAt   DateTime
-  endedAt     DateTime
+  id            Int      @id @default(autoincrement())
+  startDockName String
+  endDockName   String
+  startedAt     DateTime
+  endedAt       DateTime
 
-  @@index([endDockId], type: Hash)
-  @@index([startDockId], type: Hash)
+  @@index([endDockName], type: Hash)
+  @@index([startDockName], type: Hash)
 }
