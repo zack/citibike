@@ -12,13 +12,11 @@ export async function getDockData(dockName: string) {
       ],
     },
     select: {
-      startedAt: true,
       startDockName: true,
     },
   });
 
   const cleanedTrips = trips.map(trip => ({
-    startedAt: trip.startedAt,
     isStartDock: trip.startDockName === dockName,
   }));
 

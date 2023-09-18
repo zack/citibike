@@ -24,7 +24,7 @@ import {
 
 export default function DockSelector({ docks } : { docks: string[] }) {
   const [dock, setDock] = React.useState<string>('');
-  const [_dockData, setDockData] = React.useState<{ startedAt: Date, isStartDock: boolean }[]|undefined>(undefined);
+  const [_dockData, setDockData] = React.useState<{ isStartDock: boolean }[]|undefined>(undefined);
   console.log(docks);
 
   const handleDockChange = async (_event: unknown, newValue: string | null) => {

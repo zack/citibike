@@ -14,11 +14,12 @@ model Dock {
 }
 
 model Trip {
-  id            Int      @id @default(autoincrement())
+  id            Int    @id @default(autoincrement())
+  day           Int
+  month         Int
+  year          Int
   startDockName String
   endDockName   String
-  startedAt     DateTime
-  endedAt       DateTime
 
   @@index([endDockName], type: Hash)
   @@index([startDockName], type: Hash)

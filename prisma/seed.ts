@@ -27,10 +27,16 @@ async function main() {
 async function seedTrips(docks: Set<string>) {
   console.log('Seeding trips...');
   const parser = fs
-    .createReadStream(SEED_FILE)
-    .pipe(parse({ columns: true, trim: true }));
+  .createReadStream(SEED_FILE)
+  .pipe(parse({ columns: true, trim: true }));
 
-  const pendingTrips : { startDockName: string, endDockName: string, startedAt: Date, endedAt: Date }[] = [];
+  const pendingTrips : {
+    day: number,
+    endDockName: string,
+    month: number,
+    startDockName: string,
+    year: number,
+  }[] = [];
   const batchSize = 100;
   let current = 0;
 
@@ -43,11 +49,13 @@ async function seedTrips(docks: Set<string>) {
     let record;
     while ((record = parser.read()) !== null) {
       current++;
+      const startedAt = new Date(record.started_at);
       pendingTrips.push({
+        day: startedAt.getDate(),
         endDockName: record.end_station_name,
-        endedAt: new Date(record.ended_at),
+        month: startedAt.getMonth(),
         startDockName: record.start_station_name,
-        startedAt: new Date(record.started_at),
+        year: startedAt.getFullYear(),
       });
 
       docks.add(record.end_station_name);
