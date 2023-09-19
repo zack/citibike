@@ -42,5 +42,6 @@ export async function getDockData(dockId: number) {
 }
 
 export async function getDocks() {
-  return await prisma.dock.findMany({});
+  const queryResults = await prisma.dock.findMany({});
+  return queryResults;
 }
