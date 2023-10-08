@@ -22,6 +22,7 @@ import {
   YAxis,
 } from 'recharts';
 import { DockData, getDockData } from './action';
+import { exoFontFamily, ubuntuMonoFontFamily } from './ThemeProvider';
 
 function getMonthName(monthNumber: number) {
   const date = new Date();
@@ -72,7 +73,7 @@ export default function DockSelector({ docks } : { docks: { id: number, name: st
           options={dockNames}
           value={dockName}
           onChange={handleDockChange}
-          renderInput={(p) => <TextField {...p} label="Dock" />}
+          renderInput={(p) => <TextField {...p} label="Dock" InputLabelProps={{ shrink: true}} />}
           renderOption={(props, option) => {
             return (
               <li {...props} key={option}>
