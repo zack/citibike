@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { ubuntuMonoFontFamily } from './ThemeProvider';
 import {
   Autocomplete,
   Box,
@@ -116,7 +115,9 @@ export default function DockSelector({ docks } : { docks: { id: number, name: st
 
                   return (
                     <Paper elevation={2} sx={{ p: 2 }}>
-                      <Typography variant="h6" component="div">{label}</Typography>
+                      <Typography variant="h6" component="div" sx={{ fontFamily: exoFontFamily }}>
+                        {label}
+                      </Typography>
                       <Typography>total: {total}</Typography>
                       <Typography>{payload[0].name}: {payload[0].value}</Typography>
                       <Typography>{payload[1].name}: {payload[1].value}</Typography>
