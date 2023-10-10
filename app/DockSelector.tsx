@@ -43,7 +43,9 @@ export default function DockSelector({ docks } : { docks: { id: number, name: st
 
     setDockName(newDockName);
     setDockData(undefined);
-    setIsLoading(true);
+    if (newDockName !== '') {
+      setIsLoading(true);
+    }
 
     if (newDockName !== '') {
       const newDock = docks.find(d => d.name === newDockName);
@@ -58,11 +60,12 @@ export default function DockSelector({ docks } : { docks: { id: number, name: st
   let chartData;
   if (dockData !== undefined) {
     chartData = dockData.countsAsStartDock.map(data => ({
-      name: getMonthName(data.month),
-      monthIdx: data.month,
-      starts: data.count,
       ends: dockData.countsAsEndDock.find(d => d.month === data.month)?.count ?? 0,
-    })).sort((a,b) => a.monthIdx > b.monthIdx ? 1 : -1);
+      month: data.month,
+      name: `${getMonthName(data.month)} '${`${data.year}`.slice(2,)}`,
+      starts: data.count,
+      year: data.year,
+    })).sort((a,b) => `${a.year}${a.month}` > `${b.year}${b.month}` ? 1 : -1);
   }
 
   return (
@@ -87,7 +90,6 @@ export default function DockSelector({ docks } : { docks: { id: number, name: st
           ))
         }}
       />
-
 
       <Box sx={{
         width: '100%',
@@ -115,7 +117,7 @@ export default function DockSelector({ docks } : { docks: { id: number, name: st
         data={chartData}
         margin={{
           top: 0,
-          right: 0,
+          right: 5,
           left: 0,
           bottom: 0,
         }}

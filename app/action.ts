@@ -3,8 +3,8 @@
 import prisma from "@/prisma/db";
 
 export type DockData = {
-  countsAsStartDock: { month: number, count: number }[],
-  countsAsEndDock: { month: number, count: number }[],
+  countsAsStartDock: { month: number, year: number, count: number }[],
+  countsAsEndDock: { month: number, year: number, count: number }[],
 };
 
 export async function getDockData(dockId: number) {
@@ -12,7 +12,7 @@ export async function getDockData(dockId: number) {
     where: {
       startDockId: dockId,
     },
-    by: ['month'],
+    by: ['month', 'year'],
     _count: {
       month: true,
     },
@@ -22,21 +22,25 @@ export async function getDockData(dockId: number) {
     where: {
       endDockId: dockId,
     },
-    by: ['month'],
+    by: ['month', 'year'],
     _count: {
       month: true,
     },
   });
 
   const countsAsStartDock = queryResultAsStartDock.map(r => ({
-    month: r.month,
     count: r._count.month,
+    month: r.month,
+    year: r.year,
   }));
 
   const countsAsEndDock = queryResultAsEndDock.map(r => ({
-    month: r.month,
     count: r._count.month,
+    month: r.month,
+    year: r.year,
   }));
+
+  console.log(countsAsStartDock);
 
   return { countsAsStartDock, countsAsEndDock };
 }
