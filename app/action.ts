@@ -40,8 +40,6 @@ export async function getDockData(dockId: number) {
     year: r.year,
   }));
 
-  console.log(countsAsStartDock);
-
   return { countsAsStartDock, countsAsEndDock };
 }
 
