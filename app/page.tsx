@@ -5,7 +5,7 @@ import { getDocks } from './action';
 
 import {
   Box,
-  Container,
+  Grid,
   Typography,
 } from "@mui/material";
 
@@ -14,15 +14,17 @@ export default async function Home() {
 
   return (
     <main>
-      <Container maxWidth="md">
-        <Typography variant="h4" component="h1" sx={{ fontFamily: exoFontFamily, pb: 2 }} >
-          Select a Dock
-        </Typography>
+      <Grid container justifyContent="center" columns={{ xs: 6, sm: 8, md: 12 }}>
+        <Grid item xs={6}>
+          <Typography variant="h4" component="h1" sx={{ fontFamily: exoFontFamily, pb: 2 }} >
+            Select a Dock
+          </Typography>
 
-        <Box sx={{ display: 'flex', pb: 2 }}>
-          <DockSelector docks={docks}/>
-        </Box>
-      </Container>
+          <Box sx={{ display: 'flex', p: 0 }}>
+            <DockSelector docks={docks}/>
+          </Box>
+        </Grid>
+      </Grid>
     </main>
   );
 }
