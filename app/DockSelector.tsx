@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import React from 'react';
 import {
   Autocomplete,
@@ -39,7 +40,10 @@ export default function DockSelector({ docks } : { docks: { id: number, name: st
 
   const handleDockChange = async (_event: unknown, newValue: string | null) => {
     const newDockName = newValue ?? '';
+
     setDockName(newDockName);
+    setDockData(undefined);
+
     if (newDockName !== '') {
       const newDock = docks.find(d => d.name === newDockName);
       if (newDock !== undefined) {
@@ -48,8 +52,6 @@ export default function DockSelector({ docks } : { docks: { id: number, name: st
       }
     }
   }
-
-  console.log(dockData);
 
   let chartData;
   if (dockData !== undefined) {
@@ -60,8 +62,6 @@ export default function DockSelector({ docks } : { docks: { id: number, name: st
       ends: dockData.countsAsEndDock.find(d => d.month === data.month)?.count ?? 0,
     })).sort((a,b) => a.monthIdx > b.monthIdx ? 1 : -1);
   }
-
-  console.log(chartData);
 
   return (
     <Container>
@@ -88,52 +88,58 @@ export default function DockSelector({ docks } : { docks: { id: number, name: st
         />
       </Box>
 
-      {dockData !== undefined ?
-        <Box>
-          <ResponsiveContainer width="100%" height={500}>
-          <BarChart
-            style={{
-              fontFamily: ubuntuMonoFontFamily,
-            }}
-            width={800}
-            height={500}
-            data={chartData}
-            margin={{
-              top: 20,
-              right: 30,
-              left: 20,
-              bottom: 5,
-            }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip
-              content={({ active, payload, label }) => {
-                if (active && payload && payload.length) {
-                  const total = parseInt(`${payload[0].value}` ?? '', 10) + parseInt(`${payload[1].value}`, 10)
 
-                  return (
-                    <Paper elevation={2} sx={{ p: 2 }}>
-                      <Typography variant="h6" component="div" sx={{ fontFamily: exoFontFamily }}>
-                        {label}
-                      </Typography>
-                      <Typography>total: {total}</Typography>
-                      <Typography>{payload[0].name}: {payload[0].value}</Typography>
-                      <Typography>{payload[1].name}: {payload[1].value}</Typography>
-                    </Paper>
-                  );
-                }
+      <Box sx={{ width: '100%', height: '500px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        {(dockName !== '' && dockData == undefined) ? (
+          <Box sx={{ width: '100%', height: '100%', backgroundImage: 'url(/citibike-blank-chart.png)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <Image alt='loading spinner' src='/citibike-loader.gif' width={200} height={111} />
+          </Box>
+        ): null}
+        {dockData !== undefined ?
+          <ResponsiveContainer>
+            <BarChart
+              style={{
+                fontFamily: ubuntuMonoFontFamily,
               }}
-            />
-            <Legend />
-            <Bar dataKey='starts' stackId='a' fill='#FB3692' />
-            <Bar dataKey='ends' stackId='a' fill='#FB9F36' />
-          </BarChart>
+              width={800}
+              height={500}
+              data={chartData}
+              margin={{
+                top: 20,
+                right: 30,
+                left: 20,
+                bottom: 5,
+              }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip
+                content={({ active, payload, label }) => {
+                  if (active && payload && payload.length) {
+                    const total = parseInt(`${payload[0].value}` ?? '', 10) + parseInt(`${payload[1].value}`, 10)
+
+                    return (
+                      <Paper elevation={2} sx={{ p: 2 }}>
+                        <Typography variant="h6" component="div" sx={{ fontFamily: exoFontFamily }}>
+                          {label}
+                        </Typography>
+                        <Typography>total: {total}</Typography>
+                        <Typography>{payload[0].name}: {payload[0].value}</Typography>
+                        <Typography>{payload[1].name}: {payload[1].value}</Typography>
+                      </Paper>
+                    );
+                  }
+                }}
+              />
+              <Legend />
+              <Bar dataKey='starts' stackId='a' fill='#FB3692' />
+              <Bar dataKey='ends' stackId='a' fill='#FB9F36' />
+            </BarChart>
           </ResponsiveContainer>
-        </Box>
-        : null
-      }
+          : null
+        }
+      </Box>
     </Container>
   );
 }
