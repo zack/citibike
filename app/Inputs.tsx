@@ -1,17 +1,25 @@
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
-import { DatePicker } from "@mui/x-date-pickers";
+import { DatePicker } from '@mui/x-date-pickers';
+import { Granularity } from './Main';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import React from 'react';
 import {
   Autocomplete,
   Box,
   Chip,
+  FormControl,
+  FormControlLabel,
+  FormLabel,
+  Radio,
+  RadioGroup,
   TextField,
 } from "@mui/material";
 import { Dispatch, SetStateAction } from "react";
 
 export default function Inputs({
   dockName,
+  granularity,
+  setGranularity,
   dockNames,
   endDate,
   maxDate,
@@ -24,14 +32,24 @@ export default function Inputs({
   dockName: string,
   dockNames: Array<string>,
   endDate: Date,
+  granularity: Granularity,
   maxDate: Date,
   minDate: Date,
   setDockName: Dispatch<SetStateAction<string>>,
   setEndDate: Dispatch<SetStateAction<Date>>
+  setGranularity: Dispatch<SetStateAction<Granularity>>,
   setStartDate: Dispatch<SetStateAction<Date>>,
   startDate: Date,
 })
 {
+
+  const handleGranularityChange = (value: string) => {
+    if (value === 'daily') {
+      setGranularity(Granularity.Daily);
+    } else {
+      setGranularity(Granularity.Monthly);
+    }
+  }
 
   const handleDockChange = async (_event: unknown, newValue: string | null) => {
     const newDockName = newValue ?? '';
@@ -92,6 +110,23 @@ export default function Inputs({
             views={['year', 'month']}
           />
         </LocalizationProvider>
+      </Box>
+
+      <Box>
+        <FormControl>
+          <FormLabel id="granularity-options-label"> Granularity </FormLabel>
+          <RadioGroup
+            aria-labelledby="granularity-options-label"
+            defaultValue="monthly"
+            name="radio-buttons-group"
+            onChange={(e, v) => handleGranularityChange(v)}
+            row
+            value={granularity === Granularity.Daily ? 'daily' : 'monthly'}
+          >
+            <FormControlLabel value="monthly" control={<Radio />} label="Monthly" />
+            <FormControlLabel value="daily" control={<Radio />} label="Daily" />
+          </RadioGroup>
+        </FormControl>
       </Box>
     </Box>
   );

@@ -1,6 +1,7 @@
 import { DockData } from './action';
 import Image from 'next/image';
 import React from 'react';
+import { format } from 'date-fns';
 
 import {
   Bar,
@@ -21,27 +22,30 @@ import {
 
 import { exoFontFamily, ubuntuMonoFontFamily } from './ThemeProvider';
 
-function getMonthName(monthNumber: number) {
-  const date = new Date();
-  date.setMonth(monthNumber - 1);
-
-  return date.toLocaleString('en-US', {
-    month: 'short',
-  });
-}
-
-function pad(num: number) {
-  if (num < 10) {
+function pad(num: number|undefined) {
+  if (num === undefined) {
+    return '';
+  } else if (num < 10) {
     return `0${num}`;
   } else {
     return `${num}`;
   }
 }
 
+function getDataLabel(day: number|undefined, month: number, year: number) {
+  if (day === undefined) {
+    return format(new Date(year, month-1, 1), "MMM ''yy");
+  } else {
+    return format(new Date(year, month-1, day), "MMM d ''yy");
+  }
+}
+
 export default function Chart({
+  daily,
   isLoading,
   dockData,
 } : {
+  daily: boolean,
   dockData: DockData|undefined,
   isLoading: boolean
 }) {
@@ -50,11 +54,12 @@ export default function Chart({
       data => ({
         ends: dockData.countsAsEndDock.find(d => d.month === data.month)?.count ?? 0,
         month: data.month,
-        name: `${getMonthName(data.month)} '${`${data.year}`.slice(2,)}`,
+        day: data.day,
+        name: getDataLabel(data.day, data.month, data.year),
         starts: data.count,
         year: data.year,
       })
-  ).sort((a,b) => `${a.year}${pad(a.month)}` > `${b.year}${pad(b.month)}` ? 1 : -1);
+  ).sort((a,b) => `${a.year}${pad(a.month)}${pad(a.day)}` > `${b.year}${pad(b.month)}${pad(b.day)}` ? 1 : -1);
 
   if (isLoading) {
     return (
@@ -85,6 +90,7 @@ export default function Chart({
         }}
         width={800}
         height={500}
+        barCategoryGap={daily ? '1%' : '10%'}
         data={chartData}
         margin={{
           top: 10,
