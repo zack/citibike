@@ -64,15 +64,16 @@ export default function Chart({
     );
   }
 
+  // No dock selected
   if (dockData === undefined) {
-    return (
-      <Typography> Something went wrong. </Typography>
-    );
+    return null;
   }
 
   if (dockData.countsAsStartDock.length + dockData.countsAsEndDock.length === 0) {
     return (
-      <Typography> No data for that time preiod </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+        <Typography> No data for that time preiod. </Typography>
+      </Box>
     );
   }
 
