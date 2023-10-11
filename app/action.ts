@@ -8,10 +8,12 @@ export type DockData = {
 };
 
 export async function getDockData(dockId: number, startDate: Date | null, endDate: Date | null) {
-  const endMonth = endDate?.getUTCMonth() || 6; // returns a 0-indexed month
+  const endMonth = endDate?.getUTCMonth() ?? 6; // returns a 0-indexed month
   const endYear = endDate?.getUTCFullYear() || 2023;
-  const startMonth = startDate?.getUTCMonth() || 7; // returns a 0-indexed month
+  const startMonth = startDate?.getUTCMonth() ?? 7; // returns a 0-indexed month
   const startYear = startDate?.getUTCFullYear() || 2022;
+
+  console.log({ endMonth, endYear, startMonth, startYear });
 
   const queryResultAsStartDock = await prisma.trip.groupBy({
     where: {

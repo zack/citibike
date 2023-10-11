@@ -13,8 +13,8 @@ export default async function Home() {
 
   return (
     <main>
-      <Grid container justifyContent="center" columns={{ xs: 6, sm: 8, md: 8, lg: 12 }}>
-        <Grid item xs={6}>
+      <Grid container justifyContent="center" columns={{ xs: 6, sm: 8, md: 8, lg: 12 }} height='90vh' >
+        <Grid item xs={6} sx={{ height: '100%', display: 'flex', alignItems: 'stretch', flexDirection: 'column' }}>
           <Typography variant="h4" component="h1" sx={{ fontFamily: exoFontFamily, pb: 2 }} >
             Select a Dock
           </Typography>

@@ -39,8 +39,8 @@ function pad(num: number) {
 }
 
 export default function Chart({
+  isLoading,
   dockData,
-  isLoading
 } : {
   dockData: DockData|undefined,
   isLoading: boolean
@@ -56,67 +56,67 @@ export default function Chart({
       })
   ).sort((a,b) => `${a.year}${pad(a.month)}` > `${b.year}${pad(b.month)}` ? 1 : -1);
 
-  return (
-    <Box sx={{
-      alignItems: 'center',
-      aspectRatio: '1',
-      backgroundImage: `${isLoading ? 'url(/citibike-blank-chart.png)' : ''}`,
-      backgroundSize: '100% 100%',
-      display: 'flex',
-      justifyContent: 'center',
-      ml: -1,
-      pt: 2,
-      width: '100%',
-      }}
-    >
-
-      {isLoading ? (
+  if (isLoading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
         <Image alt='loading spinner' src='/citibike-loader.gif' width={200} height={111} />
-      ): null}
+      </Box>
+    );
+  }
 
-      {dockData !== undefined ?
-        <ResponsiveContainer>
+  if (dockData === undefined) {
+    return (
+      <Typography> Something went wrong. </Typography>
+    );
+  }
+
+  if (dockData.countsAsStartDock.length + dockData.countsAsEndDock.length === 0) {
+    return (
+      <Typography> No data for that time preiod </Typography>
+    );
+  }
+
+  return (
+    <ResponsiveContainer>
       <BarChart
-      style={{
-        fontFamily: ubuntuMonoFontFamily,
-      }}
-      width={800}
-      height={500}
-      data={chartData}
-      margin={{
-        top: 0,
-        right: 10,
-        left: 0,
-        bottom: 0,
-      }}
+        style={{
+          fontFamily: ubuntuMonoFontFamily,
+        }}
+        width={800}
+        height={500}
+        data={chartData}
+        margin={{
+          top: 10,
+          right: 10,
+          left: -15,
+          bottom: 10,
+        }}
       >
-      <CartesianGrid strokeDasharray="3 3" />
-      <XAxis dataKey="name" />
-      <YAxis />
-      <Tooltip
-      content={({ active, payload, label }) => {
-        if (active && payload && payload.length) {
-          const total = parseInt(`${payload[0].value}` ?? '', 10) + parseInt(`${payload[1].value}`, 10)
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="name" />
+        <YAxis />
+        <Tooltip
+          content={({ active, payload, label }) => {
+            if (active && payload && payload.length) {
+              const total = parseInt(`${payload[0].value}` ?? '', 10) + parseInt(`${payload[1].value}`, 10)
 
-          return (
-            <Paper elevation={2} sx={{ p: 2 }}>
-              <Typography variant="h6" component="div" sx={{ fontFamily: exoFontFamily }}>
-                {label}
-              </Typography>
-              <Typography>total: {total}</Typography>
-              <Typography>{payload[0].name}: {payload[0].value}</Typography>
-              <Typography>{payload[1].name}: {payload[1].value}</Typography>
-            </Paper>
-          );
-        }
-      }}
-      />
+              return (
+                <Paper elevation={2} sx={{ p: 2 }}>
+                  <Typography variant="h6" component="div" sx={{ fontFamily: exoFontFamily }}>
+                    {label}
+                  </Typography>
+                  <Typography>total: {total}</Typography>
+                  <Typography>{payload[0].name}: {payload[0].value}</Typography>
+                  <Typography>{payload[1].name}: {payload[1].value}</Typography>
+                </Paper>
+              );
+            }
+          }}
+        />
         <Legend />
         <Bar dataKey='starts' stackId='a' fill='#32908F' />
         <Bar dataKey='ends' stackId='a' fill='#26C485' />
-        </BarChart>
-        </ResponsiveContainer>
-        : null}
-    </Box>
+      </BarChart>
+    </ResponsiveContainer>
   );
 }
