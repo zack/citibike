@@ -26,6 +26,6 @@ model Trip {
   endDock     Dock @relation("endDock", fields: [endDockId], references: [id])
   endDockId   Int
 
-  @@index([endDockId])
-  @@index([startDockId])
+  @@index(fields: [endDockId])
+  @@index(fields: [startDockId])
 }
