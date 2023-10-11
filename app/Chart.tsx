@@ -112,8 +112,8 @@ export default function Chart({
       }}
       />
         <Legend />
-        <Bar dataKey='starts' stackId='a' fill='#26C485' />
-        <Bar dataKey='ends' stackId='a' fill='#32908F' />
+        <Bar dataKey='starts' stackId='a' fill='#32908F' />
+        <Bar dataKey='ends' stackId='a' fill='#26C485' />
         </BarChart>
         </ResponsiveContainer>
         : null}
