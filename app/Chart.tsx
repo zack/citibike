@@ -71,7 +71,11 @@ export default function Chart({
 
   // No dock selected
   if (dockData === undefined) {
-    return (<Typography> Select a dock to see some data. </Typography>);
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+        <Typography> Select a dock to see some data. </Typography>
+      </Box>
+    );
   }
 
   if (dockData.countsAsStartDock.length + dockData.countsAsEndDock.length === 0) {
