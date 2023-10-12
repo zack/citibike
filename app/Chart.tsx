@@ -71,7 +71,7 @@ export default function Chart({
 
   // No dock selected
   if (dockData === undefined) {
-    return null;
+    return (<Typography> Select a dock to see some data. </Typography>);
   }
 
   if (dockData.countsAsStartDock.length + dockData.countsAsEndDock.length === 0) {
