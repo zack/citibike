@@ -49,18 +49,6 @@ export default function Chart({
   dockData: DockData|undefined,
   isLoading: boolean
 }) {
-  const chartData =
-    dockData?.countsAsStartDock.map(
-      data => ({
-        ends: dockData.countsAsEndDock.find(d => d.month === data.month)?.count ?? 0,
-        month: data.month,
-        day: data.day,
-        name: getDataLabel(data.day, data.month, data.year),
-        starts: data.count,
-        year: data.year,
-      })
-  ).sort((a,b) => `${a.year}${pad(a.month)}${pad(a.day)}` > `${b.year}${pad(b.month)}${pad(b.day)}` ? 1 : -1);
-
   if (isLoading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
@@ -78,13 +66,25 @@ export default function Chart({
     );
   }
 
-  if (dockData.countsAsStartDock.length + dockData.countsAsEndDock.length === 0) {
+  if (dockData.length === 0) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
         <Typography> No data for that time preiod. </Typography>
       </Box>
     );
   }
+
+  const chartData =
+    dockData?.map(
+      data => ({
+        ended: data.ended,
+        month: data.month,
+        day: data.day,
+        name: getDataLabel(data.day, data.month, data.year),
+        started: data.started,
+        year: data.year,
+      })
+  ).sort((a,b) => `${a.year}${pad(a.month)}${pad(a.day)}` > `${b.year}${pad(b.month)}${pad(b.day)}` ? 1 : -1);
 
   return (
     <ResponsiveContainer>
@@ -109,6 +109,7 @@ export default function Chart({
         <Tooltip
           content={({ active, payload, label }) => {
             if (active && payload && payload.length) {
+              console.log({ payload });
               const total = parseInt(`${payload[0].value}` ?? '', 10) + parseInt(`${payload[1].value}`, 10)
 
               return (
@@ -125,8 +126,8 @@ export default function Chart({
           }}
         />
         <Legend />
-        <Bar dataKey='starts' stackId='a' fill='#32908F' />
-        <Bar dataKey='ends' stackId='a' fill='#26C485' />
+        <Bar dataKey='started' stackId='a' fill='#32908F' />
+        <Bar dataKey='ended' stackId='a' fill='#26C485' />
       </BarChart>
     </ResponsiveContainer>
   );

@@ -10,22 +10,21 @@ datasource db {
 }
 
 model Dock {
-  id     Int    @id @default(autoincrement())
-  name   String @unique
-  starts Trip[] @relation("endDock")
-  ends   Trip[] @relation("startDock")
+  id   Int       @id @default(autoincrement())
+  name String    @unique
+  days DockDay[] @relation("dockId")
 }
 
-model Trip {
-  id          Int  @id @default(autoincrement())
-  day         Int
-  month       Int
-  year        Int
-  startDock   Dock @relation("startDock", fields: [startDockId], references: [id])
-  startDockId Int
-  endDock     Dock @relation("endDock", fields: [endDockId], references: [id])
-  endDockId   Int
+model DockDay {
+  id      Int  @id @default(autoincrement())
+  day     Int
+  month   Int
+  year    Int
+  dock    Dock @relation("dockId", fields: [dockId], references: [id])
+  dockId  Int
+  started Int
+  ended   Int
 
-  @@index(fields: [endDockId])
-  @@index(fields: [startDockId])
+  @@unique([day, month, year, dockId])
+  @@index(fields: [dockId])
 }
