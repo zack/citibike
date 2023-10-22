@@ -109,7 +109,6 @@ export default function Chart({
         <Tooltip
           content={({ active, payload, label }) => {
             if (active && payload && payload.length) {
-              console.log({ payload });
               const total = parseInt(`${payload[0].value}` ?? '', 10) + parseInt(`${payload[1].value}`, 10)
 
               return (
