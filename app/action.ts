@@ -58,3 +58,20 @@ export async function getDocks() {
   const queryResults = await prisma.dock.findMany({});
   return queryResults;
 }
+
+export async function getDateBounds() {
+  const end = await prisma.dockDay.findFirst({orderBy: [ { year: 'desc' }, { month: 'desc' }, { day: 'desc' } ] });
+  const start = await prisma.dockDay.findFirst({orderBy: [ { year: 'asc' }, { month: 'asc' }, { day: 'asc' } ] });
+
+  if (end === null || start === null) {
+    throw 'something went wrong';
+  }
+
+  const maxDate = new Date(`${end.year}-${end.month}-${end.day}`);
+  const minDate = new Date(`${start.year}-${start.month}-${start.day}`);
+
+  return({
+    maxDate,
+    minDate,
+  });
+}

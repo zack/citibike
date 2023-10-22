@@ -1,15 +1,16 @@
 import Main from './Main';
 import React from 'react';
 import { exoFontFamily } from './ThemeProvider';
-import { getDocks } from './action';
-
 import {
   Grid,
   Typography,
 } from "@mui/material";
+import { getDateBounds, getDocks } from './action';
+
 
 export default async function Home() {
   const docks = await getDocks();
+  const {minDate, maxDate } = await getDateBounds();
 
   return (
     <main>
@@ -19,7 +20,7 @@ export default async function Home() {
             CitiBike Dock Data Viewer
           </Typography>
 
-          <Main docks={docks}/>
+          <Main docks={docks} minDate={minDate} maxDate={maxDate}/>
         </Grid>
       </Grid>
     </main>

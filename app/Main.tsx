@@ -6,20 +6,17 @@ import React from 'react';
 
 import { DockData, getDockData } from './action';
 
-const MIN_DATE = new Date('2022-10-31');
-const MAX_DATE = new Date('2023-09-31');
-
 export enum Granularity {
   Daily,
   Monthly,
 }
 
-export default function DockSelector({ docks } : { docks: { id: number, name: string }[] }) {
+export default function DockSelector({ docks, minDate, maxDate } : { docks: { id: number, name: string }[], minDate: Date, maxDate: Date }) {
   const [dockData, setDockData] = React.useState<DockData|undefined>(undefined);
   const [dockName, setDockName] = React.useState<string>('');
-  const [endDate, setEndDate] = React.useState<Date>(MAX_DATE);
+  const [endDate, setEndDate] = React.useState<Date>(maxDate);
   const [isLoading, setIsLoading] = React.useState(false);
-  const [startDate, setStartDate] = React.useState<Date>(MIN_DATE);
+  const [startDate, setStartDate] = React.useState<Date>(minDate);
   const [granularity, setGranularity] = React.useState<Granularity>(Granularity.Monthly)
 
   React.useEffect(() => {
@@ -49,8 +46,8 @@ export default function DockSelector({ docks } : { docks: { id: number, name: st
         dockNames={docks.map(d => d.name).sort((a,b) => a > b ? 1 : -1)}
         endDate={endDate}
         granularity={granularity}
-        maxDate={MAX_DATE}
-        minDate={MIN_DATE}
+        maxDate={maxDate}
+        minDate={minDate}
         setDockName={setDockName}
         setEndDate={setEndDate}
         setGranularity={setGranularity}
