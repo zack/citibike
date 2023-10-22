@@ -94,7 +94,7 @@ export default function Inputs({
             label="Start"
             maxDate={maxDate}
             minDate={minDate}
-            onChange={newValue => setStartDate(newValue || minDate)}
+            onAccept={newValue => setStartDate(newValue || minDate)}
             sx={{ width: '100%' }}
             value={startDate}
             views={['year', 'month']}
@@ -104,7 +104,7 @@ export default function Inputs({
             label="End"
             maxDate={maxDate}
             minDate={minDate}
-            onChange={newValue => setEndDate(newValue || maxDate)}
+            onAccept={newValue => setEndDate(newValue || maxDate)}
             sx={{ width: '100%' }}
             value={endDate}
             views={['year', 'month']}
