@@ -6,8 +6,8 @@ import React from 'react';
 
 import { DockData, getDockData } from './action';
 
-const MIN_DATE = new Date('2022-08-31');
-const MAX_DATE = new Date('2023-07-31');
+const MIN_DATE = new Date('2022-10-31');
+const MAX_DATE = new Date('2023-09-31');
 
 export enum Granularity {
   Daily,
