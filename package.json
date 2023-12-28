@@ -14,6 +14,7 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.481.0",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.14.6",
@@ -23,6 +24,7 @@
     "@types/react": "18.2.21",
     "@types/react-dom": "18.2.7",
     "@vercel/analytics": "^1.1.0",
+    "adm-zip": "^0.5.10",
     "date-fns": "^2.30.0",
     "eslint-config-next": "13.4.19",
     "immer": "^10.0.2",
@@ -46,7 +48,7 @@
     "husky": "^8.0.0",
     "postcss": "^8.4.28",
     "prisma": "^5.2.0",
-    "ts-node": "^10.9.1",
+    "ts-node": "^10.9.2",
     "typescript": "^5.2.2"
   }
 }
