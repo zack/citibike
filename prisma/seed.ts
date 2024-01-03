@@ -6,14 +6,15 @@ import fs from 'fs';
 import { parse } from 'csv-parse';
 
 const prisma = new PrismaClient();
-const seededDocks : Set<string> = new Set();
+const TMP_DIR = process.env.TMP_DIR;
+const ENV = process.env.ENVIRONMENT;
 
 function randomColor() {
   return '#'+Math.floor(Math.random()*16777215).toString(16);
 }
 
 async function processFiles(files: { [index: string]: number }) {
-  console.log('Seeding database...');
+  console.log('Processing files...');
 
   // Seed docks and generate data for days
   for (const file of Object.keys(files)) {
@@ -26,20 +27,16 @@ async function processFiles(files: { [index: string]: number }) {
     const month = date.slice(4,6);
     const dateStr = `${year}-${month}`;
 
-    await seedDocks(file, dateStr, files[file]).then(async (docks) => {
-      const dockMap: { [index: string]: number } = {};
-      docks.forEach(dock => {
-        dockMap[dock.name] = dock.id;
-      });
-
-      await seedDays(dateStr, file, dockMap, files[file]);
-    });
+    await seedDocks(file, dateStr, files[file]);
+    await seedDays(dateStr, file, files[file]);
   }
 }
 
+// Iterates over a file, gets all of the dock names, and inserts them into the
+// database. Will skip inserting any docks that already are present in the
+// database (based on the unique dock name). Returns all of the docks in the
+// database after the insert.
 async function seedDocks(file: string, dateStr: string, length: number) {
-  const docks : Set<string> = new Set();
-
   const parser = fs
   .createReadStream(file)
   .pipe(parse({ columns: true, trim: true }));
@@ -49,38 +46,40 @@ async function seedDocks(file: string, dateStr: string, length: number) {
     total: length,
   });
 
-  parser.on('readable', async function(){
+  const docks : Set<string> = new Set();
+  parser.on('readable', async () => {
     let record;
     while ((record = parser.read()) !== null) {
-      if (!seededDocks.has(record.end_station_name)) {
-        docks.add(record.end_station_name);
-        seededDocks.add(record.end_station_name);
-      }
-
-      if (!seededDocks.has(record.start_station_name)) {
-        docks.add(record.start_station_name);
-        seededDocks.add(record.start_station_name);
-      }
-
+      docks.add(record.end_station_name);
+      docks.add(record.start_station_name);
       progressBar.tick();
     }
   });
 
   await finished(parser).then(async () => {
+    // Some lines in the CSV are missing dock names and this results in a dock
+    // with an empty string for a name being recorded. Delete this. Elsewhere
+    // in the code we'll prevent trip data for the empty dock from being
+    // entered.
+    docks.delete('');
     await prisma.dock.createMany({
       data: [...docks].map(dock => (({ name: dock }))),
+      skipDuplicates: true,
     });
   });
-
-  return await prisma.dock.findMany({});
 }
 
 async function seedDays(
   dateStr: string,
   file: string,
-  docks: { [index:string]: number },
   length: number
 ) {
+  const docks = await prisma.dock.findMany({});
+  const dockMap: { [index: string]: number } = {};
+  docks.forEach(dock => {
+    dockMap[dock.name] = dock.id;
+  });
+
   const parser = fs
   .createReadStream(file)
   .pipe(parse({ columns: true, trim: true }));
@@ -106,23 +105,33 @@ async function seedDays(
     while ((record = parser.read()) !== null) {
       const dateStr = record.started_at.split(' ')[0];
 
-      const startDockId = docks[record.start_station_name];
-      const endDockId = docks[record.end_station_name];
+      // Sometimes there's bad data in the CSVs and one or both sides of a trip
+      // will be missing a dock name. In that case, we will still record the
+      // side of the trip that we know, but we'll drop the other one since we
+      // don't have a dock with which to associate that end.
 
-      if (processedData[startDockId] && processedData[startDockId][dateStr]) {
-        processedData[startDockId][dateStr].started += 1;
-      } else if (processedData[startDockId]) {
-        processedData[startDockId][dateStr] = { started: 1, ended: 0 };
-      } else {
-        processedData[startDockId] = {[dateStr]: { started: 1, ended: 0}};
+      const startStationName = record.start_station_name;
+      if (startStationName !== '') {
+        const startDockId = dockMap[startStationName];
+        if (processedData[startDockId] && processedData[startDockId][dateStr]) {
+          processedData[startDockId][dateStr].started += 1;
+        } else if (processedData[startDockId]) {
+          processedData[startDockId][dateStr] = { started: 1, ended: 0 };
+        } else {
+          processedData[startDockId] = {[dateStr]: { started: 1, ended: 0}};
+        }
       }
 
-      if (processedData[endDockId] && processedData[endDockId][dateStr]) {
-        processedData[endDockId][dateStr].ended += 1;
-      } else if (processedData[endDockId]) {
-        processedData[endDockId][dateStr] = { started: 0, ended: 1 };
-      } else {
-        processedData[endDockId] = {[dateStr]: { started: 0, ended: 1 }};
+      const endStationName = record.end_station_name;
+      if (endStationName !== '') {
+        const endDockId = dockMap[endStationName];
+        if (processedData[endDockId] && processedData[endDockId][dateStr]) {
+          processedData[endDockId][dateStr].ended += 1;
+        } else if (processedData[endDockId]) {
+          processedData[endDockId][dateStr] = { started: 0, ended: 1 };
+        } else {
+          processedData[endDockId] = {[dateStr]: { started: 0, ended: 1 }};
+        }
       }
 
       progressBar.tick();
@@ -150,7 +159,7 @@ async function seedDays(
   });
 }
 
-exec('wc -l ./prisma/seeds/*', (error, stdout) => {
+exec(`wc -l ${TMP_DIR}/*`, (error, stdout) => {
   const lines = stdout.split('\n').map(l => l.trim().split(' ')).filter(l => {
     return (l.length === 2 && l[1] !== 'total');
   });
@@ -168,5 +177,10 @@ exec('wc -l ./prisma/seeds/*', (error, stdout) => {
     console.error(e)
     await prisma.$disconnect()
     process.exit(1)
+  })
+  .finally(async () => {
+    if (ENV === 'production') {
+      exec(`rm -rf ${TMP_DIR}`);
+    }
   });
 });
