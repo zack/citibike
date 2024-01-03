@@ -3,10 +3,10 @@
 import prisma from "@/prisma/db";
 
 export type DockData = {
+  acoustic: number,
   day: number|undefined,
-  ended: number,
+  electric: number,
   month: number,
-  started: number,
   year: number,
 }[];
 
@@ -40,16 +40,16 @@ export async function getDockData(
       ]},
       by: (daily ? ['month', 'year', 'day'] : ['month', 'year']),
       _sum: {
-        started: true,
-        ended: true,
+        acoustic: true,
+        electric: true,
       },
   });
 
   return queryResult.map(r => ({
+    acoustic: r._sum.acoustic || 0,
     day: r.day,
-    ended: r._sum.ended || 0,
+    electric: r._sum.electric || 0,
     month: r.month,
-    started: r._sum.started || 0,
     year: r.year,
   }));
 }

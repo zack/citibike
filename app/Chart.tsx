@@ -77,11 +77,11 @@ export default function Chart({
   const chartData =
     dockData?.map(
       data => ({
-        ended: data.ended,
-        month: data.month,
+        acoustic: data.acoustic,
         day: data.day,
+        electric: data.electric,
+        month: data.month,
         name: getDataLabel(data.day, data.month, data.year),
-        started: data.started,
         year: data.year,
       })
   ).sort((a,b) => `${a.year}${pad(a.month)}${pad(a.day)}` > `${b.year}${pad(b.month)}${pad(b.day)}` ? 1 : -1);
@@ -117,16 +117,16 @@ export default function Chart({
                     {label}
                   </Typography>
                   <Typography>total: {total}</Typography>
-                  <Typography>{payload[0].name}: {payload[0].value}</Typography>
                   <Typography>{payload[1].name}: {payload[1].value}</Typography>
+                  <Typography>{payload[0].name}: {payload[0].value}</Typography>
                 </Paper>
               );
             }
           }}
         />
-        <Legend />
-        <Bar dataKey='started' stackId='a' fill='#32908F' />
-        <Bar dataKey='ended' stackId='a' fill='#26C485' />
+        <Legend formatter={(value) => (<span style={{ fontSize: '1.5rem', color: '#000' }}> {value} </span>)} />
+        <Bar dataKey='acoustic' stackId='a' fill='#0150B4' />
+        <Bar dataKey='electric' stackId='a' fill='#C1BFBB' />
       </BarChart>
     </ResponsiveContainer>
   );

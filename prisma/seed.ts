@@ -92,8 +92,8 @@ async function seedDays(
   const processedData : {
     [index: string]: { // dockId
       [index: string]: { // yyyy-mm-dd formatted date
-        ended: number,
-        started: number,
+        acoustic: number,
+        electric: number,
       },
     },
   } = {} ;
@@ -104,35 +104,37 @@ async function seedDays(
 
     while ((record = parser.read()) !== null) {
       const dateStr = record.started_at.split(' ')[0];
+      const electric = record.rideable_type === 'electric_bike';
 
-      // Sometimes there's bad data in the CSVs and one or both sides of a trip
-      // will be missing a dock name. In that case, we will still record the
-      // side of the trip that we know, but we'll drop the other one since we
-      // don't have a dock with which to associate that end.
-
-      const startStationName = record.start_station_name;
-      if (startStationName !== '') {
-        const startDockId = dockMap[startStationName];
-        if (processedData[startDockId] && processedData[startDockId][dateStr]) {
-          processedData[startDockId][dateStr].started += 1;
-        } else if (processedData[startDockId]) {
-          processedData[startDockId][dateStr] = { started: 1, ended: 0 };
-        } else {
-          processedData[startDockId] = {[dateStr]: { started: 1, ended: 0}};
+      [record.start_station_name, record.end_station_name].forEach(stationName => {
+        // Sometimes there's bad data in the CSVs and one or both sides of a trip
+        // will be missing a dock name. In that case, we will still record the
+        // side of the trip that we know, but we'll drop the other one since we
+        // don't have a dock with which to associate that end.
+        //
+        if (stationName !== '') {
+          const dockId = dockMap[stationName];
+          if (processedData[dockId] && processedData[dockId][dateStr]) {
+            if (electric) {
+              processedData[dockId][dateStr].electric += 1;
+            } else {
+              processedData[dockId][dateStr].acoustic += 1;
+            }
+          } else if (processedData[dockId]) {
+            if (electric) {
+              processedData[dockId][dateStr] = { electric: 1, acoustic: 0 };
+            } else {
+              processedData[dockId][dateStr] = { electric: 0, acoustic: 1 };
+            }
+          } else {
+            if (electric) {
+              processedData[dockId] = {[dateStr]: { electric: 1, acoustic: 0}};
+            } else {
+              processedData[dockId] = {[dateStr]: { electric: 1, acoustic: 0}};
+            }
+          }
         }
-      }
-
-      const endStationName = record.end_station_name;
-      if (endStationName !== '') {
-        const endDockId = dockMap[endStationName];
-        if (processedData[endDockId] && processedData[endDockId][dateStr]) {
-          processedData[endDockId][dateStr].ended += 1;
-        } else if (processedData[endDockId]) {
-          processedData[endDockId][dateStr] = { started: 0, ended: 1 };
-        } else {
-          processedData[endDockId] = {[dateStr]: { started: 0, ended: 1 }};
-        }
-      }
+      });
 
       progressBar.tick();
     }
@@ -144,12 +146,12 @@ async function seedDays(
       const dates: string[] = Object.keys(dockData);
 
       const rows = dates.map((date: string) => ({
+        acoustic: dockData[date].acoustic,
         day: parseInt(date.slice(8,10)),
+        dockId: parseInt(dockId),
+        electric: dockData[date].electric,
         month: parseInt(date.slice(5,7)),
         year: parseInt(date.slice(0,4)),
-        dockId: parseInt(dockId),
-        started: dockData[date].started,
-        ended: dockData[date].ended,
       }));
 
       await prisma.dockDay.createMany({

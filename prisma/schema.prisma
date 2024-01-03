@@ -16,14 +16,14 @@ model Dock {
 }
 
 model DockDay {
-  id      Int  @id @default(autoincrement())
-  day     Int
-  month   Int
-  year    Int
-  dock    Dock @relation("dockId", fields: [dockId], references: [id])
-  dockId  Int
-  started Int
-  ended   Int
+  id       Int  @id @default(autoincrement())
+  day      Int
+  month    Int
+  year     Int
+  dock     Dock @relation("dockId", fields: [dockId], references: [id])
+  acoustic Int
+  electric Int
+  dockId   Int
 
   @@unique([day, month, year, dockId])
   @@index(fields: [dockId])
