@@ -1,5 +1,4 @@
 import { DockData } from './action';
-import Image from 'next/image';
 import React from 'react';
 import { format } from 'date-fns';
 
@@ -15,7 +14,6 @@ import {
 } from 'recharts';
 
 import {
-  Box,
   Paper,
   Typography,
 } from "@mui/material";
@@ -42,37 +40,11 @@ function getDataLabel(day: number|undefined, month: number, year: number) {
 
 export default function Chart({
   daily,
-  isLoading,
   dockData,
 } : {
   daily: boolean,
   dockData: DockData|undefined,
-  isLoading: boolean
 }) {
-  if (isLoading) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-        <Image alt='loading spinner' src='/citibike-loader.gif' width={200} height={111} />
-      </Box>
-    );
-  }
-
-  // No dock selected
-  if (dockData === undefined) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-        <Typography> Select a dock to see some data. </Typography>
-      </Box>
-    );
-  }
-
-  if (dockData.length === 0) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-        <Typography> No data for that time preiod. </Typography>
-      </Box>
-    );
-  }
 
   const chartData =
     dockData?.map(

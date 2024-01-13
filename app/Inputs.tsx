@@ -14,7 +14,6 @@ import {
   RadioGroup,
   TextField,
 } from "@mui/material";
-import { Dispatch, SetStateAction } from "react";
 
 export default function Inputs({
   dockName,
@@ -35,10 +34,10 @@ export default function Inputs({
   granularity: Granularity,
   maxDate: Date,
   minDate: Date,
-  setDockName: Dispatch<SetStateAction<string>>,
-  setEndDate: Dispatch<SetStateAction<Date>>
-  setGranularity: Dispatch<SetStateAction<Granularity>>,
-  setStartDate: Dispatch<SetStateAction<Date>>,
+  setDockName: (name: string) => void,
+  setEndDate: (date: Date) => void,
+  setGranularity: (granularity: Granularity) => void,
+  setStartDate: (date: Date) => void,
   startDate: Date,
 })
 {
