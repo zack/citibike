@@ -10,6 +10,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "seed": "npx prisma db seed",
+    "update": "npm run download && npm run seed",
+    "download": "node scripts/downloader.mjs",
     "postinstall": "prisma generate",
     "prepare": "husky install"
   },
