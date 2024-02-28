@@ -59,7 +59,7 @@ export default function Inputs({
       <Autocomplete
         sx={{ width: '100%' }}
         id='player'
-        options={dockNames}
+        options={['', ...dockNames]}
         value={dockName}
         onChange={handleDockChange}
         renderInput={(p) => (

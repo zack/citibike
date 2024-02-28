@@ -1,13 +1,10 @@
-import { DockData } from './action';
 import React from 'react';
 
 import { Box, Container, Paper } from '@mui/material';
 
 export default function Data({
-  dockData,
   isLoading,
 }: {
-  dockData: DockData | undefined;
   isLoading: boolean;
 }) {
   if (isLoading) {
@@ -24,8 +21,6 @@ export default function Data({
       </Box>
     );
   }
-
-  console.log({ dockData });
 
   return (
     <Container>

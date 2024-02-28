@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 import { PrismaClient } from '@prisma/client';
 import { ProgressBar } from 'ascii-progress';
 import { exec } from 'child_process';

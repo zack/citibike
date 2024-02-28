@@ -73,7 +73,6 @@ export default function DockSelector({
     if (newDock !== undefined) {
       const daily = granularity === Granularity.Daily;
       getDockData(newDock.id, daily, startDate, endDate).then((newDockData) => {
-        console.log({ newDockData });
         setDockData(newDockData);
         setIsLoading(false);
       });
@@ -194,7 +193,7 @@ export default function DockSelector({
       <LoadingContainer isLoading={isLoading}>
         <NoDockContainer dockData={dockData}>
           <EmptyDataContainer dockData={dockData}>
-            <Data dockData={dockData} isLoading={isLoading} />
+            <Data isLoading={isLoading} />
 
             <Chart
               daily={granularity === Granularity.Daily}

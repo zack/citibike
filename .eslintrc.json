@@ -17,6 +17,7 @@
     "sort-imports": ["error", {
       "memberSyntaxSortOrder": ["none", "all", "single", "multiple"]
     }],
+    "no-console": ["error"],
     "indent": ["error", 2],
     "quotes": ["error", "single"],
     // The following two lines, combined, prevent eslint from throwing a
