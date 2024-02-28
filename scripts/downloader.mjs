@@ -3,7 +3,7 @@
 // 2. Determine whether there is any more recent data available
 // 3. Download and unzip newer data if it is available
 
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@prisma/client';
 import adm from 'adm-zip';
 import concat from 'concat-files';
 import { writeFile } from 'node:fs/promises';
@@ -12,7 +12,7 @@ import {
   GetObjectCommand,
   ListObjectsV2Command,
   S3Client,
-} from "@aws-sdk/client-s3";
+} from '@aws-sdk/client-s3';
 
 import fs, { readdirSync, rmSync } from 'fs';
 
@@ -24,17 +24,13 @@ const BUCKET_NAME = 'tripdata';
 
 async function getMostRecentData() {
   const mostRecentDay = await prisma.dockDay.findFirst({
-    orderBy: [
-      { year: 'desc' },
-      { month: 'desc' },
-      { day: 'desc' }
-    ],
+    orderBy: [{ year: 'desc' }, { month: 'desc' }, { day: 'desc' }],
   });
 
-  return ({
+  return {
     mostRecentMonth: parseInt(mostRecentDay?.month ?? process.env.START_MONTH),
     mostRecentYear: parseInt(mostRecentDay?.year ?? process.env.START_YEAR),
-  });
+  };
 }
 
 async function getListOfFileNamesOnS3() {
@@ -65,36 +61,46 @@ async function getListOfFileNamesOnS3() {
 // (e.g. 202401-citibike-tripdata.csv.zip) which also contains multiple files
 // for the single month. This is really really dumb and I hate that they did
 // this.
-async function getFilesNewerThanNewestData(fileNames, mostRecentYear, mostRecentMonth) {
-  return fileNames.filter(fileName => {
+async function getFilesNewerThanNewestData(
+  fileNames,
+  mostRecentYear,
+  mostRecentMonth,
+) {
+  return fileNames.filter((fileName) => {
     // JC- files will return NaN here
-    const fileYear = parseInt(fileName.slice(0,4));
+    const fileYear = parseInt(fileName.slice(0, 4));
     // Annual files will return NaN here
-    const fileMonth = parseInt(fileName.slice(4,6));
+    const fileMonth = parseInt(fileName.slice(4, 6));
 
     const fileIsMonthly = Number.isInteger(fileMonth);
     const fileIsYearly = !fileIsMonthly;
 
     return (
       // A whole yearly rollup file of a year ahead of any data we have
-      (fileIsYearly && fileYear > mostRecentYear)
+      (fileIsYearly && fileYear > mostRecentYear) ||
       // A yearly file for a year that we haven't yet completed
-      || (fileIsYearly && fileYear === mostRecentYear && mostRecentMonth < 12)
+      (fileIsYearly && fileYear === mostRecentYear && mostRecentMonth < 12) ||
       // A monthly file in a year for which we currently have no data
-      || (fileIsMonthly && fileYear > mostRecentYear)
+      (fileIsMonthly && fileYear > mostRecentYear) ||
       // A monthly file for a year, but not a month, in which we have data
-      || (fileIsMonthly && fileYear === mostRecentYear && fileMonth > mostRecentMonth)
+      (fileIsMonthly &&
+        fileYear === mostRecentYear &&
+        fileMonth > mostRecentMonth)
     );
   });
 }
 
-async function downloadAndUnzipFiles(fileNames, mostRecentYear, mostRecentMonth) {
+async function downloadAndUnzipFiles(
+  fileNames,
+  mostRecentYear,
+  mostRecentMonth,
+) {
   if (fileNames.length > 0 && !fs.existsSync(TMP_DIR)) {
     fs.mkdirSync(TMP_DIR);
   }
 
   // Delete any files left over in this temp dir
-  readdirSync(TMP_DIR).forEach(f => rmSync(`${TMP_DIR}/${f}`));
+  readdirSync(TMP_DIR).forEach((f) => rmSync(`${TMP_DIR}/${f}`));
 
   for (const file of fileNames) {
     const command = new GetObjectCommand({
@@ -115,17 +121,16 @@ async function downloadAndUnzipFiles(fileNames, mostRecentYear, mostRecentMonth)
       // both year and month dated before our most recent data.
       if (entry.entryName.match(/\.csv$/)) {
         const fileName = entry.entryName.match(/\d{6}.*\.csv$/)[0];
-        const fileYear = parseInt(fileName.slice(0,4));
-        const fileMonth = parseInt(fileName.slice(4,6));
+        const fileYear = parseInt(fileName.slice(0, 4));
+        const fileMonth = parseInt(fileName.slice(4, 6));
 
         if (entry.entryName[0] === '_') {
           // This is in the __MACOSX subdirectory and we don't want it
-        } else if ((fileYear > mostRecentYear) || (fileMonth > mostRecentMonth)) {
+        } else if (fileYear > mostRecentYear || fileMonth > mostRecentMonth) {
           await zip.extractEntryTo(entry.entryName, TMP_DIR, false, true);
         }
       }
     }
-
 
     fs.unlinkSync(zipLocation);
   }
@@ -138,17 +143,17 @@ async function downloadAndUnzipFiles(fileNames, mostRecentYear, mostRecentMonth)
 async function concatenateFiles() {
   const files = readdirSync(TMP_DIR);
   const months = new Set();
-  files.forEach(file => months.add(file.slice(0,6)));
+  files.forEach((file) => months.add(file.slice(0, 6)));
 
   for (const month of months) {
     const newFileName = `${TMP_DIR}/${month}.csv`;
     const thisMonthAbsoluteFiles = files
-      .filter(file => file.indexOf(month) > -1)
-      .map(file => (`${TMP_DIR}/${file}`));
+      .filter((file) => file.indexOf(month) > -1)
+      .map((file) => `${TMP_DIR}/${file}`);
 
     concat(thisMonthAbsoluteFiles, newFileName, () => {
-      thisMonthAbsoluteFiles.forEach(file => {
-        fs.unlinkSync(file)
+      thisMonthAbsoluteFiles.forEach((file) => {
+        fs.unlinkSync(file);
       });
     });
   }
@@ -157,7 +162,11 @@ async function concatenateFiles() {
 (async () => {
   const { mostRecentMonth, mostRecentYear } = await getMostRecentData();
   const fileNames = await getListOfFileNamesOnS3();
-  const newFileNames = await getFilesNewerThanNewestData(fileNames, mostRecentYear, mostRecentMonth);
+  const newFileNames = await getFilesNewerThanNewestData(
+    fileNames,
+    mostRecentYear,
+    mostRecentMonth,
+  );
   await downloadAndUnzipFiles(newFileNames, mostRecentYear, mostRecentMonth);
   await concatenateFiles();
 })();

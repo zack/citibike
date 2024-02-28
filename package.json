@@ -2,6 +2,11 @@
   "name": "citibike-dock-data",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "18",
+    "pnpm": "please-use-npm",
+    "yarn": "please-use-npm"
+  },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
   },
@@ -9,12 +14,22 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
     "seed": "npx prisma db seed",
     "update": "npm run download && npm run seed",
     "download": "node scripts/downloader.mjs",
     "postinstall": "prisma generate",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx,.mjs,.mts",
     "prepare": "husky install"
+  },
+  "lint-staged": {
+    "**/*.js": [
+      "eslint",
+      "prettier --write --ignore-unknown"
+    ],
+    "**/*.jsx": [
+      "eslint",
+      "prettier --write --ignore-unknown"
+    ]
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.481.0",
@@ -30,7 +45,6 @@
     "adm-zip": "^0.5.10",
     "concat-files": "^0.1.1",
     "date-fns": "^2.30.0",
-    "eslint-config-next": "13.4.19",
     "immer": "^10.0.2",
     "next": "13.4.19",
     "prisma-repl": "^1.4.0",
@@ -47,10 +61,14 @@
     "autoprefixer": "^10.4.15",
     "csv-parse": "^5.5.0",
     "eslint": "^8.48.0",
+    "eslint-config-next": "^14.1.0",
+    "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "husky": "^8.0.0",
+    "lint-staged": "^15.2.2",
     "postcss": "^8.4.28",
+    "prettier": "^3.2.5",
     "prisma": "^5.2.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.2.2"

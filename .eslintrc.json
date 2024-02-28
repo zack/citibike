@@ -1,10 +1,15 @@
 {
+  "env": {
+    "es6": true
+  },
   "extends": [
     "eslint:recommended",
+    "next",
     "next/core-web-vitals",
     "plugin:@typescript-eslint/recommended",
     "plugin:react-hooks/recommended",
-    "plugin:react/recommended"
+    "plugin:react/recommended",
+    "prettier"
   ],
   "parser": "@typescript-eslint/parser",
   "plugins": ["@typescript-eslint"],
@@ -12,6 +17,8 @@
     "sort-imports": ["error", {
       "memberSyntaxSortOrder": ["none", "all", "single", "multiple"]
     }],
+    "indent": ["error", 2],
+    "quotes": ["error", "single"],
     // The following two lines, combined, prevent eslint from throwing a
     // "no-unused-var" error in type definitions for function types
     "no-unused-vars": "off",
