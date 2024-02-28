@@ -7,10 +7,7 @@ import Inputs from './Inputs';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import {
-  Box,
-  Typography,
-} from "@mui/material";
+import { Box, Typography } from '@mui/material';
 
 import { DockData, getDockData } from './action';
 
@@ -20,17 +17,29 @@ export enum Granularity {
 }
 
 type Dock = {
-  id: number,
-  name: string,
-}
+  id: number;
+  name: string;
+};
 
-export default function DockSelector({ docks, minDate, maxDate } : { docks: Dock[], minDate: Date, maxDate: Date }) {
-  const [dockData, setDockData] = React.useState<DockData|undefined>(undefined);
+export default function DockSelector({
+  docks,
+  minDate,
+  maxDate,
+}: {
+  docks: Dock[];
+  minDate: Date;
+  maxDate: Date;
+}) {
+  const [dockData, setDockData] = React.useState<DockData | undefined>(
+    undefined,
+  );
   const [dockName, setDockName] = React.useState<string>('');
   const [endDate, setEndDate] = React.useState<Date>(maxDate);
   const [isLoading, setIsLoading] = React.useState(false);
   const [startDate, setStartDate] = React.useState<Date>(minDate);
-  const [granularity, setGranularity] = React.useState<Granularity>(Granularity.Monthly)
+  const [granularity, setGranularity] = React.useState<Granularity>(
+    Granularity.Monthly,
+  );
 
   function handleDockNameChange(name: string) {
     setDockName(name);
@@ -59,7 +68,7 @@ export default function DockSelector({ docks, minDate, maxDate } : { docks: Dock
   }
 
   if (dockName !== '' && dockData === undefined) {
-    const newDock = docks.find(d => d.name === dockName);
+    const newDock = docks.find((d) => d.name === dockName);
 
     if (newDock !== undefined) {
       const daily = granularity === Granularity.Daily;
@@ -71,52 +80,95 @@ export default function DockSelector({ docks, minDate, maxDate } : { docks: Dock
     }
   }
 
-
-  const LoadingContainer = ({ isLoading, children } : { isLoading: boolean, children: JSX.Element }) => {
+  const LoadingContainer = ({
+    isLoading,
+    children,
+  }: {
+    isLoading: boolean;
+    children: JSX.Element;
+  }) => {
     if (isLoading) {
       return (
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-          <Image alt='loading spinner' src='/citibike-loader.gif' width={200} height={111} />
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100%',
+          }}
+        >
+          <Image
+            alt='loading spinner'
+            src='/citibike-loader.gif'
+            width={200}
+            height={111}
+          />
         </Box>
       );
     } else {
       return children;
     }
-  }
+  };
 
   LoadingContainer.propTypes = {
     isLoading: PropTypes.bool.isRequired,
     children: PropTypes.node.isRequired,
   };
 
-  const NoDockContainer = ({ dockData, children } : { dockData: DockData|undefined, children: JSX.Element }) => {
+  const NoDockContainer = ({
+    dockData,
+    children,
+  }: {
+    dockData: DockData | undefined;
+    children: JSX.Element;
+  }) => {
     if (dockData === undefined) {
       return (
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100%',
+          }}
+        >
           <Typography> Select a dock to see some data. </Typography>
         </Box>
       );
     } else {
       return children;
     }
-  }
+  };
 
   NoDockContainer.propTypes = {
     dockData: PropTypes.object,
     children: PropTypes.node.isRequired,
   };
 
-  const EmptyDataContainer = ({ dockData, children } : { dockData: DockData|undefined, children: JSX.Element[] }) => {
+  const EmptyDataContainer = ({
+    dockData,
+    children,
+  }: {
+    dockData: DockData | undefined;
+    children: JSX.Element[];
+  }) => {
     if (!dockData || dockData.length === 0) {
       return (
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100%',
+          }}
+        >
           <Typography> No data for that time period. </Typography>
         </Box>
       );
     } else {
       return children;
     }
-  }
+  };
 
   EmptyDataContainer.propTypes = {
     dockData: PropTypes.object,
@@ -127,7 +179,7 @@ export default function DockSelector({ docks, minDate, maxDate } : { docks: Dock
     <>
       <Inputs
         dockName={dockName}
-        dockNames={docks.map(d => d.name).sort((a,b) => a > b ? 1 : -1)}
+        dockNames={docks.map((d) => d.name).sort((a, b) => (a > b ? 1 : -1))}
         endDate={endDate}
         granularity={granularity}
         maxDate={maxDate}
@@ -139,17 +191,15 @@ export default function DockSelector({ docks, minDate, maxDate } : { docks: Dock
         startDate={startDate}
       />
 
-      <LoadingContainer isLoading={isLoading} >
-        <NoDockContainer dockData={dockData} >
-          <EmptyDataContainer dockData={dockData} >
-
+      <LoadingContainer isLoading={isLoading}>
+        <NoDockContainer dockData={dockData}>
+          <EmptyDataContainer dockData={dockData}>
             <Data dockData={dockData} isLoading={isLoading} />
 
             <Chart
               daily={granularity === Granularity.Daily}
               dockData={dockData}
             />
-
           </EmptyDataContainer>
         </NoDockContainer>
       </LoadingContainer>
