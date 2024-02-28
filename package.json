@@ -25,6 +25,7 @@
     "@types/react-dom": "18.2.7",
     "@vercel/analytics": "^1.1.0",
     "adm-zip": "^0.5.10",
+    "concat-files": "^0.1.1",
     "date-fns": "^2.30.0",
     "eslint-config-next": "13.4.19",
     "immer": "^10.0.2",
