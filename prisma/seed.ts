@@ -50,8 +50,12 @@ async function seedDocks(file: string, dateStr: string, length: number) {
   parser.on('readable', async () => {
     let record;
     while ((record = parser.read()) !== null) {
-      docks.add(record.end_station_name);
-      docks.add(record.start_station_name);
+      if (record.ride_id !== 'ride_id') {
+        // There are extra header rows left over because of the way we
+        // concatenated the files in the downloader script. Skip those.
+        docks.add(record.end_station_name);
+        docks.add(record.start_station_name);
+      }
       progressBar.tick();
     }
   });
@@ -103,6 +107,12 @@ async function seedDays(
     let record;
 
     while ((record = parser.read()) !== null) {
+      if (record.ride_id === 'ride_id') {
+        // There are extra header rows left over because of the way we
+        // concatenated the files in the downloader script. Skip those.
+        continue;
+      }
+
       const dateStr = record.started_at.split(' ')[0];
       const electric = record.rideable_type === 'electric_bike';
 
@@ -111,9 +121,9 @@ async function seedDays(
         // will be missing a dock name. In that case, we will still record the
         // side of the trip that we know, but we'll drop the other one since we
         // don't have a dock with which to associate that end.
-        //
         if (stationName !== '') {
           const dockId = dockMap[stationName];
+
           if (processedData[dockId] && processedData[dockId][dateStr]) {
             if (electric) {
               processedData[dockId][dateStr].electric += 1;
