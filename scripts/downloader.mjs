@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 // This file has three jobs:
 // 1. Check for the most recent trip in the database
 // 2. Determine whether there is any more recent data available
@@ -6,6 +8,7 @@
 import { PrismaClient } from '@prisma/client';
 import adm from 'adm-zip';
 import concat from 'concat-files';
+import { exec } from 'child_process';
 import { writeFile } from 'node:fs/promises';
 
 import {
@@ -102,7 +105,12 @@ async function downloadAndUnzipFiles(
   // Delete any files left over in this temp dir
   readdirSync(TMP_DIR).forEach((f) => rmSync(`${TMP_DIR}/${f}`));
 
+  console.log(`Most recent data from ${mostRecentYear}-${mostRecentMonth}`);
+  console.log(`Found ${fileNames.length} files to download:`);
+
+  let counter = 0;
   for (const file of fileNames) {
+    counter++;
     const command = new GetObjectCommand({
       Bucket: BUCKET_NAME,
       Key: file,
@@ -111,6 +119,11 @@ async function downloadAndUnzipFiles(
     const response = await client.send(command);
     const zipLocation = `${TMP_DIR}/${file}`;
 
+    const padLength = fileNames.length.toString().length;
+    const paddedCounter = String(counter).padStart(padLength, '0');
+    console.log(
+      `[${paddedCounter}/${fileNames.length}] Downloading ${file}...`,
+    );
     await writeFile(zipLocation, response.Body);
 
     const zip = new adm(zipLocation);
@@ -152,6 +165,7 @@ async function concatenateFiles() {
       .map((file) => `${TMP_DIR}/${file}`);
 
     concat(thisMonthAbsoluteFiles, newFileName, () => {
+      exec(`dos2unix ${newFileName}`);
       thisMonthAbsoluteFiles.forEach((file) => {
         fs.unlinkSync(file);
       });

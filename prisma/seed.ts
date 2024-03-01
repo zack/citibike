@@ -15,7 +15,7 @@ function randomColor() {
   return '#' + Math.floor(Math.random() * 16777215).toString(16);
 }
 
-async function processFiles(files: { [index: string]: number }) {
+async function processFiles(files: Record<string, number>) {
   console.log('Processing files...');
 
   // Seed docks and generate data for days
@@ -36,8 +36,7 @@ async function processFiles(files: { [index: string]: number }) {
 
 // Iterates over a file, gets all of the dock names, and inserts them into the
 // database. Will skip inserting any docks that already are present in the
-// database (based on the unique dock name). Returns all of the docks in the
-// database after the insert.
+// database (based on the unique dock name).
 async function seedDocks(file: string, dateStr: string, length: number) {
   const parser = fs
     .createReadStream(file)
@@ -48,15 +47,43 @@ async function seedDocks(file: string, dateStr: string, length: number) {
     total: length,
   });
 
-  const docks: Set<string> = new Set();
+  const docks = new Set<string>();
   parser.on('readable', async () => {
     let record;
+
     while ((record = parser.read()) !== null) {
-      if (record.ride_id !== 'ride_id') {
-        // There are extra header rows left over because of the way we
-        // concatenated the files in the downloader script. Skip those.
-        docks.add(record.end_station_name);
-        docks.add(record.start_station_name);
+      // There are extra header rows left over because of the way we
+      // concatenated the files in the downloader script. Skip those.
+      if (
+        record.ride_id !== 'ride_id' ||
+        record.starttime === 'starttime' ||
+        record['Start Time'] === 'Start Time'
+      ) {
+        // old data name vs new data name
+        const start_station_name =
+          record.start_station_name ??
+          record['start station name'] ??
+          record['Start Station Name'];
+        const end_station_name =
+          record.end_station_name ??
+          record['end station name'] ??
+          record['End Station Name'];
+
+        if (
+          start_station_name !== undefined &&
+          start_station_name !== '' &&
+          start_station_name !== 'NULL'
+        ) {
+          docks.add(start_station_name.normalize('NFKC'));
+        }
+
+        if (
+          end_station_name !== undefined &&
+          end_station_name !== '' &&
+          end_station_name !== 'NULL'
+        ) {
+          docks.add(end_station_name.normalize('NFKC'));
+        }
       }
       progressBar.tick();
     }
@@ -75,9 +102,9 @@ async function seedDocks(file: string, dateStr: string, length: number) {
   });
 }
 
-async function seedDays(dateStr: string, file: string, length: number) {
+async function seedDays(fileDateStr: string, file: string, length: number) {
   const docks = await prisma.dock.findMany({});
-  const dockMap: { [index: string]: number } = {};
+  const dockMap: Record<string, number> = {};
   docks.forEach((dock) => {
     dockMap[dock.name] = dock.id;
   });
@@ -87,93 +114,133 @@ async function seedDays(dateStr: string, file: string, length: number) {
     .pipe(parse({ columns: true, trim: true }));
 
   const progressBar = new ProgressBar({
-    schema: `[${dateStr}][Trips].bold[:bar.gradient(${randomColor()},${randomColor()})][:percent].bold`,
+    schema: `[${fileDateStr}][Trips].bold[:bar.gradient(${randomColor()},${randomColor()})][:percent].bold`,
     total: length,
   });
 
-  const processedData: {
-    [index: string]: {
-      // dockId
-      [index: string]: {
+  const processedData: Record<
+    string,
+    Record<
+      string,
+      {
         // yyyy-mm-dd formatted date
         acoustic: number;
         electric: number;
-      };
-    };
-  } = {};
+      }
+    >
+  > = {};
 
   // Iterate over one entire file
   parser.on('readable', async function () {
     let record;
 
     while ((record = parser.read()) !== null) {
-      if (record.ride_id === 'ride_id') {
+      if (
+        record.ride_id === 'ride_id' ||
+        record.starttime === 'starttime' ||
+        record['Start Time'] === 'Start Time'
+      ) {
         // There are extra header rows left over because of the way we
         // concatenated the files in the downloader script. Skip those.
         continue;
       }
 
-      const dateStr = record.started_at.split(' ')[0];
+      // Both the start and end docks for each trip will be associated with
+      // the start date of the trip. This is relevant in the case where a trip
+      // starts on one day and ends on the next.
+      const dateStr = new Date(
+        (record.started_at ?? record.starttime ?? record['Start Time']).split(
+          ' ',
+        )[0],
+      )
+        .toISOString()
+        .slice(0, 10);
+
+      if (dateStr.slice(0, 7) !== fileDateStr) {
+        // This csv has lines for a different month and while it would be great
+        // if we could include it, doing so would break stuff unless I wrote a
+        // lot of extra code that I do not want to write. Shouldn't be more
+        // than 1 or 2 trips per month, at most.
+        continue;
+      }
+
       const electric = record.rideable_type === 'electric_bike';
 
-      [record.start_station_name, record.end_station_name].forEach(
-        (stationName) => {
-          // Sometimes there's bad data in the CSVs and one or both sides of a trip
-          // will be missing a dock name. In that case, we will still record the
-          // side of the trip that we know, but we'll drop the other one since we
-          // don't have a dock with which to associate that end.
-          if (stationName !== '') {
-            const dockId = dockMap[stationName];
+      const start_station_name = (
+        record.start_station_name ??
+        record['start station name'] ??
+        record['Start Station Name']
+      ).normalize('NFKC');
+      const end_station_name = (
+        record.end_station_name ??
+        record['end station name'] ??
+        record['End Station Name']
+      ).normalize('NFKC');
 
-            if (processedData[dockId] && processedData[dockId][dateStr]) {
-              if (electric) {
-                processedData[dockId][dateStr].electric += 1;
-              } else {
-                processedData[dockId][dateStr].acoustic += 1;
-              }
-            } else if (processedData[dockId]) {
-              if (electric) {
-                processedData[dockId][dateStr] = { electric: 1, acoustic: 0 };
-              } else {
-                processedData[dockId][dateStr] = { electric: 0, acoustic: 1 };
-              }
+      [start_station_name, end_station_name].forEach((stationName) => {
+        // Sometimes there's bad data in the CSVs and one or both sides of a trip
+        // will be missing a dock name. In that case, we will still record the
+        // side of the trip that we know, but we'll drop the other one since we
+        // don't have a dock with which to associate that end.
+        if (
+          stationName !== '' &&
+          stationName !== 'NULL' &&
+          stationName !== undefined
+        ) {
+          const dockId = dockMap[stationName];
+
+          if (processedData[dockId] && processedData[dockId][dateStr]) {
+            if (electric) {
+              processedData[dockId][dateStr].electric += 1;
             } else {
-              if (electric) {
-                processedData[dockId] = {
-                  [dateStr]: { electric: 1, acoustic: 0 },
-                };
-              } else {
-                processedData[dockId] = {
-                  [dateStr]: { electric: 1, acoustic: 0 },
-                };
-              }
+              processedData[dockId][dateStr].acoustic += 1;
+            }
+          } else if (processedData[dockId]) {
+            if (electric) {
+              processedData[dockId][dateStr] = { electric: 1, acoustic: 0 };
+            } else {
+              processedData[dockId][dateStr] = { electric: 0, acoustic: 1 };
+            }
+          } else {
+            if (electric) {
+              processedData[dockId] = {
+                [dateStr]: { electric: 1, acoustic: 0 },
+              };
+            } else {
+              processedData[dockId] = {
+                [dateStr]: { electric: 1, acoustic: 0 },
+              };
             }
           }
-        },
-      );
+        }
+      });
 
       progressBar.tick();
     }
   });
 
   await finished(parser).then(async () => {
-    Object.keys(processedData).forEach(async (dockId) => {
+    for (const dockId of Object.keys(processedData)) {
       const dockData = processedData[dockId];
       const dates: string[] = Object.keys(dockData);
 
-      const rows = dates.map((date: string) => ({
-        acoustic: dockData[date].acoustic,
-        day: parseInt(date.slice(8, 10)),
-        dockId: parseInt(dockId),
-        electric: dockData[date].electric,
-        month: parseInt(date.slice(5, 7)),
-        year: parseInt(date.slice(0, 4)),
-      }));
+      const rows = dates.map((date: string) => {
+        // TODO: ZACK PUT THIS BACK
+
+        return {
+          acoustic: dockData[date].acoustic,
+          day: parseInt(date.slice(8, 10)),
+          dockId: parseInt(dockId),
+          electric: dockData[date].electric,
+          month: parseInt(date.slice(5, 7)),
+          year: parseInt(date.slice(0, 4)),
+        };
+      });
 
       await prisma.dockDay.createMany({
         data: rows,
       });
-    });
+    }
   });
 }
 
@@ -185,10 +252,11 @@ exec(`wc -l ${TMP_DIR}/*`, (error, stdout) => {
       return l.length === 2 && l[1] !== 'total';
     });
 
-  const files: { [index: string]: number } = {};
-  lines.forEach((line) => (files[line[1]] = parseInt(line[0])));
+  const files: Record<string, number> = {};
+  lines.forEach((line) => {
+    files[line[1]] = parseInt(line[0]);
+  });
 
-  // processFiles(oneFile)
   processFiles(files)
     .then(async () => {
       console.log('disconnecting');
