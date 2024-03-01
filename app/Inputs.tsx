@@ -8,10 +8,9 @@ import {
   Box,
   Chip,
   FormControl,
-  FormControlLabel,
-  FormLabel,
-  Radio,
-  RadioGroup,
+  InputLabel,
+  MenuItem,
+  Select,
   TextField,
 } from '@mui/material';
 
@@ -29,7 +28,7 @@ export default function Inputs({
   startDate,
 }: {
   dockName: string;
-  dockNames: Array<string>;
+  dockNames: string[];
   endDate: Date;
   granularity: Granularity;
   maxDate: Date;
@@ -40,8 +39,15 @@ export default function Inputs({
   setStartDate: (date: Date) => void;
   startDate: Date;
 }) {
-  const handleGranularityChange = (value: string) => {
-    if (value === 'daily') {
+  const handleGranularityChange = (value: Granularity | string) => {
+    if (typeof value === 'string') {
+      // This is for the typescript
+      setGranularity(Granularity.Daily);
+      // eslint-disable-next-line no-console
+      console.error('Something went wrong with the granularity select');
+    }
+
+    if (value === Granularity.Daily) {
       setGranularity(Granularity.Daily);
     } else {
       setGranularity(Granularity.Monthly);
@@ -110,26 +116,19 @@ export default function Inputs({
             views={['year', 'month']}
           />
         </LocalizationProvider>
-      </Box>
 
-      <Box>
-        <FormControl>
-          <FormLabel id='granularity-options-label'> Granularity </FormLabel>
-          <RadioGroup
-            aria-labelledby='granularity-options-label'
-            defaultValue='monthly'
-            name='radio-buttons-group'
-            onChange={(e, v) => handleGranularityChange(v)}
-            row
-            value={granularity === Granularity.Daily ? 'daily' : 'monthly'}
+        <FormControl fullWidth>
+          <InputLabel id='granularity-options-label'> Granularity </InputLabel>
+          <Select
+            labelId='granularity-options-label'
+            id='granularity-options'
+            value={granularity}
+            label='Granularity'
+            onChange={(e) => handleGranularityChange(e.target.value)}
           >
-            <FormControlLabel
-              value='monthly'
-              control={<Radio />}
-              label='Monthly'
-            />
-            <FormControlLabel value='daily' control={<Radio />} label='Daily' />
-          </RadioGroup>
+            <MenuItem value={Granularity.Daily}> Daily </MenuItem>
+            <MenuItem value={Granularity.Monthly}> Monthly </MenuItem>
+          </Select>
         </FormControl>
       </Box>
     </Box>

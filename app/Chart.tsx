@@ -29,9 +29,9 @@ function pad(num: number | undefined) {
 
 function getDataLabel(day: number | undefined, month: number, year: number) {
   if (day === undefined) {
-    return format(new Date(year, month - 1, 1), 'MMM \'\'yy');
+    return format(new Date(year, month - 1, 1), "MMM ''yy");
   } else {
-    return format(new Date(year, month - 1, day), 'MMM d \'\'yy');
+    return format(new Date(year, month - 1, day), "MMM d ''yy");
   }
 }
 
@@ -79,6 +79,7 @@ export default function Chart({
         <XAxis dataKey='name' />
         <YAxis />
         <Tooltip
+          cursor={{ fill: '#EEE' }}
           content={({ active, payload, label }) => {
             if (active && payload && payload.length) {
               const total =

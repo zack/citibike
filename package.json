@@ -38,7 +38,7 @@
     "@mui/icons-material": "^5.14.6",
     "@mui/material": "^5.14.6",
     "@mui/x-date-pickers": "^6.16.1",
-    "@prisma/client": "^5.2.0",
+    "@prisma/client": "^5.10.2",
     "@types/react": "18.2.21",
     "@types/react-dom": "18.2.7",
     "@vercel/analytics": "^1.1.0",
@@ -54,6 +54,7 @@
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^13.4.19",
+    "@stylistic/eslint-plugin-js": "^1.6.3",
     "@types/node": "^20.5.7",
     "@typescript-eslint/eslint-plugin": "^6.5.0",
     "@typescript-eslint/parser": "^6.5.0",
@@ -69,7 +70,7 @@
     "lint-staged": "^15.2.2",
     "postcss": "^8.4.28",
     "prettier": "^3.2.5",
-    "prisma": "^5.2.0",
+    "prisma": "^5.10.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.2.2"
   }

@@ -20,9 +20,9 @@ const theme = createTheme({
   },
 });
 
-type ThemeProviderProps = {
+interface ThemeProviderProps {
   children: React.ReactNode;
-};
+}
 
 export default function ThemeProvider({ children }: ThemeProviderProps) {
   return <TP theme={theme}>{children}</TP>;

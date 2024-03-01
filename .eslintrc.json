@@ -6,6 +6,7 @@
     "eslint:recommended",
     "next",
     "next/core-web-vitals",
+    "plugin:@typescript-eslint/stylistic",
     "plugin:@typescript-eslint/recommended",
     "plugin:react-hooks/recommended",
     "plugin:react/recommended",
@@ -19,7 +20,7 @@
     }],
     "no-console": ["error"],
     "indent": ["error", 2],
-    "quotes": ["error", "single"],
+    "@typescript-eslint/quotes": ["error", "single", { "avoidEscape": true }],
     // The following two lines, combined, prevent eslint from throwing a
     // "no-unused-var" error in type definitions for function types
     "no-unused-vars": "off",

@@ -6,7 +6,8 @@ import Image from 'next/image';
 import Inputs from './Inputs';
 import PropTypes from 'prop-types';
 import React from 'react';
-
+import Warnings from './Warnings';
+import { sub as subDate } from 'date-fns';
 import { Box, Typography } from '@mui/material';
 
 import { DockData, getDockData } from './action';
@@ -16,10 +17,10 @@ export enum Granularity {
   Monthly,
 }
 
-type Dock = {
+interface Dock {
   id: number;
   name: string;
-};
+}
 
 export default function DockSelector({
   docks,
@@ -36,35 +37,37 @@ export default function DockSelector({
   const [dockName, setDockName] = React.useState<string>('');
   const [endDate, setEndDate] = React.useState<Date>(maxDate);
   const [isLoading, setIsLoading] = React.useState(false);
-  const [startDate, setStartDate] = React.useState<Date>(minDate);
+  const [startDate, setStartDate] = React.useState<Date>(
+    subDate(maxDate, { months: 6 }),
+  );
   const [granularity, setGranularity] = React.useState<Granularity>(
     Granularity.Monthly,
   );
 
-  function handleDockNameChange(name: string) {
-    setDockName(name);
-    setDockData(undefined);
-    if (name !== '') {
-      setIsLoading(true);
+  function metaHandler(func: () => void, name?: string) {
+    if (!isLoading) {
+      if (name !== undefined || (name === undefined && dockName !== '')) {
+        setIsLoading(true);
+      }
+      setDockData(undefined);
+      func();
     }
   }
 
+  function handleDockNameChange(name: string) {
+    metaHandler(() => setDockName(name), name);
+  }
+
   function handleGranularityChange(granularity: Granularity) {
-    setGranularity(granularity);
-    setDockData(undefined);
-    setIsLoading(true);
+    metaHandler(() => setGranularity(granularity));
   }
 
   function handleStartDateChange(date: Date) {
-    setStartDate(date);
-    setDockData(undefined);
-    setIsLoading(true);
+    metaHandler(() => setStartDate(date));
   }
 
   function handleEndDateChange(date: Date) {
-    setEndDate(date);
-    setDockData(undefined);
-    setIsLoading(true);
+    metaHandler(() => setEndDate(date));
   }
 
   if (dockName !== '' && dockData === undefined) {
@@ -140,7 +143,7 @@ export default function DockSelector({
   };
 
   NoDockContainer.propTypes = {
-    dockData: PropTypes.object,
+    dockData: PropTypes.array,
     children: PropTypes.node.isRequired,
   };
 
@@ -151,7 +154,7 @@ export default function DockSelector({
     dockData: DockData | undefined;
     children: JSX.Element[];
   }) => {
-    if (!dockData || dockData.length === 0) {
+    if (dockData === undefined || dockData.length === 0) {
       return (
         <Box
           sx={{
@@ -170,7 +173,7 @@ export default function DockSelector({
   };
 
   EmptyDataContainer.propTypes = {
-    dockData: PropTypes.object,
+    dockData: PropTypes.array,
     children: PropTypes.node.isRequired,
   };
 
@@ -193,7 +196,13 @@ export default function DockSelector({
       <LoadingContainer isLoading={isLoading}>
         <NoDockContainer dockData={dockData}>
           <EmptyDataContainer dockData={dockData}>
-            <Data isLoading={isLoading} />
+            <Warnings
+              dockData={dockData}
+              startDate={startDate}
+              endDate={endDate}
+            />
+
+            <Data dockData={dockData} granularity={granularity} />
 
             <Chart
               daily={granularity === Granularity.Daily}
