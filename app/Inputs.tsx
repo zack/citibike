@@ -29,7 +29,7 @@ export default function Inputs({
   startDate,
 }: {
   dockName: string;
-  dockNames: Array<string>;
+  dockNames: string[];
   endDate: Date;
   granularity: Granularity;
   maxDate: Date;

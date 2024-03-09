@@ -16,10 +16,10 @@ export enum Granularity {
   Monthly,
 }
 
-type Dock = {
+interface Dock {
   id: number;
   name: string;
-};
+}
 
 export default function DockSelector({
   docks,
