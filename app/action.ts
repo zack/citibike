@@ -10,6 +10,41 @@ export type DockData = {
   year: number;
 }[];
 
+export interface ToplineData {
+  firstDate: Date | undefined;
+  lastDate: Date | undefined;
+  trips: number;
+}
+
+export async function getToplineData(dockId: number): Promise<ToplineData> {
+  const first = await prisma.dockDay.findFirst({
+    where: { dockId },
+    orderBy: [{ year: 'asc' }, { month: 'asc' }, { day: 'asc' }],
+  });
+  const firstDate = first
+    ? new Date(first.year, first.month - 1, first.day)
+    : undefined;
+
+  const last = await prisma.dockDay.findFirst({
+    where: { dockId },
+    orderBy: [{ year: 'desc' }, { month: 'desc' }, { day: 'desc' }],
+  });
+  const lastDate = last
+    ? new Date(last.year, last.month - 1, last.day)
+    : undefined;
+
+  const trips = await prisma.dockDay.aggregate({
+    where: { dockId },
+    _sum: { acoustic: true, electric: true },
+  });
+
+  return {
+    firstDate,
+    lastDate,
+    trips: (trips._sum.acoustic ?? 0) + (trips._sum.electric ?? 0),
+  };
+}
+
 export async function getDockData(
   dockId: number,
   daily: boolean,

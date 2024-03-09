@@ -5,7 +5,7 @@ import ChartControls from './ChartControls';
 import ChartLoadingContainer from './ChartLoadingContainer';
 import { Granularity } from './Main';
 import React from 'react';
-import { format } from 'date-fns';
+import { format as formatDate } from 'date-fns';
 import { DockData, getDockData } from './action';
 
 function pad(num: number | undefined) {
@@ -20,9 +20,9 @@ function pad(num: number | undefined) {
 
 function getDataLabel(day: number | undefined, month: number, year: number) {
   if (day === undefined) {
-    return format(new Date(year, month - 1, 1), "MMM ''yy");
+    return formatDate(new Date(year, month - 1, 1), "MMM ''yy");
   } else {
-    return format(new Date(year, month - 1, day), "MMM d ''yy");
+    return formatDate(new Date(year, month - 1, day), "MMM d ''yy");
   }
 }
 

@@ -1,10 +1,21 @@
 'use client';
 
 import ChartContainer from './ChartContainer';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import PropTypes from 'prop-types';
 import React from 'react';
+import Topline from './Topline';
 
-import { Autocomplete, Box, Chip, TextField, Typography } from '@mui/material';
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Autocomplete,
+  Box,
+  Chip,
+  TextField,
+  Typography,
+} from '@mui/material';
 
 export enum Granularity {
   Daily,
@@ -82,12 +93,28 @@ export default function Main({
           ));
         }}
       />
+
       <NoDockContainer dockName={dockName}>
-        <ChartContainer
-          dockId={docks.find((d) => d.name === dockName)?.id}
-          maxDate={maxDate}
-          minDate={minDate}
-        />
+        <>
+          <Topline
+            dockId={docks.find((d) => d.name === dockName)?.id}
+            dockName={dockName}
+          />
+
+          <Accordion sx={{ marginY: 2 }}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography> See more data </Typography>
+            </AccordionSummary>
+
+            <AccordionDetails>
+              <ChartContainer
+                dockId={docks.find((d) => d.name === dockName)?.id}
+                maxDate={maxDate}
+                minDate={minDate}
+              />
+            </AccordionDetails>
+          </Accordion>
+        </>
       </NoDockContainer>
     </>
   );

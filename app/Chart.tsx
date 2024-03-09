@@ -24,7 +24,7 @@ export default function Chart({
   chartData: ChartData[];
 }) {
   return (
-    <ResponsiveContainer>
+    <ResponsiveContainer height={500}>
       <BarChart
         style={{
           fontFamily: ubuntuMonoFontFamily,
