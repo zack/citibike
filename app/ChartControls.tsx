@@ -3,37 +3,22 @@ import { DatePicker } from '@mui/x-date-pickers';
 import { Granularity } from './Main';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import React from 'react';
-import {
-  Autocomplete,
-  Box,
-  Chip,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-} from '@mui/material';
+import { Box, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 
 export default function Inputs({
-  dockName,
   granularity,
   setGranularity,
-  dockNames,
   endDate,
   maxDate,
   minDate,
-  setDockName,
   setEndDate,
   setStartDate,
   startDate,
 }: {
-  dockName: string;
-  dockNames: string[];
   endDate: Date;
   granularity: Granularity;
   maxDate: Date;
   minDate: Date;
-  setDockName: (name: string) => void;
   setEndDate: (date: Date) => void;
   setGranularity: (granularity: Granularity) => void;
   setStartDate: (date: Date) => void;
@@ -54,37 +39,8 @@ export default function Inputs({
     }
   };
 
-  const handleDockChange = async (_event: unknown, newValue: string | null) => {
-    const newDockName = newValue ?? '';
-
-    setDockName(newDockName);
-  };
-
   return (
     <Box display='block' width={'100%'}>
-      <Autocomplete
-        sx={{ width: '100%' }}
-        id='player'
-        options={['', ...dockNames]}
-        value={dockName}
-        onChange={handleDockChange}
-        renderInput={(p) => (
-          <TextField {...p} label='Dock' InputLabelProps={{ shrink: true }} />
-        )}
-        renderOption={(props, option) => {
-          return (
-            <li {...props} key={option}>
-              {option}
-            </li>
-          );
-        }}
-        renderTags={(tagValue, getTagProps) => {
-          return tagValue.map((option, index) => (
-            <Chip {...getTagProps({ index })} key={option} label={option} />
-          ));
-        }}
-      />
-
       <Box
         sx={{
           width: '100%',
