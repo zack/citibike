@@ -10,6 +10,50 @@ export type DockData = {
   year: number;
 }[];
 
+interface ShortDockData {
+  trips: number;
+  firstDate: Date | undefined;
+  lastDate: Date | undefined;
+}
+
+export async function getShortDockData(dockId: number): Promise<ShortDockData> {
+  const tripResults = await prisma.dockDay.aggregate({
+    where: { dockId },
+    _sum: {
+      acoustic: true,
+      electric: true,
+    },
+  });
+
+  const firstDateResults = await prisma.dockDay.findFirst({
+    where: { dockId },
+    orderBy: [{ year: 'desc' }, { month: 'desc' }, { day: 'desc' }],
+  });
+
+  const lastDateResults = await prisma.dockDay.findFirst({
+    where: { dockId },
+    orderBy: [{ year: 'asc' }, { month: 'asc' }, { day: 'asc' }],
+  });
+
+  return {
+    trips: (tripResults._sum.acoustic ?? 0) + (tripResults._sum.electric ?? 0),
+    firstDate: firstDateResults
+      ? new Date(
+          firstDateResults.year,
+          firstDateResults.month - 1, // month is an index
+          firstDateResults.day,
+        )
+      : undefined,
+    lastDate: lastDateResults
+      ? new Date(
+          lastDateResults.year,
+          lastDateResults.month - 1, // month is an index
+          lastDateResults.day,
+        )
+      : undefined,
+  };
+}
+
 export async function getDockData(
   dockId: number,
   daily: boolean,

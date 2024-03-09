@@ -19,7 +19,6 @@
       "memberSyntaxSortOrder": ["none", "all", "single", "multiple"]
     }],
     "no-console": ["error"],
-    "indent": ["error", 2],
     "@typescript-eslint/quotes": ["error", "single", { "avoidEscape": true }],
     // The following two lines, combined, prevent eslint from throwing a
     // "no-unused-var" error in type definitions for function types

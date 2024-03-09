@@ -1,6 +1,5 @@
-import { DockData } from './action';
+import { ChartData } from './ChartContainer';
 import React from 'react';
-import { format } from 'date-fns';
 
 import {
   Bar,
@@ -17,47 +16,13 @@ import { Paper, Typography } from '@mui/material';
 
 import { exoFontFamily, ubuntuMonoFontFamily } from './ThemeProvider';
 
-function pad(num: number | undefined) {
-  if (num === undefined) {
-    return '';
-  } else if (num < 10) {
-    return `0${num}`;
-  } else {
-    return `${num}`;
-  }
-}
-
-function getDataLabel(day: number | undefined, month: number, year: number) {
-  if (day === undefined) {
-    return format(new Date(year, month - 1, 1), "MMM ''yy");
-  } else {
-    return format(new Date(year, month - 1, day), "MMM d ''yy");
-  }
-}
-
 export default function Chart({
   daily,
-  dockData,
+  chartData,
 }: {
   daily: boolean;
-  dockData: DockData | undefined;
+  chartData: ChartData[];
 }) {
-  const chartData = dockData
-    ?.map((data) => ({
-      acoustic: data.acoustic,
-      day: data.day,
-      electric: data.electric,
-      month: data.month,
-      name: getDataLabel(data.day, data.month, data.year),
-      year: data.year,
-    }))
-    .sort((a, b) =>
-      `${a.year}${pad(a.month)}${pad(a.day)}` >
-      `${b.year}${pad(b.month)}${pad(b.day)}`
-        ? 1
-        : -1,
-    );
-
   return (
     <ResponsiveContainer>
       <BarChart
