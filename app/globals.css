@@ -21,3 +21,16 @@ body {
     /* ) */
     /* rgb(var(--background-start-rgb)); */
 }
+
+/* from https://codepen.io/nelledejones/pen/gOOPWrK */
+.swing {
+  transform-origin: top center;
+  animation: swing 2s ease infinite;
+}
+@keyframes swing {
+  20% { transform: rotate(15deg); }
+  40% { transform: rotate(-10deg); }
+  60% { transform: rotate(5deg); }
+  80% { transform: rotate(-5deg); }
+  100% { transform: rotate(0deg); }
+}

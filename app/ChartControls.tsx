@@ -43,12 +43,12 @@ export default function Inputs({
     <Box display='block' width={'100%'}>
       <Box
         sx={{
-          width: '100%',
-          display: 'flex',
-          justifyContent: 'space-between',
           alignItems: 'center',
+          display: 'flex',
           gap: 1,
+          justifyContent: 'space-between',
           pt: 1,
+          width: '100%',
         }}
       >
         <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -73,19 +73,21 @@ export default function Inputs({
           />
         </LocalizationProvider>
 
-        <FormControl fullWidth>
-          <InputLabel id='granularity-options-label'> Granularity </InputLabel>
-          <Select
-            labelId='granularity-options-label'
-            id='granularity-options'
-            value={granularity}
-            label='Granularity'
-            onChange={(e) => handleGranularityChange(e.target.value)}
-          >
-            <MenuItem value={Granularity.Daily}> Daily </MenuItem>
-            <MenuItem value={Granularity.Monthly}> Monthly </MenuItem>
-          </Select>
-        </FormControl>
+        <Box width={'270px'}>
+          <FormControl fullWidth>
+            <InputLabel id='granularity-options-label'>Granularity</InputLabel>
+            <Select
+              labelId='granularity-options-label'
+              id='granularity-options'
+              value={granularity}
+              label='Granularity'
+              onChange={(e) => handleGranularityChange(e.target.value)}
+            >
+              <MenuItem value={Granularity.Daily}> Daily </MenuItem>
+              <MenuItem value={Granularity.Monthly}> Monthly </MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
       </Box>
     </Box>
   );

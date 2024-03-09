@@ -1,10 +1,9 @@
 'use client';
 
-import ChartContainer from './ChartContainer';
-import PropTypes from 'prop-types';
-import React from 'react';
-
+import DataContainer from './DataContainer';
+import Topline from './Topline';
 import { Autocomplete, Box, Chip, TextField, Typography } from '@mui/material';
+import React, { SyntheticEvent } from 'react';
 
 export enum Granularity {
   Daily,
@@ -25,38 +24,18 @@ export default function Main({
   minDate: Date;
   maxDate: Date;
 }) {
-  const [dockName, setDockName] = React.useState<string>('');
+  const [dock, setDock] = React.useState<{
+    name: string;
+    id: number | undefined;
+  }>({ name: '', id: undefined });
   const dockNames = docks.map((d) => d.name).sort((a, b) => (a > b ? 1 : -1));
 
-  const NoDockContainer = ({
-    dockName,
-    children,
-  }: {
-    dockName: string;
-    children: JSX.Element;
-  }) => {
-    if (dockName === '') {
-      return (
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: '100%',
-          }}
-        >
-          <Typography> Select a dock to see some data. </Typography>
-        </Box>
-      );
-    } else {
-      return children;
-    }
-  };
-
-  NoDockContainer.propTypes = {
-    dockData: PropTypes.object,
-    children: PropTypes.node.isRequired,
-  };
+  function handleDockChange(event: SyntheticEvent, value: string | null) {
+    setDock({
+      name: value ?? '',
+      id: docks.find((d) => d.name === value)?.id,
+    });
+  }
 
   return (
     <>
@@ -64,8 +43,8 @@ export default function Main({
         sx={{ width: '100%' }}
         id='player'
         options={['', ...dockNames]}
-        value={dockName}
-        onChange={(e, v) => setDockName(v ?? '')}
+        value={dock.name}
+        onChange={handleDockChange}
         renderInput={(p) => (
           <TextField {...p} label='Dock' InputLabelProps={{ shrink: true }} />
         )}
@@ -82,13 +61,24 @@ export default function Main({
           ));
         }}
       />
-      <NoDockContainer dockName={dockName}>
-        <ChartContainer
-          dockId={docks.find((d) => d.name === dockName)?.id}
-          maxDate={maxDate}
-          minDate={minDate}
-        />
-      </NoDockContainer>
+
+      {dock.name === '' ? (
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100%',
+          }}
+        >
+          <Typography> Select a dock to see some data. </Typography>
+        </Box>
+      ) : (
+        <>
+          <Topline dockId={dock.id} dockName={dock.name} />
+          <DataContainer minDate={minDate} maxDate={maxDate} dockId={dock.id} />
+        </>
+      )}
     </>
   );
 }

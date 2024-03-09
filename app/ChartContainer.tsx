@@ -5,8 +5,8 @@ import ChartControls from './ChartControls';
 import ChartLoadingContainer from './ChartLoadingContainer';
 import { Granularity } from './Main';
 import React from 'react';
-import { format } from 'date-fns';
 import { DockData, getDockData } from './action';
+import { format as formatDate, sub as subDate } from 'date-fns';
 
 function pad(num: number | undefined) {
   if (num === undefined) {
@@ -20,9 +20,9 @@ function pad(num: number | undefined) {
 
 function getDataLabel(day: number | undefined, month: number, year: number) {
   if (day === undefined) {
-    return format(new Date(year, month - 1, 1), "MMM ''yy");
+    return formatDate(new Date(year, month - 1, 1), "MMM ''yy");
   } else {
-    return format(new Date(year, month - 1, day), "MMM d ''yy");
+    return formatDate(new Date(year, month - 1, day), "MMM d ''yy");
   }
 }
 
@@ -49,7 +49,9 @@ export default function ChartContainer({
   );
   const [endDate, setEndDate] = React.useState<Date>(maxDate);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
-  const [startDate, setStartDate] = React.useState<Date>(minDate);
+  const [startDate, setStartDate] = React.useState<Date>(
+    subDate(maxDate, { years: 1 }),
+  );
   const [granularity, setGranularity] = React.useState<Granularity>(
     Granularity.Monthly,
   );

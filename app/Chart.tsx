@@ -12,7 +12,7 @@ import {
   YAxis,
 } from 'recharts';
 
-import { Paper, Typography } from '@mui/material';
+import { Box, Paper, Typography } from '@mui/material';
 
 import { exoFontFamily, ubuntuMonoFontFamily } from './ThemeProvider';
 
@@ -23,8 +23,26 @@ export default function Chart({
   daily: boolean;
   chartData: ChartData[];
 }) {
+  if (chartData.length === 0) {
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100%',
+          marginY: '200px',
+        }}
+      >
+        <Typography>
+          There is no data for this dock in this time period.
+        </Typography>
+      </Box>
+    );
+  }
+
   return (
-    <ResponsiveContainer>
+    <ResponsiveContainer height={500}>
       <BarChart
         style={{
           fontFamily: ubuntuMonoFontFamily,
