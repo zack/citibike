@@ -29,7 +29,7 @@ export default async function Home() {
           <Typography
             variant='h4'
             component='h1'
-            sx={{ fontFamily: exoFontFamily, pb: 2 }}
+            sx={{ fontFamily: exoFontFamily, marginTop: 2 }}
           >
             CitiBike Dock Data
           </Typography>

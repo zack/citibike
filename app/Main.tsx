@@ -40,7 +40,7 @@ export default function Main({
   return (
     <>
       <Autocomplete
-        sx={{ width: '100%' }}
+        sx={{ width: '100%', marginTop: 4 }}
         id='player'
         options={['', ...dockNames]}
         value={dock.name}

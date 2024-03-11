@@ -63,7 +63,7 @@ export default function Topline({
 
     return (
       <>
-        <Box sx={{ marginY: 3 }}>
+        <Box sx={{ marginTop: 4, marginBottom: 2 }}>
           <Typography fontSize='2rem'>
             <>
               The dock at
@@ -92,8 +92,7 @@ export default function Topline({
             flexWrap: 'wrap',
             gap: 1,
             justifyContent: 'space-around',
-            marginBottom: 5,
-            pt: 1,
+            marginBottom: 4,
             width: '100%',
           }}
         >
