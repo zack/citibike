@@ -111,11 +111,13 @@ export default function Main({ docks }: { docks: Dock[] }) {
       )}
 
       {dock.name && (
-        <DataContainer
-          minDate={dockTimeframe?.firstDate}
-          maxDate={dockTimeframe?.lastDate}
-          dockId={dock.id}
-        />
+        <Box sx={{ paddingBottom: 5 }}>
+          <DataContainer
+            minDate={dockTimeframe?.firstDate}
+            maxDate={dockTimeframe?.lastDate}
+            dockId={dock.id}
+          />
+        </Box>
       )}
     </>
   );

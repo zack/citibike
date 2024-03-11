@@ -3,7 +3,14 @@ import { DatePicker } from '@mui/x-date-pickers';
 import { Granularity } from './Main';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import React from 'react';
-import { Box, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import {
+  Alert,
+  Box,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+} from '@mui/material';
 
 export default function ChartControls({
   granularity,
@@ -24,7 +31,9 @@ export default function ChartControls({
   setStartDate: (date: Date) => void;
   startDate: Date;
 }) {
-  const handleGranularityChange = (value: Granularity | string) => {
+  const [isError, setIsError] = React.useState(false);
+
+  function handleGranularityChange(value: Granularity | string) {
     if (typeof value === 'string') {
       // This is for the typescript
       setGranularity(Granularity.Monthly);
@@ -37,10 +46,30 @@ export default function ChartControls({
     } else {
       setGranularity(Granularity.Monthly);
     }
-  };
+  }
+
+  function handleDateChange({
+    newStart,
+    newEnd,
+  }: {
+    newStart: Date;
+    newEnd: Date;
+  }) {
+    if (newStart <= newEnd) {
+      setStartDate(newStart);
+      setEndDate(newEnd);
+      setIsError(false);
+    } else {
+      setIsError(true);
+    }
+  }
 
   return (
     <Box display='block' width={'100%'}>
+      {isError && (
+        <Alert severity='error'>Start date cannot be after end date.</Alert>
+      )}
+
       <Box
         sx={{
           alignItems: 'center',
@@ -56,20 +85,34 @@ export default function ChartControls({
             label='Start'
             maxDate={maxDate}
             minDate={minDate}
-            onAccept={(newValue) => setStartDate(newValue || minDate)}
+            onAccept={(v) =>
+              handleDateChange({ newStart: v || minDate, newEnd: endDate })
+            }
             sx={{ width: '100%' }}
             value={startDate}
             views={['year', 'month']}
+            slotProps={{
+              textField: {
+                error: isError,
+              },
+            }}
           />
 
           <DatePicker
             label='End'
             maxDate={maxDate}
             minDate={minDate}
-            onAccept={(newValue) => setEndDate(newValue || maxDate)}
+            onAccept={(v) =>
+              handleDateChange({ newStart: startDate, newEnd: v || maxDate })
+            }
             sx={{ width: '100%' }}
             value={endDate}
             views={['year', 'month']}
+            slotProps={{
+              textField: {
+                error: isError,
+              },
+            }}
           />
         </LocalizationProvider>
 
