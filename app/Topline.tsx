@@ -1,7 +1,7 @@
 import LoadingSpinner from './LoadingSpinner';
 import React from 'react';
 import { format as formatDate } from 'date-fns';
-import { Box, Typography } from '@mui/material';
+import { Box, Tooltip, Typography } from '@mui/material';
 import { ToplineData, getToplineData } from './action';
 import { differenceInCalendarDays, differenceInCalendarMonths } from 'date-fns';
 
@@ -58,6 +58,9 @@ export default function Topline({
         ? Math.round((data.trips.electric / data.tripsSinceFirstElectric) * 100)
         : 0;
 
+    const eBikeTooltipTitle =
+      'Percent of uses that were on eBikes since this dock saw its first eBike.';
+
     return (
       <>
         <Box sx={{ marginTop: 3, marginBottom: -1 }}>
@@ -65,9 +68,9 @@ export default function Topline({
             <>
               The dock at
               <Bold>{` ${dockName} `}</Bold>
-              has been used
+              has been used for
               <Bold>{` ${totalTrips.toLocaleString('en-US')} `}</Bold>
-              times
+              trips
               {data.firstDate && data.lastDate ? (
                 <>
                   {' '}
@@ -84,8 +87,9 @@ export default function Topline({
         </Box>
         <Box
           sx={{
-            alignItems: 'center',
+            alignItems: 'flex-start',
             display: 'flex',
+            flexWrap: 'wrap',
             gap: 1,
             justifyContent: 'space-around',
             marginBottom: 1,
@@ -97,28 +101,34 @@ export default function Topline({
             <Typography fontSize='4rem' fontWeight='bold'>
               {perMonth.toLocaleString('en-US')}
             </Typography>
-            <Typography sx={{ marginTop: '-1rem' }}>times per month</Typography>
+            <Typography sx={{ marginTop: '-1rem' }}>trips per month</Typography>
           </Box>
           <Box sx={{ textAlign: 'center' }}>
             <Typography fontSize='4rem' fontWeight='bold'>
               {perDay.toLocaleString('en-US')}
             </Typography>
-            <Typography sx={{ marginTop: '-1rem' }}> times per day </Typography>
+            <Typography sx={{ marginTop: '-1rem' }}> trips per day </Typography>
           </Box>
           <Box sx={{ textAlign: 'center' }}>
             <Typography fontSize='4rem' fontWeight='bold'>
               {eBikes}%
             </Typography>
             <Typography sx={{ marginTop: '-1rem' }}>
-              trips on eBikes*
+              trips on eBikes
+              <Tooltip title={eBikeTooltipTitle}>
+                <Typography
+                  sx={{
+                    color: '#0034DF',
+                    cursor: 'pointer',
+                    display: 'inline',
+                    textDecoration: 'underline',
+                  }}
+                >
+                  *
+                </Typography>
+              </Tooltip>
             </Typography>
           </Box>
-        </Box>
-        <Box sx={{ textAlign: 'center' }}>
-          <Typography fontSize='1rem'>
-            * eBike trips as a percent of trips since this dock saw its first
-            eBike
-          </Typography>
         </Box>
       </>
     );
