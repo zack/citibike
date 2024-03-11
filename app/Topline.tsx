@@ -59,7 +59,7 @@ export default function Topline({
         : 0;
 
     const eBikeTooltipTitle =
-      'Percent of uses that were on eBikes since this dock saw its first eBike.';
+      'Percent of trips that were on eBikes since this dock saw its first eBike.';
 
     return (
       <>
