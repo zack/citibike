@@ -1,3 +1,4 @@
+import LoadingSpinner from './LoadingSpinner';
 import React from 'react';
 import { format as formatDate } from 'date-fns';
 import { Box, Typography } from '@mui/material';
@@ -33,7 +34,17 @@ export default function Topline({
   }, [dockId]);
 
   if (isLoading) {
-    return <Typography> Loading... </Typography>;
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <LoadingSpinner />
+      </Box>
+    );
   } else if (data === undefined) {
     return null;
   } else {
