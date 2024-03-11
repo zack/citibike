@@ -31,7 +31,7 @@ export default async function Home() {
             component='h1'
             sx={{ fontFamily: exoFontFamily, pb: 2 }}
           >
-            CitiBike Dock Data Viewer
+            CitiBike Dock Data
           </Typography>
 
           <Main docks={docks} minDate={minDate} maxDate={maxDate} />
