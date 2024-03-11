@@ -208,7 +208,7 @@ async function seedDays(fileDateStr: string, file: string, length: number) {
               };
             } else {
               processedData[dockId] = {
-                [dateStr]: { electric: 1, acoustic: 0 },
+                [dateStr]: { electric: 0, acoustic: 1 },
               };
             }
           }
