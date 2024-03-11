@@ -85,11 +85,6 @@ export async function getToplineData(
       })
     : { _sum: { electric: 0, acoustic: 0 } };
 
-  const firstElectricDate = firstElectric
-    ? new Date(firstElectric.year, firstElectric.month - 1, firstElectric.day)
-    : undefined;
-  console.log({ firstElectricDate });
-
   return {
     trips: {
       acoustic: trips._sum.acoustic ?? 0,

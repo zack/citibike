@@ -113,6 +113,7 @@ export default function Topline({
               <Tooltip title={eBikeTooltipTitle}>
                 <Typography
                   tabIndex={0}
+                  component='span'
                   sx={{
                     color: '#0034DF',
                     cursor: 'pointer',

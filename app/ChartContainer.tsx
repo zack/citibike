@@ -1,17 +1,11 @@
 'use client';
 
 import Chart from './Chart';
-import ChartControls from './ChartControls';
+import { ChartData } from './DataContainer';
 import ChartLoadingContainer from './ChartLoadingContainer';
-import { Granularity } from './Main';
+import { DockData } from './action';
 import React from 'react';
-
-import { DockData, getDockData } from './action';
-import {
-  format as formatDate,
-  max as laterDate,
-  sub as subDate,
-} from 'date-fns';
+import { format as formatDate } from 'date-fns';
 
 function pad(num: number | undefined) {
   if (num === undefined) {
@@ -31,55 +25,15 @@ function getDataLabel(day: number | undefined, month: number, year: number) {
   }
 }
 
-export interface ChartData {
-  acoustic: number;
-  day: number | undefined;
-  electric: number;
-  month: number;
-  name: string;
-  year: number;
-}
-
 export default function ChartContainer({
-  dockId,
-  maxDate,
-  minDate,
+  isLoading,
+  daily,
+  dockData,
 }: {
-  dockId: number | undefined;
-  maxDate: Date | undefined;
-  minDate: Date | undefined;
+  isLoading: boolean;
+  daily: boolean;
+  dockData: DockData;
 }) {
-  const [dockData, setDockData] = React.useState<DockData | undefined>(
-    undefined,
-  );
-  const [endDate, setEndDate] = React.useState<Date | undefined>(maxDate);
-  const [isLoading, setIsLoading] = React.useState<boolean>(false);
-  const [startDate, setStartDate] = React.useState<Date | undefined>(() => {
-    if (minDate && maxDate) {
-      return laterDate([minDate, subDate(maxDate, { years: 1 })]);
-    } else {
-      return undefined;
-    }
-  });
-  const [granularity, setGranularity] = React.useState<Granularity>(
-    Granularity.Monthly,
-  );
-  const daily = granularity === Granularity.Daily;
-
-  React.useEffect(() => {
-    if (dockId !== undefined && startDate && endDate) {
-      setIsLoading(true);
-      getDockData(dockId, daily, startDate, endDate).then((newDockData) => {
-        setDockData(newDockData);
-        setIsLoading(false);
-      });
-    }
-  }, [daily, dockId, endDate, startDate]);
-
-  if (dockData === undefined) {
-    return null;
-  }
-
   const chartData: ChartData[] = dockData
     ?.map((data) => ({
       acoustic: data.acoustic,
@@ -97,22 +51,8 @@ export default function ChartContainer({
     );
 
   return (
-    <>
-      {minDate && maxDate && startDate && endDate && (
-        <ChartControls
-          endDate={endDate}
-          granularity={granularity}
-          maxDate={maxDate}
-          minDate={minDate}
-          setEndDate={setEndDate}
-          setGranularity={setGranularity}
-          setStartDate={setStartDate}
-          startDate={startDate}
-        />
-      )}
-      <ChartLoadingContainer isLoading={isLoading}>
-        <Chart daily={daily} chartData={chartData} />
-      </ChartLoadingContainer>
-    </>
+    <ChartLoadingContainer isLoading={isLoading}>
+      <Chart daily={daily} chartData={chartData} />
+    </ChartLoadingContainer>
   );
 }
