@@ -31,8 +31,10 @@ async function getMostRecentData() {
   });
 
   return {
-    mostRecentMonth: parseInt(mostRecentDay?.month ?? process.env.START_MONTH),
-    mostRecentYear: parseInt(mostRecentDay?.year ?? process.env.START_YEAR),
+    mostRecentMonth: Number(
+      mostRecentDay?.month ?? process.env.START_MONTH ?? 0,
+    ),
+    mostRecentYear: Number(mostRecentDay?.year ?? process.env.START_YEAR ?? 0),
   };
 }
 

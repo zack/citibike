@@ -15,8 +15,26 @@ function randomColor() {
   return '#' + Math.floor(Math.random() * 16777215).toString(16);
 }
 
+async function getMostRecentData(): Promise<{
+  mostRecentMonth: number;
+  mostRecentYear: number;
+}> {
+  const mostRecentDay = await prisma.dockDay.findFirst({
+    orderBy: [{ year: 'desc' }, { month: 'desc' }, { day: 'desc' }],
+  });
+
+  return {
+    mostRecentMonth: Number(
+      mostRecentDay?.month ?? process.env.START_MONTH ?? 0,
+    ),
+    mostRecentYear: Number(mostRecentDay?.year ?? process.env.START_YEAR ?? 0),
+  };
+}
+
 async function processFiles(files: Record<string, number>) {
   console.log('Processing files...');
+  const { mostRecentMonth, mostRecentYear } = await getMostRecentData();
+  console.log(`Most recent data from ${mostRecentYear}-${mostRecentMonth}`);
 
   // Seed docks and generate data for days
   for (const file of Object.keys(files)) {
@@ -29,8 +47,13 @@ async function processFiles(files: Record<string, number>) {
     const month = date.slice(4, 6);
     const dateStr = `${year}-${month}`;
 
-    await seedDocks(file, dateStr, files[file]);
-    await seedDays(dateStr, file, files[file]);
+    if (
+      parseInt(year) > mostRecentYear ||
+      (parseInt(year) === mostRecentYear && parseInt(month) > mostRecentMonth)
+    ) {
+      await seedDocks(file, dateStr, files[file]);
+      await seedDays(dateStr, file, files[file]);
+    }
   }
 }
 
