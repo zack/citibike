@@ -42,7 +42,6 @@ export async function getDockTimeframe(
 }
 
 export interface ToplineData {
-  firstElectricDate: Date | undefined;
   trips: {
     acoustic: number;
     electric: number;
@@ -72,8 +71,15 @@ export async function getToplineData(
     ? await prisma.dockDay.aggregate({
         where: {
           dockId,
-          year: { gte: firstElectric.year },
-          month: { gte: firstElectric.month - 1 },
+          OR: [
+            { year: { gte: firstElectric.year } },
+            {
+              AND: [
+                { year: { gte: firstElectric.year } },
+                { month: { gte: firstElectric.month - 1 } },
+              ],
+            },
+          ],
         },
         _sum: { acoustic: true, electric: true },
       })
@@ -82,9 +88,9 @@ export async function getToplineData(
   const firstElectricDate = firstElectric
     ? new Date(firstElectric.year, firstElectric.month - 1, firstElectric.day)
     : undefined;
+  console.log({ firstElectricDate });
 
   return {
-    firstElectricDate,
     trips: {
       acoustic: trips._sum.acoustic ?? 0,
       electric: trips._sum.electric ?? 0,
