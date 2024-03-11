@@ -10,8 +10,43 @@ import {
   AccordionDetails,
   AccordionSummary,
   Box,
+  Tab,
+  Tabs,
   Typography,
 } from '@mui/material';
+
+export enum View {
+  Chart,
+  Table,
+}
+
+function a11yProps(index: number) {
+  return {
+    id: `tab-${index}`,
+    'aria-controls': `tabpanel-${index}`,
+  };
+}
+
+function TabPanel({
+  value,
+  index,
+  children,
+}: {
+  value: View;
+  index: number;
+  children: JSX.Element;
+}) {
+  return (
+    <div
+      role='tabpanel'
+      hidden={value !== index}
+      id={`tabpanel-${index}`}
+      aria-labelledby={`tab-${index}`}
+    >
+      <>{value === index && children}</>
+    </div>
+  );
+}
 
 export default function DataContainer({
   dockId,
@@ -23,6 +58,11 @@ export default function DataContainer({
   minDate: Date | undefined;
 }) {
   const [accordionOpen, setAccordionOpen] = React.useState(false);
+  const [selection, setSelection] = React.useState<View>(View.Chart);
+
+  function handleTabChange(event: React.SyntheticEvent, newValue: View) {
+    setSelection(newValue);
+  }
 
   return (
     <Accordion
@@ -36,7 +76,27 @@ export default function DataContainer({
 
       <AccordionDetails>
         {minDate && maxDate ? (
-          <ChartContainer dockId={dockId} maxDate={maxDate} minDate={minDate} />
+          <Box sx={{ width: '100%' }}>
+            <Tabs
+              value={selection}
+              onChange={handleTabChange}
+              aria-label='data view options'
+            >
+              <Tab label='Chart' {...a11yProps(0)} />
+              <Tab label='Table' {...a11yProps(1)} />
+            </Tabs>
+            <TabPanel value={selection} index={0}>
+              <ChartContainer
+                dockId={dockId}
+                maxDate={maxDate}
+                minDate={minDate}
+              />
+            </TabPanel>
+
+            <TabPanel value={selection} index={1}>
+              <Typography> Table </Typography>
+            </TabPanel>
+          </Box>
         ) : (
           <Box
             sx={{
