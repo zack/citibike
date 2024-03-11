@@ -16,9 +16,13 @@ function Bold({ children }: { children: string }) {
 export default function Topline({
   dockId,
   dockName,
+  maxDate,
+  minDate,
 }: {
-  dockId: number | undefined;
+  dockId: number;
   dockName: string;
+  maxDate: Date;
+  minDate: Date;
 }) {
   const [data, setData] = React.useState<ToplineData | undefined>(undefined);
   const [isLoading, setIsLoading] = React.useState(false);
@@ -31,7 +35,7 @@ export default function Topline({
         setIsLoading(false);
       });
     }
-  }, [dockId]);
+  }, [dockId, minDate, maxDate]);
 
   if (isLoading) {
     return (
@@ -49,8 +53,8 @@ export default function Topline({
     return null;
   } else {
     const totalTrips = data.trips.electric + data.trips.acoustic;
-    const months = differenceInCalendarMonths(data.lastDate, data.firstDate);
-    const days = differenceInCalendarDays(data.lastDate, data.firstDate);
+    const months = differenceInCalendarMonths(maxDate, minDate);
+    const days = differenceInCalendarDays(maxDate, minDate);
     const perMonth = Math.round(totalTrips / months);
     const perDay = Math.round(totalTrips / days);
     const eBikes =
@@ -70,18 +74,10 @@ export default function Topline({
               <Bold>{` ${dockName} `}</Bold>
               has been used for
               <Bold>{` ${totalTrips.toLocaleString('en-US')} `}</Bold>
-              trips
-              {data.firstDate && data.lastDate ? (
-                <>
-                  {' '}
-                  between
-                  <Bold>{` ${formatDate(data.firstDate, 'MMMM yyyy')} `}</Bold>
-                  and
-                  <Bold>{` ${formatDate(data.lastDate, 'MMMM yyyy')}`}</Bold>.
-                </>
-              ) : (
-                '.'
-              )}
+              trips between
+              <Bold>{` ${formatDate(minDate, 'MMMM yyyy')} `}</Bold>
+              and
+              <Bold>{` ${formatDate(maxDate, 'MMMM yyyy')}`}</Bold>.
             </>
           </Typography>
         </Box>
@@ -113,7 +109,7 @@ export default function Topline({
               {eBikes}%
             </Typography>
             <Typography sx={{ marginTop: '-1rem' }}>
-              trips on eBikes
+              on {String.fromCodePoint(0x26a1)}eBikes
               <Tooltip title={eBikeTooltipTitle}>
                 <Typography
                   tabIndex={0}

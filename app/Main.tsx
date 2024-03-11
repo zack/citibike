@@ -1,8 +1,10 @@
 'use client';
 
 import DataContainer from './DataContainer';
+import LoadingSpinner from './LoadingSpinner';
 import Topline from './Topline';
 import { Autocomplete, Box, Chip, TextField, Typography } from '@mui/material';
+import { DockTimeframe, getDockTimeframe } from './action';
 import React, { SyntheticEvent } from 'react';
 
 export enum Granularity {
@@ -15,27 +17,39 @@ interface Dock {
   name: string;
 }
 
-export default function Main({
-  docks,
-  maxDate,
-  minDate,
-}: {
-  docks: Dock[];
-  minDate: Date;
-  maxDate: Date;
-}) {
-  const [dock, setDock] = React.useState<{
-    name: string;
-    id: number | undefined;
-  }>({ name: '', id: undefined });
+export default function Main({ docks }: { docks: Dock[] }) {
+  const [dock, setDock] = React.useState<Dock>({ name: '', id: 0 });
+  const [dockTimeframe, setDockTimeframe] = React.useState<
+    DockTimeframe | undefined
+  >(undefined);
+  const [isLoading, setIsLoading] = React.useState(false);
   const dockNames = docks.map((d) => d.name).sort((a, b) => (a > b ? 1 : -1));
 
   function handleDockChange(event: SyntheticEvent, value: string | null) {
-    setDock({
-      name: value ?? '',
-      id: docks.find((d) => d.name === value)?.id,
-    });
+    if (value === null || value === '') {
+      // use cleared the input
+      setDock({ name: '', id: 0 });
+    } else {
+      const id = docks.find((d) => d.name === value)?.id;
+      if (id !== undefined) {
+        setDock({
+          name: value,
+          id,
+        });
+      }
+    }
   }
+
+  React.useEffect(() => {
+    if (dock.name !== '') {
+      setIsLoading(true);
+      setDockTimeframe(undefined);
+      getDockTimeframe(dock.id).then((newData) => {
+        setDockTimeframe(newData);
+        setIsLoading(false);
+      });
+    }
+  }, [dock]);
 
   return (
     <>
@@ -62,7 +76,19 @@ export default function Main({
         }}
       />
 
-      {dock.name === '' ? (
+      {isLoading && (
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <LoadingSpinner />
+        </Box>
+      )}
+
+      {!isLoading && (dock.name === '' || dockTimeframe === undefined) && (
         <Box
           sx={{
             display: 'flex',
@@ -73,11 +99,23 @@ export default function Main({
         >
           <Typography> Select a dock to see some data. </Typography>
         </Box>
-      ) : (
-        <>
-          <Topline dockId={dock.id} dockName={dock.name} />
-          <DataContainer minDate={minDate} maxDate={maxDate} dockId={dock.id} />
-        </>
+      )}
+
+      {!isLoading && dock.name !== '' && dockTimeframe !== undefined && (
+        <Topline
+          dockId={dock.id}
+          dockName={dock.name}
+          minDate={dockTimeframe.firstDate}
+          maxDate={dockTimeframe.lastDate}
+        />
+      )}
+
+      {dock.name && (
+        <DataContainer
+          minDate={dockTimeframe?.firstDate}
+          maxDate={dockTimeframe?.lastDate}
+          dockId={dock.id}
+        />
       )}
     </>
   );

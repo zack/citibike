@@ -5,7 +5,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import React from 'react';
 import { Box, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 
-export default function Inputs({
+export default function ChartControls({
   granularity,
   setGranularity,
   endDate,
@@ -27,7 +27,7 @@ export default function Inputs({
   const handleGranularityChange = (value: Granularity | string) => {
     if (typeof value === 'string') {
       // This is for the typescript
-      setGranularity(Granularity.Daily);
+      setGranularity(Granularity.Monthly);
       // eslint-disable-next-line no-console
       console.error('Something went wrong with the granularity select');
     }

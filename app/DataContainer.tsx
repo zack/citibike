@@ -2,12 +2,14 @@
 
 import ChartContainer from './ChartContainer';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import LoadingSpinner from './LoadingSpinner';
 import React from 'react';
 
 import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Box,
   Typography,
 } from '@mui/material';
 
@@ -16,9 +18,9 @@ export default function DataContainer({
   maxDate,
   minDate,
 }: {
-  dockId: number | undefined;
-  maxDate: Date;
-  minDate: Date;
+  dockId: number;
+  maxDate: Date | undefined;
+  minDate: Date | undefined;
 }) {
   const [accordionOpen, setAccordionOpen] = React.useState(false);
 
@@ -33,7 +35,19 @@ export default function DataContainer({
       </AccordionSummary>
 
       <AccordionDetails>
-        <ChartContainer dockId={dockId} maxDate={maxDate} minDate={minDate} />
+        {minDate && maxDate ? (
+          <ChartContainer dockId={dockId} maxDate={maxDate} minDate={minDate} />
+        ) : (
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <LoadingSpinner />
+          </Box>
+        )}
       </AccordionDetails>
     </Accordion>
   );

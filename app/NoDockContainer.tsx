@@ -11,7 +11,7 @@ import {
   Typography,
 } from '@mui/material';
 
-export default function DataContainer({
+export default function NoDockContainer({
   dockId,
   maxDate,
   minDate,

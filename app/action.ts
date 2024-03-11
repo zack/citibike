@@ -10,20 +10,14 @@ export type DockData = {
   year: number;
 }[];
 
-export interface ToplineData {
+export interface DockTimeframe {
   firstDate: Date;
-  firstElectricDate: Date | undefined;
   lastDate: Date;
-  trips: {
-    acoustic: number;
-    electric: number;
-  };
-  tripsSinceFirstElectric: number;
 }
 
-export async function getToplineData(
+export async function getDockTimeframe(
   dockId: number,
-): Promise<ToplineData | undefined> {
+): Promise<DockTimeframe | undefined> {
   const first = await prisma.dockDay.findFirst({
     where: { dockId },
     orderBy: [{ year: 'asc' }, { month: 'asc' }, { day: 'asc' }],
@@ -34,6 +28,31 @@ export async function getToplineData(
     orderBy: [{ year: 'desc' }, { month: 'desc' }, { day: 'desc' }],
   });
 
+  if (first && last) {
+    const firstDate = new Date(first.year, first.month - 1, first.day);
+    const lastDate = new Date(last.year, last.month - 1, last.day);
+
+    return {
+      firstDate,
+      lastDate,
+    };
+  } else {
+    return undefined;
+  }
+}
+
+export interface ToplineData {
+  firstElectricDate: Date | undefined;
+  trips: {
+    acoustic: number;
+    electric: number;
+  };
+  tripsSinceFirstElectric: number;
+}
+
+export async function getToplineData(
+  dockId: number,
+): Promise<ToplineData | undefined> {
   const firstElectric = await prisma.dockDay.findFirst({
     where: {
       dockId,
@@ -60,28 +79,20 @@ export async function getToplineData(
       })
     : { _sum: { electric: 0, acoustic: 0 } };
 
-  if (first && last && trips) {
-    const firstDate = new Date(first.year, first.month - 1, first.day);
-    const lastDate = new Date(last.year, last.month - 1, last.day);
-    const firstElectricDate = firstElectric
-      ? new Date(firstElectric.year, firstElectric.month - 1, firstElectric.day)
-      : undefined;
+  const firstElectricDate = firstElectric
+    ? new Date(firstElectric.year, firstElectric.month - 1, firstElectric.day)
+    : undefined;
 
-    return {
-      firstDate,
-      firstElectricDate,
-      lastDate,
-      trips: {
-        acoustic: trips._sum.acoustic ?? 0,
-        electric: trips._sum.electric ?? 0,
-      },
-      tripsSinceFirstElectric:
-        (tripsSinceFirstElectric._sum.electric ?? 0) +
-        (tripsSinceFirstElectric._sum.acoustic ?? 0),
-    };
-  } else {
-    return undefined;
-  }
+  return {
+    firstElectricDate,
+    trips: {
+      acoustic: trips._sum.acoustic ?? 0,
+      electric: trips._sum.electric ?? 0,
+    },
+    tripsSinceFirstElectric:
+      (tripsSinceFirstElectric._sum.electric ?? 0) +
+      (tripsSinceFirstElectric._sum.acoustic ?? 0),
+  };
 }
 
 export async function getDockData(
@@ -138,25 +149,4 @@ export async function getDockData(
 export async function getDocks() {
   const queryResults = await prisma.dock.findMany({});
   return queryResults;
-}
-
-export async function getDateBounds() {
-  const end = await prisma.dockDay.findFirst({
-    orderBy: [{ year: 'desc' }, { month: 'desc' }, { day: 'desc' }],
-  });
-  const start = await prisma.dockDay.findFirst({
-    orderBy: [{ year: 'asc' }, { month: 'asc' }, { day: 'asc' }],
-  });
-
-  if (end === null || start === null) {
-    throw 'something went wrong';
-  }
-
-  const maxDate = new Date(`${end.year}-${end.month}-${end.day}`);
-  const minDate = new Date(`${start.year}-${start.month}-${start.day}`);
-
-  return {
-    maxDate,
-    minDate,
-  };
 }
