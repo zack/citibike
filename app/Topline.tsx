@@ -90,7 +90,7 @@ export default function Topline({
             alignItems: 'flex-start',
             display: 'flex',
             flexWrap: 'wrap',
-            gap: 1,
+            gap: 3,
             justifyContent: 'space-around',
             marginBottom: 4,
             width: '100%',
