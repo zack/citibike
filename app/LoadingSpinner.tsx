@@ -8,7 +8,7 @@ export default function LoadingSpinner() {
       <Image
         className='swing'
         alt='loading spinner'
-        src='/citibike-loader.png'
+        src='/citibike-loader.svg'
         width={200}
         height={111}
       />
