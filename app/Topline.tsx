@@ -63,8 +63,8 @@ export default function Topline({
 
     return (
       <>
-        <Box sx={{ marginTop: 3, marginBottom: -1 }}>
-          <Typography fontSize='2rem' lineHeight='2rem'>
+        <Box sx={{ marginY: 3 }}>
+          <Typography fontSize='2rem'>
             <>
               The dock at
               <Bold>{` ${dockName} `}</Bold>
@@ -92,7 +92,7 @@ export default function Topline({
             flexWrap: 'wrap',
             gap: 1,
             justifyContent: 'space-around',
-            marginBottom: 1,
+            marginBottom: 5,
             pt: 1,
             width: '100%',
           }}
@@ -117,6 +117,7 @@ export default function Topline({
               trips on eBikes
               <Tooltip title={eBikeTooltipTitle}>
                 <Typography
+                  tabIndex={0}
                   sx={{
                     color: '#0034DF',
                     cursor: 'pointer',
