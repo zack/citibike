@@ -91,6 +91,7 @@ export default function DataContainer({
     Granularity.Monthly,
   );
 
+  const scrollRef = React.useRef<null | HTMLDivElement>();
   const daily = granularity === Granularity.Daily;
 
   // There's a lot going on with these useEffects. Basically what's going on is
@@ -138,6 +139,7 @@ export default function DataContainer({
       getDockData(dockId, daily, startDate, endDate).then((newDockData) => {
         setDockData(newDockData);
         setIsLoading(false);
+        scrollRef.current?.scrollIntoView();
       });
     }
   }, [daily, dockId, endDate, startDate]);
@@ -178,6 +180,7 @@ export default function DataContainer({
                 value={selection}
                 onChange={(e, v) => {
                   setSelection(v);
+                  scrollRef.current?.scrollIntoView();
                 }}
                 aria-label='data view options'
               >
@@ -208,6 +211,7 @@ export default function DataContainer({
             </Box>
           )}
         </AccordionDetails>
+        <Box ref={scrollRef} />
       </Accordion>
     </>
   );
