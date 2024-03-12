@@ -166,6 +166,14 @@ async function concatenateFiles() {
       .filter((file) => file.indexOf(month) > -1)
       .map((file) => `${TMP_DIR}/${file}`);
 
+    // You're never going to believe me but we've started having an issue with
+    // the final lines of the csv files being truncated. I don't care enough
+    // about (roughly) 1 in 100,000 trips, so I'm just going to delete the last
+    // line of each file to be safe.
+    for (const file of thisMonthAbsoluteFiles) {
+      exec(`tail -n 1 ${file} | wc -c | xargs -I {} truncate ${file} -s -{}`);
+    }
+
     concat(thisMonthAbsoluteFiles, newFileName, () => {
       exec(`dos2unix ${newFileName}`);
       thisMonthAbsoluteFiles.forEach((file) => {
