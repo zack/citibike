@@ -82,6 +82,7 @@ export default function Main({ docks }: { docks: Dock[] }) {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
+            height: '700px',
           }}
         >
           <LoadingSpinner />

@@ -63,7 +63,7 @@ export default function ChartContainer({
           display: isLoading ? 'flex' : 'none',
           justifyContent: 'center',
           alignItems: 'center',
-          height: '100%',
+          height: '500px',
         }}
       >
         <LoadingSpinner />
