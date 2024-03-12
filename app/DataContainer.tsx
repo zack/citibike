@@ -6,6 +6,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Granularity } from './Main';
 import LoadingSpinner from './LoadingSpinner';
 import React from 'react';
+import Table from './Table';
 
 import {
   Accordion,
@@ -173,6 +174,7 @@ export default function DataContainer({
           {minDate && maxDate ? (
             <Box sx={{ width: '100%' }}>
               <Tabs
+                sx={{ my: 2 }}
                 value={selection}
                 onChange={(e, v) => {
                   setSelection(v);
@@ -191,7 +193,7 @@ export default function DataContainer({
               </TabPanel>
 
               <TabPanel value={selection} index={1}>
-                <Typography> Table </Typography>
+                <Table isLoading={isLoading} dockData={dockData} />
               </TabPanel>
             </Box>
           ) : (

@@ -1,9 +1,10 @@
 'use client';
 
+import { Box } from '@mui/material';
 import Chart from './Chart';
 import { ChartData } from './DataContainer';
-import ChartLoadingContainer from './ChartLoadingContainer';
 import { DockData } from './action';
+import LoadingSpinner from './LoadingSpinner';
 import React from 'react';
 import { format as formatDate } from 'date-fns';
 
@@ -51,8 +52,23 @@ export default function ChartContainer({
     );
 
   return (
-    <ChartLoadingContainer isLoading={isLoading}>
-      <Chart daily={daily} chartData={chartData} />
-    </ChartLoadingContainer>
+    // I know this looks like a really weird and stupid way to handle an
+    // if/else for display, but it solves the issue of the spinner component
+    // taking a long time to load when the user switches granularity from
+    // 'Monthly' to 'Daily' on a massive dataset. This approach makes the
+    // loader show up much more quickly since it's already rendered.
+    <>
+      <Box
+        sx={{
+          display: isLoading ? 'flex' : 'none',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100%',
+        }}
+      >
+        <LoadingSpinner />
+      </Box>
+      {isLoading ? null : <Chart daily={daily} chartData={chartData} />}
+    </>
   );
 }
