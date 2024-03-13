@@ -44,6 +44,7 @@
     "@types/react-dom": "18.2.7",
     "@vercel/analytics": "^1.1.0",
     "adm-zip": "^0.5.10",
+    "autosuggest-highlight": "^3.3.4",
     "concat-files": "^0.1.1",
     "date-fns": "^2.30.0",
     "immer": "^10.0.2",
@@ -56,6 +57,7 @@
   "devDependencies": {
     "@next/eslint-plugin-next": "^13.4.19",
     "@stylistic/eslint-plugin-js": "^1.6.3",
+    "@types/autosuggest-highlight": "^3.2.3",
     "@types/node": "^20.5.7",
     "@typescript-eslint/eslint-plugin": "^6.5.0",
     "@typescript-eslint/parser": "^6.5.0",

@@ -3,6 +3,8 @@
 import DataContainer from './DataContainer';
 import LoadingSpinner from './LoadingSpinner';
 import Topline from './Topline';
+import match from 'autosuggest-highlight/match';
+import parse from 'autosuggest-highlight/parse';
 import { Autocomplete, Box, Chip, TextField, Typography } from '@mui/material';
 import { DockTimeframe, getDockTimeframe } from './action';
 import React, { SyntheticEvent } from 'react';
@@ -62,10 +64,25 @@ export default function Main({ docks }: { docks: Dock[] }) {
         renderInput={(p) => (
           <TextField {...p} label='Dock' InputLabelProps={{ shrink: true }} />
         )}
-        renderOption={(props, option) => {
+        renderOption={(props, option, { inputValue }) => {
+          const matches = match(option, inputValue, {
+            insideWords: true,
+          });
+          const parts = parse(option, matches);
+
           return (
             <li {...props} key={option}>
-              {option}
+              {parts.map((part, index) => (
+                <span
+                  key={index}
+                  style={{
+                    whiteSpace: 'pre',
+                    fontWeight: part.highlight ? 700 : 400,
+                  }}
+                >
+                  {part.text}
+                </span>
+              ))}
             </li>
           );
         }}
