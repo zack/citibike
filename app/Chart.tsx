@@ -42,13 +42,11 @@ export default function Chart({
   }
 
   return (
-    <ResponsiveContainer height={500}>
+    <ResponsiveContainer height={570}>
       <BarChart
         style={{
           fontFamily: ubuntuMonoFontFamily,
         }}
-        width={800}
-        height={500}
         barCategoryGap={daily ? '1%' : '10%'}
         data={chartData}
         margin={{
@@ -59,7 +57,13 @@ export default function Chart({
         }}
       >
         <CartesianGrid strokeDasharray='3 3' />
-        <XAxis dataKey='name' />
+        <XAxis
+          dataKey='name'
+          angle={-45}
+          tickMargin={daily ? 29 : 22}
+          dx={daily ? -26 : -23}
+          height={70}
+        />
         <YAxis />
         <Tooltip
           cursor={{ fill: '#EEE' }}
