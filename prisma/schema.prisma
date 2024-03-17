@@ -10,20 +10,25 @@ datasource db {
 }
 
 model Dock {
-  id   Int       @id @default(autoincrement())
-  name String    @unique
-  days DockDay[] @relation("dockId")
+  id                Int       @id @default(autoincrement())
+  borough           String?
+  communityDistrict Int?
+  councilDistrict   Int?
+  days              DockDay[] @relation("dockId")
+  latitude          String
+  longitude         String
+  name              String    @unique
 }
 
 model DockDay {
   id       Int  @id @default(autoincrement())
+  acoustic Int
   day      Int
+  dock     Dock @relation("dockId", fields: [dockId], references: [id])
+  dockId   Int
+  electric Int
   month    Int
   year     Int
-  dock     Dock @relation("dockId", fields: [dockId], references: [id])
-  acoustic Int
-  electric Int
-  dockId   Int
 
   @@unique([day, month, year, dockId])
   @@index(fields: [dockId])

@@ -6,6 +6,8 @@ import { exec } from 'child_process';
 import { finished } from 'stream/promises';
 import fs from 'fs';
 import { parse } from 'csv-parse';
+import { stringify } from 'csv-stringify';
+import util from 'node:util';
 
 const prisma = new PrismaClient();
 const TMP_DIR = process.env.TMP_DIR;
@@ -71,44 +73,92 @@ async function seedDocks(file: string, dateStr: string, length: number) {
     total: length,
   });
 
-  const docks = new Set<string>();
+  const docks: Record<string, { latitude: string; longitude: string }> = {};
+
   parser.on('readable', async () => {
     let record;
 
     while ((record = parser.read()) !== null) {
-      // There are extra header rows left over because of the way we
-      // concatenated the files in the downloader script. Skip those.
       if (
-        record.ride_id !== 'ride_id'
+        record.ride_id === 'ride_id'
+        || record.tripduration === 'tripduration'
         || record.starttime === 'starttime'
         || record['Start Time'] === 'Start Time'
       ) {
-        // old data name vs new data name
-        const start_station_name =
-          record.start_station_name
-          ?? record['start station name']
-          ?? record['Start Station Name'];
-        const end_station_name =
-          record.end_station_name
-          ?? record['end station name']
-          ?? record['End Station Name'];
-
-        if (
-          start_station_name !== undefined
-          && start_station_name !== ''
-          && start_station_name !== 'NULL'
-        ) {
-          docks.add(start_station_name.normalize('NFKC'));
-        }
-
-        if (
-          end_station_name !== undefined
-          && end_station_name !== ''
-          && end_station_name !== 'NULL'
-        ) {
-          docks.add(end_station_name.normalize('NFKC'));
-        }
+        // There are extra header rows left over because of the way we
+        // concatenated the files in the downloader script. Skip those.
+        // Use a different check for the different formats we see in different
+        // files.
+        continue;
       }
+
+      // old data name vs new data name
+      const start_station_name =
+        record.start_station_name
+        ?? record['start station name']
+        ?? record['Start Station Name'];
+      const start_station_latitude =
+        record['start station latitude']
+        ?? record['Start Station Latitude']
+        ?? record.start_lat;
+      const start_station_longitude =
+        record['start station longitude']
+        ?? record['Start Station Longitude']
+        ?? record.start_lng;
+
+      if (
+        // There are a few different docks that include this string in the data
+        // that we don't want to include. It's test data and somtimes
+        // malformed anyway.
+        !start_station_name.includes('Lab - NYC')
+        // Sometimes there are just malformed lines with missing dock names
+        && start_station_name !== undefined
+        && start_station_name !== ''
+        && start_station_name !== 'NULL'
+        // Sometimes docks have lats or lons or 0.0. I don't know why, but we
+        // don't want them
+        && start_station_latitude !== '0.0'
+        && start_station_longitude !== '0.0'
+      ) {
+        docks[start_station_name.normalize('NFKC')] = {
+          latitude: start_station_latitude,
+          longitude: start_station_longitude,
+        };
+      }
+
+      const end_station_name =
+        record.end_station_name
+        ?? record['end station name']
+        ?? record['End Station Name'];
+      const end_station_latitude =
+        record['end station latitude']
+        ?? record['End Station Latitude']
+        ?? record.end_lat;
+      const end_station_longitude =
+        record['end station longitude']
+        ?? record['End Station Longitude']
+        ?? record.end_lng;
+
+      if (
+        // There are a few different docks that include this string in the data
+        // that we don't want to include. It's test data and somtimes
+        // malformed anyway.
+        !end_station_name.includes('Lab - NYC')
+        // Sometimes there are just malformed lines with missing dock names
+        && end_station_name !== undefined
+        && end_station_name !== ''
+        && end_station_name !== 'NULL'
+        // Sometimes docks have lats or lons or 0.0. I don't know why, but we
+        // don't want them
+        && end_station_latitude !== '0.0'
+        && end_station_longitude !== '0.0'
+      ) {
+        docks[end_station_name.normalize('NFKC')] = {
+          latitude: end_station_latitude,
+          longitude: end_station_longitude,
+        };
+      }
+
       progressBar.tick();
     }
   });
@@ -118,9 +168,13 @@ async function seedDocks(file: string, dateStr: string, length: number) {
     // with an empty string for a name being recorded. Delete this. Elsewhere
     // in the code we'll prevent trip data for the empty dock from being
     // entered.
-    docks.delete('');
+    delete docks[''];
     await prisma.dock.createMany({
-      data: [...docks].map((dock) => ({ name: dock })),
+      data: Object.keys(docks).map((dockName) => ({
+        latitude: docks[dockName].latitude,
+        longitude: docks[dockName].longitude,
+        name: dockName,
+      })),
       skipDuplicates: true,
     });
   });
@@ -188,7 +242,8 @@ async function seedDays(fileDateStr: string, file: string, length: number) {
         continue;
       }
 
-      const electric = record.rideable_type === 'electric_bike';
+      const electric =
+        record.rideable_type && record.rideable_type === 'electric_bike';
 
       const start_station_name = (
         record.start_station_name
@@ -213,27 +268,36 @@ async function seedDays(fileDateStr: string, file: string, length: number) {
         ) {
           const dockId = dockMap[stationName];
 
-          if (processedData[dockId] && processedData[dockId][dateStr]) {
-            if (electric) {
-              processedData[dockId][dateStr].electric += 1;
+          // Get rid of trips without an associated dock. This happens when
+          // there is the occasional trip associated with a fake or temporary
+          // dock. These docks didn't have latitude or longitude. I don't know
+          // why Citibike's data is so gross.
+          //
+          // Sorry to my freshman Comp Sci Fundamentals professor about all the
+          // nested `if` statements.
+          if (dockId) {
+            if (processedData[dockId] && processedData[dockId][dateStr]) {
+              if (electric) {
+                processedData[dockId][dateStr].electric += 1;
+              } else {
+                processedData[dockId][dateStr].acoustic += 1;
+              }
+            } else if (processedData[dockId]) {
+              if (electric) {
+                processedData[dockId][dateStr] = { electric: 1, acoustic: 0 };
+              } else {
+                processedData[dockId][dateStr] = { electric: 0, acoustic: 1 };
+              }
             } else {
-              processedData[dockId][dateStr].acoustic += 1;
-            }
-          } else if (processedData[dockId]) {
-            if (electric) {
-              processedData[dockId][dateStr] = { electric: 1, acoustic: 0 };
-            } else {
-              processedData[dockId][dateStr] = { electric: 0, acoustic: 1 };
-            }
-          } else {
-            if (electric) {
-              processedData[dockId] = {
-                [dateStr]: { electric: 1, acoustic: 0 },
-              };
-            } else {
-              processedData[dockId] = {
-                [dateStr]: { electric: 0, acoustic: 1 },
-              };
+              if (electric) {
+                processedData[dockId] = {
+                  [dateStr]: { electric: 1, acoustic: 0 },
+                };
+              } else {
+                processedData[dockId] = {
+                  [dateStr]: { electric: 0, acoustic: 1 },
+                };
+              }
             }
           }
         }
@@ -248,21 +312,60 @@ async function seedDays(fileDateStr: string, file: string, length: number) {
       const dockData = processedData[dockId];
       const dates: string[] = Object.keys(dockData);
 
-      const rows = dates.map((date: string) => {
-        // TODO: ZACK PUT THIS BACK
-
-        return {
+      await prisma.dockDay.createMany({
+        data: dates.map((date: string) => ({
           acoustic: dockData[date].acoustic,
           day: parseInt(date.slice(8, 10)),
           dockId: parseInt(dockId),
           electric: dockData[date].electric,
           month: parseInt(date.slice(5, 7)),
           year: parseInt(date.slice(0, 4)),
-        };
+        })),
       });
+    }
+  });
+}
 
-      await prisma.dockDay.createMany({
-        data: rows,
+// Add borough, community district, and council district to the docks. Makes
+// ues of an external python script.
+async function updateDockExtras() {
+  console.log('Updating dock extras...');
+
+  const docks = await prisma.dock.findMany({});
+
+  const columns = ['name', 'latitude', 'longitude'];
+  const filename = `${TMP_DIR}/docks.csv`;
+  const writableStream = fs.createWriteStream(filename);
+  const stringifier = stringify({ header: true, columns: columns });
+
+  docks.forEach((dock) => {
+    stringifier.write({
+      name: dock.name,
+      latitude: dock.latitude,
+      longitude: dock.longitude,
+    });
+  });
+
+  stringifier.pipe(writableStream);
+
+  const execPromise = util.promisify(exec);
+  await execPromise('python3 scripts/embellishDockData.py');
+
+  const parser = fs
+    .createReadStream(`${TMP_DIR}/docks_completed.csv`)
+    .pipe(parse({ columns: true, trim: true }));
+
+  parser.on('readable', async () => {
+    let record;
+
+    while ((record = parser.read()) !== null) {
+      await prisma.dock.update({
+        where: { name: record.name },
+        data: {
+          borough: record.borough,
+          communityDistrict: parseInt(record.communityDistrict),
+          councilDistrict: parseInt(record.councilDistrict),
+        },
       });
     }
   });
@@ -273,7 +376,11 @@ exec(`wc -l ${TMP_DIR}/*`, (error, stdout) => {
     .split('\n')
     .map((l) => l.trim().split(' '))
     .filter((l) => {
-      return l.length === 2 && l[1] !== 'total';
+      return (
+        l.length === 2
+        && l[1] !== 'total'
+        && l[1].match(new RegExp(`${TMP_DIR}/\\d+\\.csv$`)) !== null
+      );
     });
 
   const files: Record<string, number> = {};
@@ -282,6 +389,9 @@ exec(`wc -l ${TMP_DIR}/*`, (error, stdout) => {
   });
 
   processFiles(files)
+    .then(async () => {
+      updateDockExtras();
+    })
     .then(async () => {
       console.log('disconnecting');
       await prisma.$disconnect();
