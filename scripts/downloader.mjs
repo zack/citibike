@@ -82,15 +82,15 @@ async function getFilesNewerThanNewestData(
 
     return (
       // A whole yearly rollup file of a year ahead of any data we have
-      (fileIsYearly && fileYear > mostRecentYear) ||
+      (fileIsYearly && fileYear > mostRecentYear)
       // A yearly file for a year that we haven't yet completed
-      (fileIsYearly && fileYear === mostRecentYear && mostRecentMonth < 12) ||
+      || (fileIsYearly && fileYear === mostRecentYear && mostRecentMonth < 12)
       // A monthly file in a year for which we currently have no data
-      (fileIsMonthly && fileYear > mostRecentYear) ||
+      || (fileIsMonthly && fileYear > mostRecentYear)
       // A monthly file for a year, but not a month, in which we have data
-      (fileIsMonthly &&
-        fileYear === mostRecentYear &&
-        fileMonth > mostRecentMonth)
+      || (fileIsMonthly
+        && fileYear === mostRecentYear
+        && fileMonth > mostRecentMonth)
     );
   });
 }

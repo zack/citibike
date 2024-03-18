@@ -45,8 +45,8 @@ export default function ChartContainer({
       year: data.year,
     }))
     .sort((a, b) =>
-      `${a.year}${pad(a.month)}${pad(a.day)}` >
-      `${b.year}${pad(b.month)}${pad(b.day)}`
+      `${a.year}${pad(a.month)}${pad(a.day)}`
+      > `${b.year}${pad(b.month)}${pad(b.day)}`
         ? 1
         : -1,
     );

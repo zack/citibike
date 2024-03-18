@@ -15,9 +15,12 @@
   "parser": "@typescript-eslint/parser",
   "plugins": ["@typescript-eslint"],
   "rules": {
-    "sort-imports": ["error", {
-      "memberSyntaxSortOrder": ["none", "all", "single", "multiple"]
-    }],
+    "sort-imports": [
+      "error",
+      {
+        "memberSyntaxSortOrder": ["none", "all", "single", "multiple"]
+      }
+    ],
     "no-console": ["error"],
     "@typescript-eslint/quotes": ["error", "single", { "avoidEscape": true }],
     // The following two lines, combined, prevent eslint from throwing a

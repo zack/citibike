@@ -48,8 +48,9 @@ async function processFiles(files: Record<string, number>) {
     const dateStr = `${year}-${month}`;
 
     if (
-      parseInt(year) > mostRecentYear ||
-      (parseInt(year) === mostRecentYear && parseInt(month) > mostRecentMonth)
+      parseInt(year) > mostRecentYear
+      || (parseInt(year) === mostRecentYear
+        && parseInt(month) > mostRecentMonth)
     ) {
       await seedDocks(file, dateStr, files[file]);
       await seedDays(dateStr, file, files[file]);
@@ -78,32 +79,32 @@ async function seedDocks(file: string, dateStr: string, length: number) {
       // There are extra header rows left over because of the way we
       // concatenated the files in the downloader script. Skip those.
       if (
-        record.ride_id !== 'ride_id' ||
-        record.starttime === 'starttime' ||
-        record['Start Time'] === 'Start Time'
+        record.ride_id !== 'ride_id'
+        || record.starttime === 'starttime'
+        || record['Start Time'] === 'Start Time'
       ) {
         // old data name vs new data name
         const start_station_name =
-          record.start_station_name ??
-          record['start station name'] ??
-          record['Start Station Name'];
+          record.start_station_name
+          ?? record['start station name']
+          ?? record['Start Station Name'];
         const end_station_name =
-          record.end_station_name ??
-          record['end station name'] ??
-          record['End Station Name'];
+          record.end_station_name
+          ?? record['end station name']
+          ?? record['End Station Name'];
 
         if (
-          start_station_name !== undefined &&
-          start_station_name !== '' &&
-          start_station_name !== 'NULL'
+          start_station_name !== undefined
+          && start_station_name !== ''
+          && start_station_name !== 'NULL'
         ) {
           docks.add(start_station_name.normalize('NFKC'));
         }
 
         if (
-          end_station_name !== undefined &&
-          end_station_name !== '' &&
-          end_station_name !== 'NULL'
+          end_station_name !== undefined
+          && end_station_name !== ''
+          && end_station_name !== 'NULL'
         ) {
           docks.add(end_station_name.normalize('NFKC'));
         }
@@ -159,9 +160,9 @@ async function seedDays(fileDateStr: string, file: string, length: number) {
 
     while ((record = parser.read()) !== null) {
       if (
-        record.ride_id === 'ride_id' ||
-        record.starttime === 'starttime' ||
-        record['Start Time'] === 'Start Time'
+        record.ride_id === 'ride_id'
+        || record.starttime === 'starttime'
+        || record['Start Time'] === 'Start Time'
       ) {
         // There are extra header rows left over because of the way we
         // concatenated the files in the downloader script. Skip those.
@@ -190,14 +191,14 @@ async function seedDays(fileDateStr: string, file: string, length: number) {
       const electric = record.rideable_type === 'electric_bike';
 
       const start_station_name = (
-        record.start_station_name ??
-        record['start station name'] ??
-        record['Start Station Name']
+        record.start_station_name
+        ?? record['start station name']
+        ?? record['Start Station Name']
       ).normalize('NFKC');
       const end_station_name = (
-        record.end_station_name ??
-        record['end station name'] ??
-        record['End Station Name']
+        record.end_station_name
+        ?? record['end station name']
+        ?? record['End Station Name']
       ).normalize('NFKC');
 
       [start_station_name, end_station_name].forEach((stationName) => {
@@ -206,9 +207,9 @@ async function seedDays(fileDateStr: string, file: string, length: number) {
         // side of the trip that we know, but we'll drop the other one since we
         // don't have a dock with which to associate that end.
         if (
-          stationName !== '' &&
-          stationName !== 'NULL' &&
-          stationName !== undefined
+          stationName !== ''
+          && stationName !== 'NULL'
+          && stationName !== undefined
         ) {
           const dockId = dockMap[stationName];
 

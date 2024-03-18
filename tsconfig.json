@@ -13,7 +13,11 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "typeRoots": ["./node_modules/@types", "./shared/types", "./environment.d.ts"],
+    "typeRoots": [
+      "./node_modules/@types",
+      "./shared/types",
+      "./environment.d.ts"
+    ],
     "plugins": [
       {
         "name": "next"
