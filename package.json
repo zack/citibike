@@ -72,7 +72,7 @@
     "husky": "^8.0.0",
     "lint-staged": "^15.2.2",
     "postcss": "^8.4.28",
-    "prettier": "^3.2.5",
+    "prettier": "npm:@btmills/prettier@^3.2.5",
     "prisma": "^5.10.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.2.2"

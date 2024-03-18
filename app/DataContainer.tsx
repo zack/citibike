@@ -122,10 +122,10 @@ export default function DataContainer({
   // selection). We want to use those to set the default date range.
   React.useEffect(() => {
     if (
-      minDate &&
-      maxDate &&
-      startDate === undefined &&
-      endDate === undefined
+      minDate
+      && maxDate
+      && startDate === undefined
+      && endDate === undefined
     ) {
       setStartDate(laterDate([minDate, subDate(maxDate, { years: 1 })]));
       setEndDate(maxDate);

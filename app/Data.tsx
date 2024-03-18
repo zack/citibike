@@ -2,11 +2,7 @@ import React from 'react';
 
 import { Box, Container, Paper } from '@mui/material';
 
-export default function Data({
-  isLoading,
-}: {
-  isLoading: boolean;
-}) {
+export default function Data({ isLoading }: { isLoading: boolean }) {
   if (isLoading) {
     return (
       <Box

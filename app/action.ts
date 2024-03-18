@@ -91,8 +91,8 @@ export async function getToplineData(
       electric: trips._sum.electric ?? 0,
     },
     tripsSinceFirstElectric:
-      (tripsSinceFirstElectric._sum.electric ?? 0) +
-      (tripsSinceFirstElectric._sum.acoustic ?? 0),
+      (tripsSinceFirstElectric._sum.electric ?? 0)
+      + (tripsSinceFirstElectric._sum.acoustic ?? 0),
   };
 }
 

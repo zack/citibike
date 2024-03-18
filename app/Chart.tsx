@@ -70,8 +70,8 @@ export default function Chart({
           content={({ active, payload, label }) => {
             if (active && payload && payload.length) {
               const total =
-                parseInt(`${payload[0].value}` ?? '', 10) +
-                parseInt(`${payload[1].value}`, 10);
+                parseInt(`${payload[0].value}` ?? '', 10)
+                + parseInt(`${payload[1].value}`, 10);
 
               return (
                 <Paper elevation={2} sx={{ p: 2 }}>
