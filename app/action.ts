@@ -147,7 +147,7 @@ export async function getDockData(
   }));
 }
 
-export async function getDocks() {
-  const queryResults = await prisma.dock.findMany({});
+export async function getDocks(borough: string) {
+  const queryResults = await prisma.dock.findMany({ where: { borough } });
   return queryResults;
 }

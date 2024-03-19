@@ -14,11 +14,13 @@ function Bold({ children }: { children: string }) {
 }
 
 export default function Topline({
+  borough,
   dockId,
   dockName,
   maxDate,
   minDate,
 }: {
+  borough: string;
   dockId: number;
   dockName: string;
   maxDate: Date;
@@ -72,6 +74,8 @@ export default function Topline({
             <>
               The dock at
               <Bold>{` ${dockName} `}</Bold>
+              in
+              <Bold>{` ${borough} `}</Bold>
               has been used for
               <Bold>{` ${totalTrips.toLocaleString('en-US')} `}</Bold>
               trips between

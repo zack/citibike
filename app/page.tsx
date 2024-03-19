@@ -1,13 +1,10 @@
 import Main from './Main';
 import React from 'react';
 import { exoFontFamily } from './ThemeProvider';
-import { getDocks } from './action';
 
 import { Grid, Typography } from '@mui/material';
 
 export default async function Home() {
-  const docks = await getDocks();
-
   return (
     <main>
       <Grid
@@ -34,7 +31,7 @@ export default async function Home() {
             CitiBike Dock Data
           </Typography>
 
-          <Main docks={docks} />
+          <Main />
         </Grid>
       </Grid>
     </main>
