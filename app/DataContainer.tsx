@@ -148,11 +148,21 @@ export default function DataContainer({
     return null;
   }
 
+  function handleAccordionChange() {
+    setAccordionOpen(!accordionOpen);
+    if (!accordionOpen) {
+      window.setTimeout(
+        () => scrollRef.current?.scrollIntoView({ behavior: 'smooth' }),
+        400,
+      );
+    }
+  }
+
   return (
     <>
       <Accordion
         expanded={accordionOpen}
-        onChange={() => setAccordionOpen(!accordionOpen)}
+        onChange={handleAccordionChange}
         sx={{ marginY: 2 }}
       >
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
