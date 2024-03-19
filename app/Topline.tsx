@@ -75,7 +75,7 @@ export default function Topline({
               The dock at
               <Bold>{` ${dockName} `}</Bold>
               in
-              <Bold>{` ${borough === 'Bronx' ? 'The Bronx' : borough} `}</Bold>
+              <Bold>{` ${borough === 'Bronx' ? 'the Bronx' : borough} `}</Bold>
               has been used for
               <Bold>{` ${totalTrips.toLocaleString('en-US')} `}</Bold>
               trips between
