@@ -100,7 +100,7 @@ async function downloadAndUnzipFiles(
   mostRecentYear,
   mostRecentMonth,
 ) {
-  if (fileNames.length > 0 && !fs.existsSync(TMP_DIR)) {
+  if (!fs.existsSync(TMP_DIR)) {
     fs.mkdirSync(TMP_DIR);
   }
 
