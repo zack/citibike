@@ -121,7 +121,7 @@ export default function Main() {
         <Autocomplete
           sx={{ width: '100%' }}
           id='player'
-          loading={docksLoading}
+          disabled={docksLoading}
           options={['', ...dockNames]}
           value={dock.name}
           onChange={handleDockChange}
@@ -136,8 +136,9 @@ export default function Main() {
                   <React.Fragment>
                     {docksLoading ? (
                       <CircularProgress color='inherit' size={20} />
-                    ) : null}
-                    {p.InputProps.endAdornment}
+                    ) : (
+                      p.InputProps.endAdornment
+                    )}
                   </React.Fragment>
                 ),
               }}
