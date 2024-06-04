@@ -327,7 +327,7 @@ async function seedDays(fileDateStr: string, file: string, length: number) {
 }
 
 // Add borough, community district, and council district to the docks. Makes
-// ues of an external python script.
+// use of an external python script.
 async function updateDockExtras() {
   console.log('Updating dock extras...');
 
@@ -390,7 +390,7 @@ exec(`wc -l ${TMP_DIR}/*`, (error, stdout) => {
 
   processFiles(files)
     .then(async () => {
-      updateDockExtras();
+      await updateDockExtras();
     })
     .then(async () => {
       console.log('disconnecting');
