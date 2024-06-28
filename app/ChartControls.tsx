@@ -1,4 +1,4 @@
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
 import { DatePicker } from '@mui/x-date-pickers';
 import { Granularity } from './Main';
 import { LocalizationProvider } from '@mui/x-date-pickers';
