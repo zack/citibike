@@ -5,7 +5,7 @@ import { Box, ToggleButton, ToggleButtonGroup } from '@mui/material';
 
 import React, { memo } from 'react';
 
-type View = 'dock' | 'borough' | 'community' | 'council';
+type View = 'dock' | 'borough'; // | 'community' | 'council';
 
 export default memo(function ViewPicker() {
   const [view, setView] = React.useState<View>('dock');
@@ -20,7 +20,7 @@ export default memo(function ViewPicker() {
   };
 
   return (
-    <>
+    <Box sx={{ height: '100%' }}>
       <div style={{ display: 'flex', alignItems: 'center' }}>
         <Typography sx={{ marginRight: 1 }}> See data by: </Typography>
         <ToggleButtonGroup
@@ -37,24 +37,16 @@ export default memo(function ViewPicker() {
           <ToggleButton value='borough' aria-label='borough'>
             Borough
           </ToggleButton>
-
-          <ToggleButton value='community' aria-label='community district'>
-            Community District
-          </ToggleButton>
-
-          <ToggleButton value='council' aria-label='council district'>
-            Council District
-          </ToggleButton>
         </ToggleButtonGroup>
       </div>
 
-      <Box sx={{ display: view === 'dock' ? 'block' : 'none' }}>
+      <Box sx={{ display: view === 'dock' ? 'block' : 'none', height: '50vh' }}>
         <DockData />
       </Box>
 
       <Box sx={{ display: view === 'borough' ? 'block' : 'none' }}>
         <BoroughData />
       </Box>
-    </>
+    </Box>
   );
 });

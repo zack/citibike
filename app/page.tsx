@@ -68,7 +68,7 @@ export default memo(function Home() {
           {faq && <FAQ />}
 
           {/* Don't lose state when FAQ is opened */}
-          <Box sx={{ display: faq ? 'none' : 'block' }}>
+          <Box sx={{ display: faq ? 'none' : 'block', height: '100%' }}>
             <ViewPicker />
           </Box>
         </Grid>
