@@ -29,12 +29,12 @@ export default function Table({
     },
     {
       field: 'electric',
-      headerName: 'Trips (Electric)',
+      headerName: 'Trips (electric)',
       flex: 1,
     },
     {
       field: 'total',
-      headerName: 'Trips (Total)',
+      headerName: 'Trips (total)',
       flex: 1,
     },
   ];
