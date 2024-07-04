@@ -54,7 +54,7 @@ export default function Home() {
             <div style={{ display: 'flex-item' }}>
               {faq ? (
                 <StyledButton onClick={() => setFaq(false)}>
-                  <CancelIcon /> <Typography> Cancel </Typography>
+                  <CancelIcon /> <Typography> Back </Typography>
                 </StyledButton>
               ) : (
                 <StyledButton onClick={() => setFaq(true)}>
