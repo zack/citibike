@@ -3,16 +3,17 @@
 import CancelIcon from '@mui/icons-material/Cancel';
 import FAQ from './FAQ';
 import HelpIcon from '@mui/icons-material/Help';
-import Main from './Main';
-import React from 'react';
+import ViewPicker from './ViewPicker';
 
 import { exoFontFamily } from './ThemeProvider';
 
 import styled from '@emotion/styled';
 
-import { Grid, Typography } from '@mui/material';
+import { Box, Grid, Typography } from '@mui/material';
 
-export default function Home() {
+import React, { memo } from 'react';
+
+export default memo(function Home() {
   const [faq, setFaq] = React.useState(false);
 
   return (
@@ -67,14 +68,14 @@ export default function Home() {
           {faq && <FAQ />}
 
           {/* Don't lose state when FAQ is opened */}
-          <div style={{ display: faq ? 'none' : 'block' }}>
-            <Main />
-          </div>
+          <Box sx={{ display: faq ? 'none' : 'block' }}>
+            <ViewPicker />
+          </Box>
         </Grid>
       </Grid>
     </main>
   );
-}
+});
 
 const StyledButton = styled.button`
   background: white;

@@ -1,6 +1,6 @@
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
 import { DatePicker } from '@mui/x-date-pickers';
-import { Granularity } from './Main';
+import { Granularity } from './constants';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import React from 'react';
 import {

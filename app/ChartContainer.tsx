@@ -2,9 +2,9 @@
 
 import { Box } from '@mui/material';
 import Chart from './Chart';
-import { ChartData } from './DataContainer';
-import { DockData } from './action';
+import { ChartData } from './action';
 import LoadingSpinner from './LoadingSpinner';
+import { NamedChartData } from './DataContainer';
 import React from 'react';
 import { format as formatDate } from 'date-fns';
 
@@ -29,13 +29,13 @@ function getDataLabel(day: number | undefined, month: number, year: number) {
 export default function ChartContainer({
   isLoading,
   daily,
-  dockData,
+  data,
 }: {
   isLoading: boolean;
   daily: boolean;
-  dockData: DockData;
+  data: ChartData[];
 }) {
-  const chartData: ChartData[] = dockData
+  const chartData: NamedChartData[] = data
     ?.map((data) => ({
       acoustic: data.acoustic,
       day: data.day,

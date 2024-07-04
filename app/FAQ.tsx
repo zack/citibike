@@ -65,13 +65,15 @@ export default function FAQ() {
         component='h3'
         sx={{ fontFamily: exoFontFamily, marginTop: 2 }}
       >
-        What is a &quot;trip&quot;?
+        What are you counting?
       </Typography>
 
       <Typography>
-        For my graphs and charts, one trip counts as either a docking or an
-        undocking. I consider this the most valuable number because it shows how
-        many times a dock is providing value to someone in a day/month.
+        I&apos;m counting each docking and undocking as an individual use. That means
+        most trips generate two uses, and usually at two different docks. I
+        consider this the most valuable number because it shows how many times a
+        dock is providing value to someone in a day/month. If you are looking
+        for data about trips taken, you will have to find that elsewhere, sorry.
       </Typography>
 
       <Typography
@@ -112,13 +114,13 @@ export default function FAQ() {
       </Typography>
 
       <Typography>
-        I&apos;ll be blunt: CitiBike&apos;s data is pretty messy. Sometimes they move
-        docks and/or change names, which makes the data look kind of weird, but
-        there&apos;s not really anything I can do about that. I also sometimes
-        have to drop trips (a tiny fraction of a percent of trips) because the
-        row is malformed. If you think you&apos;ve found something really wrong,
-        or you&apos;re just not sure, feel free to open a GitHub issue or email
-        me.
+        I&apos;ll be blunt: CitiBike&apos;s data is pretty messy. Sometimes they
+        move docks and/or change names, which makes the data look kind of weird,
+        but there&apos;s not really anything I can do about that. I also
+        sometimes have to drop trips (a tiny fraction of a percent of trips)
+        because the row is malformed. If you think you&apos;ve found something
+        really wrong, or you&apos;re just not sure, feel free to open a GitHub
+        issue or email me.
       </Typography>
 
       <Typography sx={{ marginTop: 2 }}>

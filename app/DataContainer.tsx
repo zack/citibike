@@ -1,9 +1,10 @@
-'use client';
-
+import { BoroughDataFetcherFunction } from './BoroughData';
 import ChartContainer from './ChartContainer';
 import ChartControls from './ChartControls';
+import { ChartData } from './action';
+import { DockDataFetcherFunction } from './DockData';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Granularity } from './Main';
+import { Granularity } from './constants';
 import LoadingSpinner from './LoadingSpinner';
 import React from 'react';
 import Table from './Table';
@@ -17,7 +18,6 @@ import {
   Tabs,
   Typography,
 } from '@mui/material';
-import { DockData, getDockData } from './action';
 import { max as laterDate, sub as subDate } from 'date-fns';
 
 export enum View {
@@ -25,13 +25,10 @@ export enum View {
   Table,
 }
 
-export interface ChartData {
-  acoustic: number;
-  day: number | undefined;
-  electric: number;
-  month: number;
+type DataFetcherFunction = BoroughDataFetcherFunction | DockDataFetcherFunction;
+
+export interface NamedChartData extends ChartData {
   name: string;
-  year: number;
 }
 
 function a11yProps(index: number) {
@@ -63,21 +60,21 @@ function TabPanel({
 }
 
 export default function DataContainer({
-  dockId,
+  dataFetcherFunc,
   maxDate,
   minDate,
+  userSelection, // a dock id, borough, community district, or council district
 }: {
-  dockId: number;
+  dataFetcherFunc: DataFetcherFunction;
   maxDate: Date | undefined;
   minDate: Date | undefined;
+  userSelection: string; // stringifying dockIds just for this component
 }) {
   const [accordionOpen, setAccordionOpen] = React.useState(false);
   const [selection, setSelection] = React.useState<View>(View.Chart);
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
-  const [dockData, setDockData] = React.useState<DockData | undefined>(
-    undefined,
-  );
+  const [data, setData] = React.useState<ChartData[] | undefined>(undefined);
 
   const [endDate, setEndDate] = React.useState<Date | undefined>(maxDate);
   const [startDate, setStartDate] = React.useState<Date | undefined>(() => {
@@ -99,27 +96,27 @@ export default function DataContainer({
   // and also its own inputs (the data range and granularity) but the *parent*
   // component supplies the minimum and maximum dates for for the date pickers.
   // We also want to use the minumum and maximum ranges to set smart defaults
-  // on the datepickers whenever the user loads up a new dock. So the intended
-  // behavior here, from the top down, is:
-  // * When the dockId changes we immediately forget the start and end dates.
-  //   The parent, at this point, will have cleared out the min and max dates,
-  //   so those will also be undefined.
+  // on the datepickers whenever the user loads up a new selection. So the
+  // intended behavior here, from the top down, is:
+  // * When the userSelection changes we immediately forget the start and end
+  //   dates. The parent, at this point, will have cleared out the min and max
+  //   dates, so those will also be undefined.
   // * When the new minDate and maxDate come in from the parent we will set the
   //   startDate and endDate intelligently, using those dates.
-  // * Once we have a start date and an end date for a dock we'll fetch new
-  //   dock data.
+  // * Once we have a start date and an end date for a selection we'll fetch new
+  //   data.
 
-  // When the dockId changes, unload the start and end date so we can get new
-  // ones when those come in. I would like this to be a little more tightly
-  // coupled, but for now this works.
+  // When the userSelection changes, unload the start and end date so we can
+  // get new ones when those come in. I would like this to be a little more
+  // tightly coupled, but for now this works.
   React.useEffect(() => {
     setStartDate(undefined);
     setEndDate(undefined);
-  }, [dockId]);
+  }, [userSelection]);
 
   // This handles the case when we minDate and maxDate come in from the parent
-  // component and is not already set (because we just changed the dock
-  // selection). We want to use those to set the default date range.
+  // component and is not already set (because we just changed the selection).
+  // We want to use those to set the default date range.
   React.useEffect(() => {
     if (
       minDate
@@ -134,17 +131,19 @@ export default function DataContainer({
 
   // If anything about the user's selections changes we should get new data.
   React.useEffect(() => {
-    if (dockId !== undefined && startDate && endDate) {
+    if (userSelection !== undefined && startDate && endDate) {
       setIsLoading(true);
-      getDockData(dockId, daily, startDate, endDate).then((newDockData) => {
-        setDockData(newDockData);
-        setIsLoading(false);
-        scrollRef.current?.scrollIntoView();
-      });
+      dataFetcherFunc(userSelection, granularity, startDate, endDate).then(
+        (newData) => {
+          setData(newData);
+          setIsLoading(false);
+          scrollRef.current?.scrollIntoView();
+        },
+      );
     }
-  }, [daily, dockId, endDate, startDate]);
+  }, [daily, dataFetcherFunc, granularity, endDate, startDate, userSelection]);
 
-  if (dockData === undefined) {
+  if (data === undefined) {
     return null;
   }
 
@@ -201,12 +200,12 @@ export default function DataContainer({
                 <ChartContainer
                   isLoading={isLoading}
                   daily={daily}
-                  dockData={dockData}
+                  data={data}
                 />
               </TabPanel>
 
               <TabPanel value={selection} index={1}>
-                <Table isLoading={isLoading} dockData={dockData} />
+                <Table isLoading={isLoading} data={data} />
               </TabPanel>
             </Box>
           ) : (

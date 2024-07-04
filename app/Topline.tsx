@@ -1,8 +1,8 @@
 import LoadingSpinner from './LoadingSpinner';
 import React from 'react';
+import { ToplineData } from './action';
 import { format as formatDate } from 'date-fns';
 import { Box, Tooltip, Typography } from '@mui/material';
-import { ToplineData, getToplineData } from './action';
 import { differenceInCalendarDays, differenceInCalendarMonths } from 'date-fns';
 
 function Bold({ children }: { children: string }) {
@@ -15,14 +15,14 @@ function Bold({ children }: { children: string }) {
 
 export default function Topline({
   borough,
-  dockId,
+  dataFetcherFunc,
   dockName,
   maxDate,
   minDate,
 }: {
   borough: string;
-  dockId: number;
-  dockName: string;
+  dataFetcherFunc: () => Promise<ToplineData | undefined>;
+  dockName?: string;
   maxDate: Date;
   minDate: Date;
 }) {
@@ -30,14 +30,14 @@ export default function Topline({
   const [isLoading, setIsLoading] = React.useState(false);
 
   React.useEffect(() => {
-    if (dockId !== undefined) {
+    if (borough || dockName) {
       setIsLoading(true);
-      getToplineData(dockId).then((newData) => {
+      dataFetcherFunc().then((newData) => {
         setData(newData);
         setIsLoading(false);
       });
     }
-  }, [dockId, minDate, maxDate]);
+  }, [borough, dataFetcherFunc, dockName, minDate, maxDate]);
 
   if (isLoading) {
     return (
@@ -64,21 +64,39 @@ export default function Topline({
         ? Math.round((data.trips.electric / data.tripsSinceFirstElectric) * 100)
         : 0;
 
-    const eBikeTooltipTitle =
-      'Percent of trips that were on eBikes since this dock saw its first eBike.';
+    let unit;
+    if (dockName) {
+      unit = 'dock';
+    } else if (borough) {
+      unit = 'borough';
+    }
+
+    const eBikeTooltipTitle = `Percent of trips that were on eBikes since this ${unit} saw its first eBike trip.`;
 
     return (
       <>
         <Box sx={{ marginTop: 4, marginBottom: 2 }}>
           <Typography fontSize='2rem'>
             <>
-              The dock at
-              <Bold>{` ${dockName} `}</Bold>
-              in
-              <Bold>{` ${borough === 'Bronx' ? 'the Bronx' : borough} `}</Bold>
-              has been used for
+              {dockName && (
+                <>
+                  The dock at
+                  <Bold>{` ${dockName} `}</Bold>
+                  in
+                  <Bold>{` ${borough === 'Bronx' ? 'the Bronx' : borough} `}</Bold>
+                  has
+                </>
+              )}
+              {!dockName && borough && (
+                <>
+                  Docks in
+                  <Bold>{` ${borough === 'Bronx' ? 'The Bronx' : borough} `}</Bold>
+                  have
+                </>
+              )}{' '}
+              been used
               <Bold>{` ${totalTrips.toLocaleString('en-US')} `}</Bold>
-              trips between
+              times between
               <Bold>{` ${formatDate(minDate, 'MMMM yyyy')} `}</Bold>
               and
               <Bold>{` ${formatDate(maxDate, 'MMMM yyyy')}`}</Bold>.

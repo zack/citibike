@@ -1,9 +1,10 @@
 'use client';
 
+import { ChartData } from './action';
 import DataContainer from './DataContainer';
+import { Granularity } from './constants';
 import LoadingSpinner from './LoadingSpinner';
 import Topline from './Topline';
-import { getDocks } from './action';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
 import {
@@ -18,13 +19,16 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { DockTimeframe, getDockTimeframe } from './action';
-import React, { SyntheticEvent } from 'react';
+import React, { SyntheticEvent, memo } from 'react';
+import { Timeframe, getDockTimeframe } from './action';
+import { getDockData, getDocks, getToplineDockData } from './action';
 
-export enum Granularity {
-  Daily,
-  Monthly,
-}
+export type DockDataFetcherFunction = (
+  dockId: string,
+  granularity: Granularity,
+  startDate: Date,
+  endDate: Date,
+) => Promise<ChartData[]>;
 
 interface Dock {
   id: number;
@@ -39,14 +43,14 @@ function Bold({ children }: { children: string }) {
   );
 }
 
-export default function Main() {
+export default memo(function DockData() {
   const [borough, setBorough] = React.useState<string>('Brooklyn');
   const [docks, setDocks] = React.useState<Dock[]>([]);
   const [dock, setDock] = React.useState<Dock>({ name: '', id: 0 });
   const [docksLoading, setDocksLoading] = React.useState<boolean>(true);
-  const [dockTimeframe, setDockTimeframe] = React.useState<
-    DockTimeframe | undefined
-  >(undefined);
+  const [timeframe, setTimeframe] = React.useState<Timeframe | undefined>(
+    undefined,
+  );
   const [isLoading, setIsLoading] = React.useState(false);
   const dockNames = docks.map((d) => d.name).sort((a, b) => (a > b ? 1 : -1));
 
@@ -79,13 +83,27 @@ export default function Main() {
   React.useEffect(() => {
     if (dock.name !== '') {
       setIsLoading(true);
-      setDockTimeframe(undefined);
+      setTimeframe(undefined);
       getDockTimeframe(dock.id).then((newData) => {
-        setDockTimeframe(newData);
+        setTimeframe(newData);
         setIsLoading(false);
       });
     }
   }, [dock]);
+
+  const toplineFetcherFunc = () => {
+    return getToplineDockData(dock.id);
+  };
+
+  const dataFetcherFunc: DockDataFetcherFunction = (
+    dockId: string,
+    granularity: Granularity,
+    startDate: Date,
+    endDate: Date,
+  ) => {
+    const daily = granularity === Granularity.Daily;
+    return getDockData(parseInt(dockId), daily, startDate, endDate);
+  };
 
   return (
     <>
@@ -186,7 +204,7 @@ export default function Main() {
         </Box>
       )}
 
-      {!isLoading && (dock.name === '' || dockTimeframe === undefined) && (
+      {!isLoading && (dock.name === '' || timeframe === undefined) && (
         <Box
           sx={{
             display: 'flex',
@@ -203,25 +221,26 @@ export default function Main() {
         </Box>
       )}
 
-      {!isLoading && dock.name !== '' && dockTimeframe !== undefined && (
+      {!isLoading && dock.name !== '' && timeframe !== undefined && (
         <Topline
           borough={borough}
-          dockId={dock.id}
+          dataFetcherFunc={toplineFetcherFunc}
           dockName={dock.name}
-          minDate={dockTimeframe.firstDate}
-          maxDate={dockTimeframe.lastDate}
+          maxDate={timeframe.lastDate}
+          minDate={timeframe.firstDate}
         />
       )}
 
       {dock.name && (
         <Box sx={{ paddingBottom: 5 }}>
           <DataContainer
-            minDate={dockTimeframe?.firstDate}
-            maxDate={dockTimeframe?.lastDate}
-            dockId={dock.id}
+            dataFetcherFunc={dataFetcherFunc}
+            maxDate={timeframe?.lastDate}
+            minDate={timeframe?.firstDate}
+            userSelection={`${dock.id}`}
           />
         </Box>
       )}
     </>
   );
-}
+});

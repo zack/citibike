@@ -1,4 +1,4 @@
-import { ChartData } from './DataContainer';
+import { NamedChartData } from './DataContainer';
 import React from 'react';
 
 import {
@@ -21,7 +21,7 @@ export default function Chart({
   chartData,
 }: {
   daily: boolean;
-  chartData: ChartData[];
+  chartData: NamedChartData[];
 }) {
   if (chartData.length === 0) {
     return (
@@ -82,12 +82,16 @@ export default function Chart({
                   >
                     {label}
                   </Typography>
-                  <Typography>total: {total}</Typography>
                   <Typography>
-                    {payload[1].name}: {payload[1].value}
+                    total: {total.toLocaleString('en-US')}
                   </Typography>
                   <Typography>
-                    {payload[0].name}: {payload[0].value}
+                    {payload[1].name}:{' '}
+                    {payload[1].value?.toLocaleString('en-US')}
+                  </Typography>
+                  <Typography>
+                    {payload[0].name}:{' '}
+                    {payload[0].value?.toLocaleString('en-US')}
                   </Typography>
                 </Paper>
               );
