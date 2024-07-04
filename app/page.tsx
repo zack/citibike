@@ -64,7 +64,12 @@ export default function Home() {
             </div>
           </div>
 
-          {faq ? <FAQ /> : <Main />}
+          {faq && <FAQ />}
+
+          {/* Don't lose state when FAQ is opened */}
+          <div style={{ display: faq ? 'none' : 'block' }}>
+            <Main />
+          </div>
         </Grid>
       </Grid>
     </main>
