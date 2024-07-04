@@ -7,6 +7,25 @@ import React from 'react';
 
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 
+interface ChartDataRowBase {
+  acoustic: number;
+  electric: number;
+  id: number;
+  total: number;
+}
+
+interface ChartDataRowDaily extends ChartDataRowBase {
+  date: string;
+  month?: never;
+}
+
+interface ChartDataRowMonthly extends ChartDataRowBase {
+  date?: never;
+  month: string;
+}
+
+type ChartDataRow = ChartDataRowMonthly | ChartDataRowDaily;
+
 export default function Table({
   dockData,
   isLoading,
@@ -39,7 +58,7 @@ export default function Table({
     },
   ];
 
-  const tableData = dockData.map((row) => {
+  const tableData = dockData.map((row): ChartDataRow => {
     const base = {
       acoustic: row.acoustic,
       electric: row.electric,
@@ -53,12 +72,10 @@ export default function Table({
         date: new Date(row.year, row.month - 1, row.day)
           .toISOString()
           .slice(0, 10),
-        month: undefined, // make typescript happy for sorting
       };
     } else {
       return {
         ...base,
-        date: undefined, // make typsecript happy for sorting
         id: new Date(row.year, row.month - 1, 1).getTime(),
         month: new Date(row.year, row.month - 1, 1).toISOString().slice(0, 7),
       };
@@ -71,7 +88,7 @@ export default function Table({
     } else if (a.month && b.month) {
       return b.month.localeCompare(a.month);
     } else {
-      // this shouldn't happen
+      // this should never happen
       return 0;
     }
   });
