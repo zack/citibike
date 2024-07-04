@@ -45,6 +45,7 @@ export default function Table({
       electric: row.electric,
       total: row.acoustic + row.electric,
     };
+
     if (daily) {
       return {
         ...base,
@@ -52,13 +53,26 @@ export default function Table({
         date: new Date(row.year, row.month - 1, row.day)
           .toISOString()
           .slice(0, 10),
+        month: undefined, // make typescript happy for sorting
       };
     } else {
       return {
         ...base,
+        date: undefined, // make typsecript happy for sorting
         id: new Date(row.year, row.month - 1, 1).getTime(),
         month: new Date(row.year, row.month - 1, 1).toISOString().slice(0, 7),
       };
+    }
+  });
+
+  tableData.sort((a, b) => {
+    if (a.date && b.date) {
+      return b.date.localeCompare(a.date);
+    } else if (a.month && b.month) {
+      return b.month.localeCompare(a.month);
+    } else {
+      // this shouldn't happen
+      return 0;
     }
   });
 
