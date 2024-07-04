@@ -1,7 +1,7 @@
 'use client';
 
 import { Box } from '@mui/material';
-import { DockData } from './action';
+import { ChartData } from './action';
 import LoadingSpinner from './LoadingSpinner';
 import React from 'react';
 
@@ -27,13 +27,13 @@ interface ChartDataRowMonthly extends ChartDataRowBase {
 type ChartDataRow = ChartDataRowMonthly | ChartDataRowDaily;
 
 export default function Table({
-  dockData,
+  data,
   isLoading,
 }: {
-  dockData: DockData;
+  data: ChartData[];
   isLoading: boolean;
 }) {
-  const daily = dockData[0].day !== undefined;
+  const daily = data[0].day !== undefined;
 
   const columns: GridColDef[] = [
     {
@@ -58,7 +58,7 @@ export default function Table({
     },
   ];
 
-  const tableData = dockData.map((row): ChartDataRow => {
+  const tableData = data.map((row): ChartDataRow => {
     const base = {
       acoustic: row.acoustic,
       electric: row.electric,
