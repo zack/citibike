@@ -52,7 +52,7 @@ export default function Chart({
         margin={{
           top: 10,
           right: 10,
-          left: -15,
+          left: 10,
           bottom: 10,
         }}
       >
