@@ -41,6 +41,22 @@ export default function Chart({
     );
   }
 
+  const getBarChartLeftMargin = () => {
+    const maxValue = chartData.reduce((memo, val) => {
+      const valSum = val.acoustic + val.electric;
+      return valSum > memo ? valSum : memo;
+    }, -1);
+
+    const widestTickLength = maxValue.toLocaleString('en-US').length;
+    if (widestTickLength < 7) {
+      return 0;
+    } else if (widestTickLength < 9) {
+      return 10;
+    } else {
+      return 20;
+    }
+  };
+
   return (
     <ResponsiveContainer height={570}>
       <BarChart
@@ -52,7 +68,7 @@ export default function Chart({
         margin={{
           top: 10,
           right: 10,
-          left: 10,
+          left: getBarChartLeftMargin(),
           bottom: 10,
         }}
       >
@@ -64,7 +80,7 @@ export default function Chart({
           dx={daily ? -26 : -23}
           height={70}
         />
-        <YAxis />
+        <YAxis tickFormatter={(tick) => tick.toLocaleString('en-US')} />
         <Tooltip
           cursor={{ fill: '#EEE' }}
           content={({ active, payload, label }) => {
