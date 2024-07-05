@@ -118,13 +118,13 @@ export default function Topline({
             <Typography fontSize='4rem' fontWeight='bold'>
               {perMonth.toLocaleString('en-US')}
             </Typography>
-            <Typography sx={{ marginTop: '-1rem' }}>trips per month</Typography>
+            <Typography sx={{ marginTop: '-1rem' }}> uses per month </Typography>
           </Box>
           <Box sx={{ textAlign: 'center' }}>
             <Typography fontSize='4rem' fontWeight='bold'>
               {perDay.toLocaleString('en-US')}
             </Typography>
-            <Typography sx={{ marginTop: '-1rem' }}> trips per day </Typography>
+            <Typography sx={{ marginTop: '-1rem' }}> uses per day </Typography>
           </Box>
           <Box sx={{ textAlign: 'center' }}>
             <Typography fontSize='4rem' fontWeight='bold'>
