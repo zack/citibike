@@ -118,7 +118,7 @@ export default function Topline({
             <Typography fontSize='4rem' fontWeight='bold'>
               {perMonth.toLocaleString('en-US')}
             </Typography>
-            <Typography sx={{ marginTop: '-1rem' }}> uses per month </Typography>
+            <Typography sx={{ marginTop: '-1rem' }}>uses per month</Typography>
           </Box>
           <Box sx={{ textAlign: 'center' }}>
             <Typography fontSize='4rem' fontWeight='bold'>
@@ -131,19 +131,22 @@ export default function Topline({
               {eBikes}%
             </Typography>
             <Typography sx={{ marginTop: '-1rem' }}>
-              on {String.fromCodePoint(0x26a1)}eBikes
+              on{' '}
               <Tooltip title={eBikeTooltipTitle}>
-                <Typography
-                  tabIndex={0}
-                  component='span'
-                  sx={{
-                    color: '#0034DF',
-                    cursor: 'pointer',
-                    display: 'inline',
-                    textDecoration: 'underline',
-                  }}
-                >
-                  *
+                <Typography component='span'>
+                  {String.fromCodePoint(0x26a1)}eBikes
+                  <Typography
+                    tabIndex={0}
+                    component='span'
+                    sx={{
+                      color: '#0034DF',
+                      cursor: 'pointer',
+                      display: 'inline',
+                      textDecoration: 'underline',
+                    }}
+                  >
+                    *
+                  </Typography>
                 </Typography>
               </Tooltip>
             </Typography>
