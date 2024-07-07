@@ -5,9 +5,19 @@ import { format as formatDate } from 'date-fns';
 import { Box, Tooltip, Typography } from '@mui/material';
 import { differenceInCalendarDays, differenceInCalendarMonths } from 'date-fns';
 
-function Bold({ children }: { children: string }) {
+function Bold({
+  children,
+  highlight,
+}: {
+  children: string;
+  highlight?: boolean;
+}) {
   return (
-    <Box component='span' fontWeight='bold'>
+    <Box
+      component='span'
+      fontWeight='bold'
+      sx={{ background: highlight ? '#ED6C02' : 'white' }}
+    >
       {children}
     </Box>
   );
@@ -16,12 +26,14 @@ function Bold({ children }: { children: string }) {
 export default function Topline({
   borough,
   dataFetcherFunc,
+  outOfDate,
   dockName,
   maxDate,
   minDate,
 }: {
   borough: string;
   dataFetcherFunc: () => Promise<ToplineData | undefined>;
+  outOfDate?: boolean;
   dockName?: string;
   maxDate: Date;
   minDate: Date;
@@ -98,8 +110,11 @@ export default function Topline({
               <Bold>{` ${totalTrips.toLocaleString('en-US')} `}</Bold>
               times between
               <Bold>{` ${formatDate(minDate, 'MMMM yyyy')} `}</Bold>
-              and
-              <Bold>{` ${formatDate(maxDate, 'MMMM yyyy')}`}</Bold>.
+              and{' '}
+              <Bold
+                highlight={outOfDate}
+              >{`${formatDate(maxDate, 'MMMM yyyy')}`}</Bold>
+              .
             </>
           </Typography>
         </Box>

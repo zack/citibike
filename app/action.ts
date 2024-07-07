@@ -273,3 +273,14 @@ export async function getDocks(borough: string) {
   const queryResults = await prisma.dock.findMany({ where: { borough } });
   return queryResults;
 }
+
+export async function getMostRecentDateInDatabase() {
+  const queryResults = await prisma.dockDay.findFirst({
+    orderBy: [{ year: 'desc' }, { month: 'desc' }, { day: 'desc' }],
+  });
+
+  return {
+    year: queryResults?.year || 0,
+    month: queryResults?.month || 0,
+  };
+}
