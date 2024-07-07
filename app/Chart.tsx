@@ -19,9 +19,11 @@ import { exoFontFamily, ubuntuMonoFontFamily } from './ThemeProvider';
 export default function Chart({
   daily,
   chartData,
+  foo,
 }: {
   daily: boolean;
   chartData: NamedChartData[];
+  foo: boolean;
 }) {
   const getMaxValueInData = React.useCallback(() => {
     return chartData.reduce((memo, val) => {
