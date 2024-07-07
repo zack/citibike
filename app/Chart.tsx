@@ -23,6 +23,38 @@ export default function Chart({
   daily: boolean;
   chartData: NamedChartData[];
 }) {
+  const getMaxValueInData = React.useCallback(() => {
+    return chartData.reduce((memo, val) => {
+      const valSum = val.acoustic + val.electric;
+      return valSum > memo ? valSum : memo;
+    }, -1);
+  }, [chartData]);
+
+  const maxValueInData = getMaxValueInData();
+
+  const generateTicks = React.useCallback(() => {
+    const powersOfTen = [
+      10, 100, 1_000, 10_000, 100_000, 1_000_000, 10_000_000, 100_000_000,
+    ];
+
+    const powerOfTen = powersOfTen.reduce((memo, power) => {
+      if (memo === 0 && maxValueInData < power * 1.5) {
+        return power;
+      } else {
+        return memo;
+      }
+    }, 0);
+
+    const tickValue = powerOfTen / 10;
+
+    return Array.from(
+      { length: (maxValueInData + tickValue) / tickValue + 1 },
+      (value, index) => index * tickValue,
+    );
+  }, [maxValueInData]);
+
+  const ticks = generateTicks();
+
   if (chartData.length === 0) {
     return (
       <Box
@@ -42,12 +74,7 @@ export default function Chart({
   }
 
   const getBarChartLeftMargin = () => {
-    const maxValue = chartData.reduce((memo, val) => {
-      const valSum = val.acoustic + val.electric;
-      return valSum > memo ? valSum : memo;
-    }, -1);
-
-    const widestTickLength = maxValue.toLocaleString('en-US').length;
+    const widestTickLength = maxValueInData.toLocaleString('en-US').length;
     if (widestTickLength < 7) {
       return 0;
     } else if (widestTickLength < 9) {
@@ -80,7 +107,11 @@ export default function Chart({
           dx={daily ? -26 : -23}
           height={70}
         />
-        <YAxis tickFormatter={(tick) => tick.toLocaleString('en-US')} />
+        <YAxis
+          tickFormatter={(tick) => tick.toLocaleString('en-US')}
+          ticks={ticks}
+          domain={[0, ...ticks.slice(-1)]}
+        />
         <Tooltip
           cursor={{ fill: '#EEE' }}
           content={({ active, payload, label }) => {
