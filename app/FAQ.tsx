@@ -57,7 +57,7 @@ export default function FAQ() {
       </Typography>
 
       <Typography>
-        <a href='https://github.com/zack/citibike'>Here</a>
+        <a href='https://github.com/zack/citibike'>Here</a>.
       </Typography>
 
       <Typography
