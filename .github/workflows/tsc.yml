@@ -1,5 +1,5 @@
-name: 'Node Linter'
-run-name: ${{ github.actor }} is linting Javascript
+name: 'typescript compiler'
+run-name: ${{ github.actor }} is type checking Typescript
 on:
   pull_request:
 jobs:
