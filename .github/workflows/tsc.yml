@@ -1,0 +1,14 @@
+name: 'Typescript Compiler'
+run-name: ${{ github.actor }} is type checking Typescript
+on:
+  pull_request:
+jobs:
+  tsc:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 19.2.0
+    - run: npm ci
+    - run: npx tsc
