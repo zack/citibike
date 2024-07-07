@@ -165,7 +165,7 @@ export default function DataContainer({
         sx={{ marginY: 2 }}
       >
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography> More data </Typography>
+          <Typography>{accordionOpen ? 'Hide ' : 'Show '} more data</Typography>
         </AccordionSummary>
 
         <AccordionDetails>
