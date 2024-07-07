@@ -3,7 +3,7 @@ run-name: ${{ github.actor }} is type checking Typescript
 on:
   pull_request:
 jobs:
-  run-linter:
+  tsc:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
