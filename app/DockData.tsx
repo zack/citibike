@@ -1,6 +1,5 @@
 'use client';
 
-import { ChartData } from './action';
 import DataContainer from './DataContainer';
 import { Granularity } from './constants';
 import LoadingSpinner from './LoadingSpinner';
@@ -8,6 +7,7 @@ import Topline from './Topline';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
 import {
+  Alert,
   Autocomplete,
   Box,
   Chip,
@@ -19,6 +19,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { ChartData, getMostRecentDateInDatabase } from './action';
 import React, { SyntheticEvent, memo } from 'react';
 import { Timeframe, getDockTimeframe } from './action';
 import { getDockData, getDocks, getToplineDockData } from './action';
@@ -45,13 +46,16 @@ function Bold({ children }: { children: string }) {
 
 export default memo(function DockData() {
   const [borough, setBorough] = React.useState<string>('Brooklyn');
-  const [docks, setDocks] = React.useState<Dock[]>([]);
   const [dock, setDock] = React.useState<Dock>({ name: '', id: 0 });
+  const [docks, setDocks] = React.useState<Dock[]>([]);
   const [docksLoading, setDocksLoading] = React.useState<boolean>(true);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [mostRecentMonth, setMostRecentMonth] = React.useState<number>(0);
+  const [mostRecentYear, setMostRecentYear] = React.useState<number>(0);
   const [timeframe, setTimeframe] = React.useState<Timeframe | undefined>(
     undefined,
   );
-  const [isLoading, setIsLoading] = React.useState(false);
+
   const dockNames = docks.map((d) => d.name).sort((a, b) => (a > b ? 1 : -1));
 
   function handleDockChange(event: SyntheticEvent, value: string | null) {
@@ -68,6 +72,16 @@ export default memo(function DockData() {
       }
     }
   }
+
+  React.useEffect(() => {
+    const updateMostRecentMonthAndYear = async () => {
+      const { month, year } = await getMostRecentDateInDatabase();
+      setMostRecentMonth(month);
+      setMostRecentYear(year);
+    };
+
+    updateMostRecentMonthAndYear();
+  }, []);
 
   React.useEffect(() => {
     setDocksLoading(true);
@@ -104,6 +118,14 @@ export default memo(function DockData() {
     const daily = granularity === Granularity.Daily;
     return getDockData(parseInt(dockId), daily, startDate, endDate);
   };
+
+  const dataIsNotUpToDate = !!(
+    timeframe
+    && mostRecentYear
+    && mostRecentMonth
+    && (mostRecentMonth !== timeframe.lastDate.getMonth() + 1
+      || mostRecentYear !== timeframe.lastDate.getFullYear())
+  );
 
   return (
     <>
@@ -192,6 +214,13 @@ export default memo(function DockData() {
         />
       </Box>
 
+      {dataIsNotUpToDate && (
+        <Alert severity='warning' sx={{ mt: 3 }}>
+          <b>Warning:</b> There is no recent data for this dock. It may have
+          been moved, removed, renamed, or perhaps destroyed in a car crash.
+        </Alert>
+      )}
+
       {isLoading && (
         <Box
           sx={{
@@ -228,6 +257,7 @@ export default memo(function DockData() {
           dockName={dock.name}
           maxDate={timeframe.lastDate}
           minDate={timeframe.firstDate}
+          outOfDate={dataIsNotUpToDate}
         />
       )}
 
