@@ -2,6 +2,7 @@ import { BoroughDataFetcherFunction } from './BoroughData';
 import ChartContainer from './ChartContainer';
 import ChartControls from './ChartControls';
 import { ChartData } from './action';
+import { CouncilDistrictDataFetcherFunction } from './CouncilDistrictData';
 import { DockDataFetcherFunction } from './DockData';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Granularity } from './constants';
@@ -25,7 +26,10 @@ export enum View {
   Table,
 }
 
-type DataFetcherFunction = BoroughDataFetcherFunction | DockDataFetcherFunction;
+type DataFetcherFunction =
+  | BoroughDataFetcherFunction
+  | CouncilDistrictDataFetcherFunction
+  | DockDataFetcherFunction;
 
 export interface NamedChartData extends ChartData {
   name: string;

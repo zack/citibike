@@ -25,13 +25,15 @@ function Bold({
 
 export default function Topline({
   borough,
+  councilDistrict,
   dataFetcherFunc,
   outOfDate,
   dockName,
   maxDate,
   minDate,
 }: {
-  borough: string;
+  borough?: string;
+  councilDistrict?: number;
   dataFetcherFunc: () => Promise<ToplineData | undefined>;
   outOfDate?: boolean;
   dockName?: string;
@@ -42,14 +44,14 @@ export default function Topline({
   const [isLoading, setIsLoading] = React.useState(false);
 
   React.useEffect(() => {
-    if (borough || dockName) {
+    if (borough || dockName || councilDistrict) {
       setIsLoading(true);
       dataFetcherFunc().then((newData) => {
         setData(newData);
         setIsLoading(false);
       });
     }
-  }, [borough, dataFetcherFunc, dockName, minDate, maxDate]);
+  }, [borough, councilDistrict, dataFetcherFunc, dockName, minDate, maxDate]);
 
   if (isLoading) {
     return (
@@ -77,7 +79,10 @@ export default function Topline({
         : 0;
 
     let unit;
-    if (dockName) {
+
+    if (councilDistrict) {
+      unit = 'council district';
+    } else if (dockName) {
       unit = 'dock';
     } else if (borough) {
       unit = 'borough';
@@ -99,10 +104,19 @@ export default function Topline({
                   has
                 </>
               )}
-              {!dockName && borough && (
+              {councilDistrict && (
                 <>
                   Docks in
-                  <Bold>{` ${borough === 'Bronx' ? 'The Bronx' : borough} `}</Bold>
+                  <Bold>{` Council District ${councilDistrict} `}</Bold>
+                  in
+                  <Bold>{` ${borough === 'Bronx' ? 'the Bronx' : borough} `}</Bold>
+                  have
+                </>
+              )}
+              {!dockName && !councilDistrict && borough && (
+                <>
+                  Docks in
+                  <Bold>{` ${borough === 'Bronx' ? 'the Bronx' : borough} `}</Bold>
                   have
                 </>
               )}{' '}

@@ -1,11 +1,12 @@
 import BoroughData from './BoroughData';
+import CouncilDistrictData from './CouncilDistrictData';
 import DockData from './DockData';
 import { Typography } from '@mui/material';
 import { Box, ToggleButton, ToggleButtonGroup } from '@mui/material';
 
 import React, { memo } from 'react';
 
-type View = 'dock' | 'borough'; // | 'community' | 'council';
+type View = 'dock' | 'borough' | 'council'; // | 'council';
 
 export default memo(function ViewPicker() {
   const [view, setView] = React.useState<View>('dock');
@@ -30,12 +31,16 @@ export default memo(function ViewPicker() {
           onChange={handleViewChange}
           value={view}
         >
-          <ToggleButton value='dock' aria-label='dock'>
-            Dock
-          </ToggleButton>
-
           <ToggleButton value='borough' aria-label='borough'>
             Borough
+          </ToggleButton>
+
+          <ToggleButton value='council' aria-label='council district'>
+            Council District
+          </ToggleButton>
+
+          <ToggleButton value='dock' aria-label='dock'>
+            Dock
           </ToggleButton>
         </ToggleButtonGroup>
       </div>
@@ -46,6 +51,10 @@ export default memo(function ViewPicker() {
 
       <Box sx={{ display: view === 'borough' ? 'block' : 'none' }}>
         <BoroughData />
+      </Box>
+
+      <Box sx={{ display: view === 'council' ? 'block' : 'none' }}>
+        <CouncilDistrictData />
       </Box>
     </Box>
   );
