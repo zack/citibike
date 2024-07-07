@@ -4,14 +4,12 @@ A website to allow users to look up usage for their favorite CitiBike docks
 
 # Local Setup
 
-(Example commands given for Ubuntu)
-
 ## Database
 
 1. Install postgres
 1. Create a user
    1. `$ sudo -u postgres psql`
-   1. `postgres=# CREATE USER citibike WITH PASSWORD 'citibike'
+   1. `postgres=# CREATE USER citibike WITH PASSWORD 'citibike'`
 1. Create a database and a shadow database
    1. `postgres=# CREATE DATABASE dockdata;`
    1. `postgres=# CREATE DATABASE dockdatashadow;`
