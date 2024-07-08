@@ -102,7 +102,7 @@ export default function FAQ() {
         it at{' '}
         <a href='mailto:citibikedata.nyc@youngren.io'>
           citibikedata.nyc@youngren.io
-        </a>
+        </a>.
       </Typography>
 
       <Typography
