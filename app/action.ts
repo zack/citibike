@@ -2,13 +2,19 @@
 
 import prisma from '@/prisma/db';
 
+interface BoroughSpecifier {
+  dock: {
+    borough: string;
+  };
+}
+
 interface DockSpecifier {
   dockId: number;
 }
 
-interface BoroughSpecifier {
+interface CommunityDistrictSpecifier {
   dock: {
-    borough: string;
+    communityDistrict: number;
   };
 }
 
@@ -19,9 +25,10 @@ interface CouncilDistrictSpecifier {
 }
 
 type WhereSpecifier =
-  | DockSpecifier
   | BoroughSpecifier
-  | CouncilDistrictSpecifier;
+  | CommunityDistrictSpecifier
+  | CouncilDistrictSpecifier
+  | DockSpecifier;
 
 export interface ChartData {
   acoustic: number;
@@ -205,6 +212,42 @@ export async function getCouncilDistricts() {
   return queryResults
     .filter(isValidCouncilDistrict)
     .sort((a, b) => (a.councilDistrict > b.councilDistrict ? 1 : -1));
+}
+
+// This function is extremely messy because for some reason prisma does not
+// correct generate the type for the results where we specified communityDistict
+// is not null. This is a known issue.
+export async function getCommunityDistricts() {
+  interface CommunityDistrictResult {
+    communityDistrict: number | null;
+    borough: string | null;
+  }
+
+  interface ValidCommunityDistrict {
+    communityDistrict: number;
+    borough: string;
+  }
+
+  function isValidCommunityDistrict(
+    obj: CommunityDistrictResult,
+  ): obj is ValidCommunityDistrict {
+    return obj.communityDistrict !== null && obj.borough !== null;
+  }
+
+  const queryResults = await prisma.dock.findMany({
+    select: { communityDistrict: true, borough: true },
+    where: { communityDistrict: { not: null }, borough: { not: null } },
+    distinct: ['communityDistrict'],
+  });
+
+  // For some reason prisma does not correctly generate the type for the results
+  // where we specified communityDistict is not null. This is a known issue.
+  // Further, typescript can't figure out the correct type from a simple
+  // filter, so we need to use the special filtering function and interfaces
+  // from above to get this to work.
+  return queryResults
+    .filter(isValidCommunityDistrict)
+    .sort((a, b) => (a.communityDistrict > b.communityDistrict ? 1 : -1));
 }
 
 export async function getMostRecentDateInDatabase() {
