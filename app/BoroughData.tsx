@@ -5,7 +5,14 @@ import DataContainer from './DataContainer';
 import { Granularity } from './constants';
 import LoadingSpinner from './LoadingSpinner';
 import Topline from './Topline';
-import { Box, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import {
+  Box,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Typography,
+} from '@mui/material';
 import React, { memo } from 'react';
 import {
   Timeframe,
@@ -22,14 +29,14 @@ export type BoroughDataFetcherFunction = (
 ) => Promise<ChartData[]>;
 
 export default memo(function BoroughData() {
-  const [borough, setBorough] = React.useState<string>('Brooklyn');
+  const [borough, setBorough] = React.useState<string | undefined>(undefined);
   const [timeframe, setTimeframe] = React.useState<Timeframe | undefined>(
     undefined,
   );
   const [isLoading, setIsLoading] = React.useState(false);
 
   React.useEffect(() => {
-    if (borough !== '') {
+    if (borough !== undefined) {
       setIsLoading(true);
       setTimeframe(undefined);
       getTimeframeData({ dock: { borough } }).then((newData) => {
@@ -81,7 +88,22 @@ export default memo(function BoroughData() {
         </Box>
       )}
 
-      {!isLoading && timeframe !== undefined && (
+      {!isLoading && (borough === '' || timeframe === undefined) && (
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100%',
+          }}
+        >
+          <Typography>
+            <>Select a borough to see some data.</>
+          </Typography>
+        </Box>
+      )}
+
+      {!isLoading && borough && timeframe !== undefined && (
         <Topline
           borough={borough}
           dataFetcherFunc={() => getToplineData({ dock: { borough } })}
@@ -90,7 +112,7 @@ export default memo(function BoroughData() {
         />
       )}
 
-      {timeframe !== undefined && (
+      {timeframe !== undefined && borough && (
         <Box sx={{ paddingBottom: 5 }}>
           <DataContainer
             dataFetcherFunc={dataFetcherFunc}

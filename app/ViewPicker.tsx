@@ -23,8 +23,10 @@ export default memo(function ViewPicker() {
 
   return (
     <Box sx={{ height: '100%' }}>
-      <div style={{ display: 'flex', alignItems: 'center' }}>
-        <Typography sx={{ marginRight: 1 }}> See data by: </Typography>
+      <div style={{ display: 'inline-block' }}>
+        <Typography sx={{ marginRight: 1, display: 'inline-block' }}>
+          See data by:
+        </Typography>
         <ToggleButtonGroup
           aria-label='view type'
           color='primary'
@@ -50,15 +52,24 @@ export default memo(function ViewPicker() {
         </ToggleButtonGroup>
       </div>
 
-      <Box sx={{ display: view === 'borough' ? 'block' : 'none' }}>
+      <Box
+        sx={{ display: view === 'borough' ? 'block' : 'none', height: '50vh' }}
+      >
         <BoroughData />
       </Box>
 
-      <Box sx={{ display: view === 'community' ? 'block' : 'none' }}>
+      <Box
+        sx={{
+          display: view === 'community' ? 'block' : 'none',
+          height: '50vh',
+        }}
+      >
         <CommunityDistrictData />
       </Box>
 
-      <Box sx={{ display: view === 'council' ? 'block' : 'none' }}>
+      <Box
+        sx={{ display: view === 'council' ? 'block' : 'none', height: '50vh' }}
+      >
         <CouncilDistrictData />
       </Box>
 
