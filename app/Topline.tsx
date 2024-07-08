@@ -25,33 +25,43 @@ function Bold({
 
 export default function Topline({
   borough,
+  communityDistrict,
   councilDistrict,
   dataFetcherFunc,
-  outOfDate,
   dockName,
   maxDate,
   minDate,
+  outOfDate,
 }: {
   borough?: string;
+  communityDistrict?: number;
   councilDistrict?: number;
   dataFetcherFunc: () => Promise<ToplineData | undefined>;
-  outOfDate?: boolean;
   dockName?: string;
   maxDate: Date;
   minDate: Date;
+  outOfDate?: boolean;
 }) {
   const [data, setData] = React.useState<ToplineData | undefined>(undefined);
   const [isLoading, setIsLoading] = React.useState(false);
 
   React.useEffect(() => {
-    if (borough || dockName || councilDistrict) {
+    if (borough || dockName || councilDistrict || communityDistrict) {
       setIsLoading(true);
       dataFetcherFunc().then((newData) => {
         setData(newData);
         setIsLoading(false);
       });
     }
-  }, [borough, councilDistrict, dataFetcherFunc, dockName, minDate, maxDate]);
+  }, [
+    borough,
+    communityDistrict,
+    councilDistrict,
+    dataFetcherFunc,
+    dockName,
+    minDate,
+    maxDate,
+  ]);
 
   if (isLoading) {
     return (
@@ -80,11 +90,14 @@ export default function Topline({
 
     let unit;
 
-    if (councilDistrict) {
+    if (communityDistrict) {
+      unit = 'community district';
+    } else if (councilDistrict) {
       unit = 'council district';
     } else if (dockName) {
       unit = 'dock';
     } else if (borough) {
+      // this needs to be last
       unit = 'borough';
     }
 
@@ -104,6 +117,15 @@ export default function Topline({
                   has
                 </>
               )}
+              {communityDistrict && (
+                <>
+                  Docks in
+                  <Bold>{` Community District ${communityDistrict} `}</Bold>
+                  in
+                  <Bold>{` ${borough === 'Bronx' ? 'the Bronx' : borough} `}</Bold>
+                  have
+                </>
+              )}
               {councilDistrict && (
                 <>
                   Docks in
@@ -113,13 +135,16 @@ export default function Topline({
                   have
                 </>
               )}
-              {!dockName && !councilDistrict && borough && (
-                <>
-                  Docks in
-                  <Bold>{` ${borough === 'Bronx' ? 'the Bronx' : borough} `}</Bold>
-                  have
-                </>
-              )}{' '}
+              {!dockName
+                && !councilDistrict
+                && !communityDistrict
+                && borough && (
+                  <>
+                    Docks in
+                    <Bold>{` ${borough === 'Bronx' ? 'the Bronx' : borough} `}</Bold>
+                    have
+                  </>
+                )}{' '}
               been used
               <Bold>{` ${totalTrips.toLocaleString('en-US')} `}</Bold>
               times between
