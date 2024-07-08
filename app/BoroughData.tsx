@@ -88,7 +88,7 @@ export default memo(function BoroughData() {
         </Box>
       )}
 
-      {!isLoading && (borough === '' || timeframe === undefined) && (
+      {!isLoading && borough === undefined && (
         <Box
           sx={{
             display: 'flex',
