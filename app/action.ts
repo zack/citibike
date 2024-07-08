@@ -1,5 +1,7 @@
 'use server';
 
+import { District } from './constants';
+
 import prisma from '@/prisma/db';
 
 interface BoroughSpecifier {
@@ -179,75 +181,56 @@ export async function getDocks(borough: string) {
 }
 
 // This function is extremely messy because for some reason prisma does not
-// correct generate the type for the results where we specified councilDistict
-// is not null. This is a known issue.
-export async function getCouncilDistricts() {
-  interface CouncilDistrictResult {
-    councilDistrict: number | null;
+// correct generate the type for the results where we specified
+// communityDistict or councilDistrict is not null. This is a known issue.
+export async function getDistricts(type: District) {
+  const selectClause =
+    type === 'community'
+      ? { communityDistrict: true, borough: true }
+      : { councilDistrict: true, borough: true };
+
+  const whereClause =
+    type === 'community'
+      ? { communityDistrict: { not: null }, borough: { not: null } }
+      : { councilDistrict: { not: null }, borough: { not: null } };
+
+  interface DistrictResult {
+    district: number | null;
     borough: string | null;
   }
 
-  interface ValidCouncilDistrict {
-    councilDistrict: number;
+  interface ValidDistrict {
+    district: number;
     borough: string;
   }
 
-  function isValidCouncilDistrict(
-    obj: CouncilDistrictResult,
-  ): obj is ValidCouncilDistrict {
-    return obj.councilDistrict !== null && obj.borough !== null;
+  function isValidDistrict(obj: DistrictResult): obj is ValidDistrict {
+    return obj.district !== null && obj.borough !== null;
   }
 
   const queryResults = await prisma.dock.findMany({
-    select: { councilDistrict: true, borough: true },
-    where: { councilDistrict: { not: null }, borough: { not: null } },
-    distinct: ['councilDistrict'],
+    select: selectClause,
+    where: whereClause,
+    distinct: [`${type}District`],
   });
 
-  // For some reason prisma does not correctly generate the type for the results
-  // where we specified councilDistict is not null. This is a known issue.
-  // Further, typescript can't figure out the correct type from a simple
-  // filter, so we need to use the special filtering function and interfaces
-  // from above to get this to work.
-  return queryResults
-    .filter(isValidCouncilDistrict)
-    .sort((a, b) => (a.councilDistrict > b.councilDistrict ? 1 : -1));
-}
-
-// This function is extremely messy because for some reason prisma does not
-// correct generate the type for the results where we specified communityDistict
-// is not null. This is a known issue.
-export async function getCommunityDistricts() {
-  interface CommunityDistrictResult {
-    communityDistrict: number | null;
-    borough: string | null;
-  }
-
-  interface ValidCommunityDistrict {
-    communityDistrict: number;
-    borough: string;
-  }
-
-  function isValidCommunityDistrict(
-    obj: CommunityDistrictResult,
-  ): obj is ValidCommunityDistrict {
-    return obj.communityDistrict !== null && obj.borough !== null;
-  }
-
-  const queryResults = await prisma.dock.findMany({
-    select: { communityDistrict: true, borough: true },
-    where: { communityDistrict: { not: null }, borough: { not: null } },
-    distinct: ['communityDistrict'],
-  });
+  const transformedResults = queryResults.map((r) => ({
+    district: r.communityDistrict ?? r.councilDistrict,
+    borough: r.borough,
+  }));
 
   // For some reason prisma does not correctly generate the type for the results
   // where we specified communityDistict is not null. This is a known issue.
   // Further, typescript can't figure out the correct type from a simple
   // filter, so we need to use the special filtering function and interfaces
   // from above to get this to work.
-  return queryResults
-    .filter(isValidCommunityDistrict)
-    .sort((a, b) => (a.communityDistrict > b.communityDistrict ? 1 : -1));
+  return transformedResults
+    .filter(isValidDistrict)
+    .sort((a, b) => (a.district > b.district ? 1 : -1))
+    .map(({ district, borough }) => ({
+      [`${type}District`]: district,
+      borough,
+    }));
 }
 
 export async function getMostRecentDateInDatabase() {

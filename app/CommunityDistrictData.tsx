@@ -18,7 +18,7 @@ import React, { memo } from 'react';
 import {
   Timeframe,
   getChartData,
-  getCommunityDistricts,
+  getDistricts,
   getTimeframeData,
   getToplineData,
 } from './action';
@@ -48,7 +48,7 @@ export default memo(function CommunityDistrictData() {
   React.useEffect(() => {
     setCommunityDistrictsLoading(true);
     async function fn() {
-      const communityDistricts = await getCommunityDistricts();
+      const communityDistricts = await getDistricts('community');
       setCommunityDistricts([...communityDistricts]);
       setCommunityDistrictsLoading(false);
     }
