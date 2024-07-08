@@ -30,7 +30,7 @@ export type CommunityDistrictDataFetcherFunction = (
   endDate: Date,
 ) => Promise<ChartData[]>;
 
-export default memo(function BoroughData() {
+export default memo(function CommunityDistrictData() {
   const [borough, setBorough] = React.useState<string | undefined>(undefined);
   const [communityDistricts, setCommunityDistricts] = React.useState<
     { communityDistrict: number; borough: string }[]
