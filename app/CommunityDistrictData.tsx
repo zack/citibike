@@ -12,6 +12,7 @@ import {
   ListSubheader,
   MenuItem,
   Select,
+  Typography,
 } from '@mui/material';
 import React, { memo } from 'react';
 import {
@@ -147,6 +148,21 @@ export default memo(function BoroughData() {
           }}
         >
           <LoadingSpinner />
+        </Box>
+      )}
+
+      {!isLoading && communityDistrict === undefined && (
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100%',
+          }}
+        >
+          <Typography>
+            <>Select a community district to see some data.</>
+          </Typography>
         </Box>
       )}
 
