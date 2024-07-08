@@ -21,8 +21,13 @@ import {
 } from '@mui/material';
 import { ChartData, getMostRecentDateInDatabase } from './action';
 import React, { SyntheticEvent, memo } from 'react';
-import { Timeframe, getDockTimeframe } from './action';
-import { getDockData, getDocks, getToplineDockData } from './action';
+import {
+  Timeframe,
+  getChartData,
+  getDocks,
+  getTimeframeData,
+  getToplineData,
+} from './action';
 
 export type DockDataFetcherFunction = (
   dockId: string,
@@ -98,16 +103,12 @@ export default memo(function DockData() {
     if (dock.name !== '') {
       setIsLoading(true);
       setTimeframe(undefined);
-      getDockTimeframe(dock.id).then((newData) => {
+      getTimeframeData({ dockId: dock.id }).then((newData) => {
         setTimeframe(newData);
         setIsLoading(false);
       });
     }
   }, [dock]);
-
-  const toplineFetcherFunc = () => {
-    return getToplineDockData(dock.id);
-  };
 
   const dataFetcherFunc: DockDataFetcherFunction = (
     dockId: string,
@@ -116,7 +117,12 @@ export default memo(function DockData() {
     endDate: Date,
   ) => {
     const daily = granularity === Granularity.Daily;
-    return getDockData(parseInt(dockId), daily, startDate, endDate);
+    return getChartData(
+      { dockId: parseInt(dockId) },
+      daily,
+      startDate,
+      endDate,
+    );
   };
 
   const dataIsNotUpToDate = !!(
@@ -253,7 +259,7 @@ export default memo(function DockData() {
       {!isLoading && dock.name !== '' && timeframe !== undefined && (
         <Topline
           borough={borough}
-          dataFetcherFunc={toplineFetcherFunc}
+          dataFetcherFunc={() => getToplineData({ dockId: dock.id })}
           dockName={dock.name}
           maxDate={timeframe.lastDate}
           minDate={timeframe.firstDate}

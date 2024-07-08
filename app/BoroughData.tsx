@@ -7,8 +7,12 @@ import LoadingSpinner from './LoadingSpinner';
 import Topline from './Topline';
 import { Box, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import React, { memo } from 'react';
-import { Timeframe, getBoroughTimeframe } from './action';
-import { getBoroughData, getToplineBoroughData } from './action';
+import {
+  Timeframe,
+  getChartData,
+  getTimeframeData,
+  getToplineData,
+} from './action';
 
 export type BoroughDataFetcherFunction = (
   borough: string,
@@ -28,16 +32,12 @@ export default memo(function BoroughData() {
     if (borough !== '') {
       setIsLoading(true);
       setTimeframe(undefined);
-      getBoroughTimeframe(borough).then((newData) => {
+      getTimeframeData({ dock: { borough } }).then((newData) => {
         setTimeframe(newData);
         setIsLoading(false);
       });
     }
   }, [borough]);
-
-  const toplineFetcherFunc = () => {
-    return getToplineBoroughData(borough);
-  };
 
   const dataFetcherFunc: BoroughDataFetcherFunction = (
     borough: string,
@@ -46,7 +46,7 @@ export default memo(function BoroughData() {
     endDate: Date,
   ) => {
     const daily = granularity === Granularity.Daily;
-    return getBoroughData(borough, daily, startDate, endDate);
+    return getChartData({ dock: { borough } }, daily, startDate, endDate);
   };
 
   return (
@@ -84,7 +84,7 @@ export default memo(function BoroughData() {
       {!isLoading && timeframe !== undefined && (
         <Topline
           borough={borough}
-          dataFetcherFunc={toplineFetcherFunc}
+          dataFetcherFunc={() => getToplineData({ dock: { borough } })}
           maxDate={timeframe.lastDate}
           minDate={timeframe.firstDate}
         />

@@ -2,6 +2,27 @@
 
 import prisma from '@/prisma/db';
 
+interface DockSpecifier {
+  dockId: number;
+}
+
+interface BoroughSpecifier {
+  dock: {
+    borough: string;
+  };
+}
+
+interface CouncilDistrictSpecifier {
+  dock: {
+    councilDistrict: number;
+  };
+}
+
+type WhereSpecifier =
+  | DockSpecifier
+  | BoroughSpecifier
+  | CouncilDistrictSpecifier;
+
 export interface ChartData {
   acoustic: number;
   day: number | undefined;
@@ -15,42 +36,16 @@ export interface Timeframe {
   lastDate: Date;
 }
 
-export async function getDockTimeframe(
-  dockId: number,
+export async function getTimeframeData(
+  specifier: WhereSpecifier,
 ): Promise<Timeframe | undefined> {
   const first = await prisma.dockDay.findFirst({
-    where: { dockId },
+    where: specifier,
     orderBy: [{ year: 'asc' }, { month: 'asc' }, { day: 'asc' }],
   });
 
   const last = await prisma.dockDay.findFirst({
-    where: { dockId },
-    orderBy: [{ year: 'desc' }, { month: 'desc' }, { day: 'desc' }],
-  });
-
-  if (first && last) {
-    const firstDate = new Date(first.year, first.month - 1, first.day);
-    const lastDate = new Date(last.year, last.month - 1, last.day);
-
-    return {
-      firstDate,
-      lastDate,
-    };
-  } else {
-    return undefined;
-  }
-}
-
-export async function getBoroughTimeframe(
-  borough: string,
-): Promise<Timeframe | undefined> {
-  const first = await prisma.dockDay.findFirst({
-    where: { dock: { borough } },
-    orderBy: [{ year: 'asc' }, { month: 'asc' }, { day: 'asc' }],
-  });
-
-  const last = await prisma.dockDay.findFirst({
-    where: { dock: { borough } },
+    where: specifier,
     orderBy: [{ year: 'desc' }, { month: 'desc' }, { day: 'desc' }],
   });
 
@@ -75,26 +70,26 @@ export interface ToplineData {
   tripsSinceFirstElectric: number;
 }
 
-export async function getToplineBoroughData(
-  borough: string,
+export async function getToplineData(
+  specifier: WhereSpecifier,
 ): Promise<ToplineData | undefined> {
   const firstElectric = await prisma.dockDay.findFirst({
     where: {
+      ...specifier,
       electric: { gt: 0 },
-      dock: { borough },
     },
     orderBy: [{ year: 'asc' }, { month: 'asc' }, { day: 'asc' }],
   });
 
   const trips = await prisma.dockDay.aggregate({
-    where: { dock: { borough } },
+    where: specifier,
     _sum: { acoustic: true, electric: true },
   });
 
   const tripsSinceFirstElectric = firstElectric
     ? await prisma.dockDay.aggregate({
         where: {
-          dock: { borough },
+          ...specifier,
           OR: [
             { year: { gte: firstElectric.year } },
             {
@@ -120,55 +115,8 @@ export async function getToplineBoroughData(
   };
 }
 
-export async function getToplineDockData(
-  dockId: number,
-): Promise<ToplineData | undefined> {
-  const firstElectric = await prisma.dockDay.findFirst({
-    where: {
-      dockId,
-      electric: {
-        gt: 0,
-      },
-    },
-    orderBy: [{ year: 'asc' }, { month: 'asc' }, { day: 'asc' }],
-  });
-
-  const trips = await prisma.dockDay.aggregate({
-    where: { dockId },
-    _sum: { acoustic: true, electric: true },
-  });
-
-  const tripsSinceFirstElectric = firstElectric
-    ? await prisma.dockDay.aggregate({
-        where: {
-          dockId,
-          OR: [
-            { year: { gte: firstElectric.year } },
-            {
-              AND: [
-                { year: { gte: firstElectric.year } },
-                { month: { gte: firstElectric.month - 1 } },
-              ],
-            },
-          ],
-        },
-        _sum: { acoustic: true, electric: true },
-      })
-    : { _sum: { electric: 0, acoustic: 0 } };
-
-  return {
-    trips: {
-      acoustic: trips._sum.acoustic ?? 0,
-      electric: trips._sum.electric ?? 0,
-    },
-    tripsSinceFirstElectric:
-      (tripsSinceFirstElectric._sum.electric ?? 0)
-      + (tripsSinceFirstElectric._sum.acoustic ?? 0),
-  };
-}
-
-export async function getBoroughData(
-  borough: string,
+export async function getChartData(
+  specifier: WhereSpecifier,
   daily: boolean,
   startDate: Date | null,
   endDate: Date | null,
@@ -182,58 +130,7 @@ export async function getBoroughData(
   const queryResult = await prisma.dockDay.groupBy({
     where: {
       AND: [
-        { dock: { borough } },
-        {
-          OR: [
-            { year: { gt: startYear } },
-            {
-              AND: [
-                { year: { gte: startYear } },
-                { month: { gte: startMonth } },
-              ],
-            },
-          ],
-        },
-        {
-          OR: [
-            { year: { lt: endYear } },
-            { AND: [{ year: { lte: endYear } }, { month: { lte: endMonth } }] },
-          ],
-        },
-      ],
-    },
-    by: daily ? ['month', 'year', 'day'] : ['month', 'year'],
-    _sum: {
-      acoustic: true,
-      electric: true,
-    },
-  });
-
-  return queryResult.map((r) => ({
-    acoustic: r._sum.acoustic || 0,
-    day: r.day,
-    electric: r._sum.electric || 0,
-    month: r.month,
-    year: r.year,
-  }));
-}
-
-export async function getDockData(
-  dockId: number,
-  daily: boolean,
-  startDate: Date | null,
-  endDate: Date | null,
-): Promise<ChartData[]> {
-  const endMonth = (endDate?.getUTCMonth() ?? 6) + 1; // month is 0-indexed in getUTCMonth
-  const endYear = endDate?.getUTCFullYear() || 2023;
-
-  const startMonth = (startDate?.getUTCMonth() ?? 7) + 1; // month is 0-indexed in getUTCMonth
-  const startYear = startDate?.getUTCFullYear() || 2022;
-
-  const queryResult = await prisma.dockDay.groupBy({
-    where: {
-      AND: [
-        { dockId },
+        specifier,
         {
           OR: [
             { year: { gt: startYear } },
@@ -272,6 +169,42 @@ export async function getDockData(
 export async function getDocks(borough: string) {
   const queryResults = await prisma.dock.findMany({ where: { borough } });
   return queryResults;
+}
+
+// This function is extremely messy because for some reason prisma does not
+// correct generate the type for the results where we specified councilDistict
+// is not null. This is a known issue.
+export async function getCouncilDistricts() {
+  interface CouncilDistrictResult {
+    councilDistrict: number | null;
+    borough: string | null;
+  }
+
+  interface ValidCouncilDistrict {
+    councilDistrict: number;
+    borough: string;
+  }
+
+  function isValidCouncilDistrict(
+    obj: CouncilDistrictResult,
+  ): obj is ValidCouncilDistrict {
+    return obj.councilDistrict !== null && obj.borough !== null;
+  }
+
+  const queryResults = await prisma.dock.findMany({
+    select: { councilDistrict: true, borough: true },
+    where: { councilDistrict: { not: null }, borough: { not: null } },
+    distinct: ['councilDistrict'],
+  });
+
+  // For some reason prisma does not correctly generate the type for the results
+  // where we specified councilDistict is not null. This is a known issue.
+  // Further, typescript can't figure out the correct type from a simple
+  // filter, so we need to use the special filtering function and interfaces
+  // from above to get this to work.
+  return queryResults
+    .filter(isValidCouncilDistrict)
+    .sort((a, b) => (a.councilDistrict > b.councilDistrict ? 1 : -1));
 }
 
 export async function getMostRecentDateInDatabase() {
