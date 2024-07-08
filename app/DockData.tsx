@@ -175,7 +175,6 @@ export default memo(function DockData() {
             <TextField
               {...p}
               label='Dock'
-              InputLabelProps={{ shrink: true }}
               InputProps={{
                 ...p.InputProps,
                 endAdornment: (
@@ -223,7 +222,8 @@ export default memo(function DockData() {
       {dataIsNotUpToDate && (
         <Alert severity='warning' sx={{ mt: 3 }}>
           <b>Warning:</b> There is no recent data for this dock. It may have
-          been moved, removed, renamed, or perhaps destroyed in a <a href='https://crashnotaccident.com/'>car crash</a>.
+          been moved, removed, renamed, or perhaps destroyed in a{' '}
+          <a href='https://crashnotaccident.com/'>car crash</a>.
         </Alert>
       )}
 
