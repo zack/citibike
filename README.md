@@ -1,6 +1,6 @@
-# CitiBike Dock Data
+# Citi Bike Dock Data
 
-A website to allow users to look up usage for their favorite CitiBike docks
+A website to allow users to look up usage for their favorite Citi Bike docks
 
 # Local Setup
 

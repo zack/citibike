@@ -5,8 +5,8 @@ import React from 'react';
 import ThemeProvider from './ThemeProvider';
 
 export const metadata: Metadata = {
-  title: 'CitiBike Dock Data',
-  description: 'Explore trip data for your favorite Citibike docks',
+  title: 'Citi Bike Dock Data',
+  description: 'Explore trip data for your favorite Citi Bike docks',
 };
 
 interface RootLayoutProps {

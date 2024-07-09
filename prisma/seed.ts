@@ -271,7 +271,7 @@ async function seedDays(fileDateStr: string, file: string, length: number) {
           // Get rid of trips without an associated dock. This happens when
           // there is the occasional trip associated with a fake or temporary
           // dock. These docks didn't have latitude or longitude. I don't know
-          // why Citibike's data is so gross.
+          // why Citi Bike's data is so gross.
           //
           // Sorry to my freshman Comp Sci Fundamentals professor about all the
           // nested `if` statements.
