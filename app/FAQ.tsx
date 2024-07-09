@@ -22,7 +22,7 @@ export default function FAQ() {
       </Typography>
 
       <Typography>
-        CitiBike publishes monthly data to an s3 bucket{' '}
+        Citi Bike publishes monthly data to an s3 bucket{' '}
         <a href='https://s3.amazonaws.com/tripdata/index.html'>here</a>. I pull
         down this data, format it to fit in a database, and then store it there.
         A program checks for new data each morning.
@@ -37,7 +37,7 @@ export default function FAQ() {
       </Typography>
 
       <Typography>
-        Sometimes CitiBike is slow in uploading new data, so it might be that.
+        Sometimes Citi Bike is slow in uploading new data, so it might be that.
         Otherwise, if you see the data available at the link above but it&apos;s
         been more than a day and it&apos;s still not here, there might have been
         a bug in my code. Hopefully I&apos;ll see it soon. Feel free to{' '}
@@ -85,7 +85,7 @@ export default function FAQ() {
       </Typography>
 
       <Typography>
-        CitiBike publishes data as far back as June 2013. All of that data is
+        Citi Bike publishes data as far back as June 2013. All of that data is
         available here.
       </Typography>
 
@@ -115,9 +115,9 @@ export default function FAQ() {
       </Typography>
 
       <Typography>
-        I&apos;ll be blunt: CitiBike&apos;s data is pretty messy. Sometimes they
-        move docks and/or change names, which makes the data look kind of weird,
-        but there&apos;s not really anything I can do about that. I also
+        I&apos;ll be blunt: Citi Bike&apos;s data is pretty messy. Sometimes
+        they move docks and/or change names, which makes the data look kind of
+        weird, but there&apos;s not really anything I can do about that. I also
         sometimes have to drop trips (a tiny fraction of a percent of trips)
         because the row is malformed. If you think you&apos;ve found something
         really wrong, or you&apos;re just not sure, feel free to{' '}

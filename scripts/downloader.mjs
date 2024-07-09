@@ -57,7 +57,7 @@ async function getListOfFileNamesOnS3() {
   return fileNames;
 }
 
-// As of February 2024 the Citibike team has made the absolutely ludicrous
+// As of February 2024 the Citi Bike team has made the absolutely ludicrous
 // decision to change their naming & file structure scheme. Previous years are
 // rolled up into a single zip file each (e.g. 2023-citibike-tripdata.zip) that
 // contains a single directory (e.g. 2023-citibike-tripdata) which contains
@@ -151,7 +151,7 @@ async function downloadAndUnzipFiles(
   }
 }
 
-// Before Citibike migrated to a strictly dumber and worse file scheme, each
+// Before Citi Bike migrated to a strictly dumber and worse file scheme, each
 // month was one file. The seeder expects this, and I don't want to rewrite
 // that, so I'm going to concatenate the multiple files per month into one
 // file and tell the seeder to skip the extra header rows.
