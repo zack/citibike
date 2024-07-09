@@ -40,12 +40,12 @@ export default function FAQ() {
         Sometimes CitiBike is slow in uploading new data, so it might be that.
         Otherwise, if you see the data available at the link above but it&apos;s
         been more than a day and it&apos;s still not here, there might have been
-        a bug in my code. Hopefully I&apos;ll see it soon. Feel free to open an
-        issue on GitHub or email me about it at{' '}
-        <a href='mailto:citibikedata.nyc@youngren.io'>
-          citibikedata.nyc@youngren.io
-        </a>
-        .
+        a bug in my code. Hopefully I&apos;ll see it soon. Feel free to{' '}
+        <a href='https://github.com/zack/citibike/issues/new'>
+          open an issue on GitHub
+        </a>{' '}
+        or email me about it at{' '}
+        <a href='mailto:zack@citibikedata.nyc'>zack@citibikedata.nyc</a>.
       </Typography>
 
       <Typography
@@ -98,12 +98,12 @@ export default function FAQ() {
       </Typography>
 
       <Typography>
-        Feel free to open an issue on GitHub if you know how, or email me about
-        it at{' '}
-        <a href='mailto:citibikedata.nyc@youngren.io'>
-          citibikedata.nyc@youngren.io
-        </a>
-        .
+        Feel free to{' '}
+        <a href='https://github.com/zack/citibike/issues/new'>
+          open an issue on GitHub
+        </a>{' '}
+        or email me about it at{' '}
+        <a href='mailto:zack@citibikedata.nyc'>zack@citibikedata.nyc</a>.
       </Typography>
 
       <Typography
@@ -120,8 +120,12 @@ export default function FAQ() {
         but there&apos;s not really anything I can do about that. I also
         sometimes have to drop trips (a tiny fraction of a percent of trips)
         because the row is malformed. If you think you&apos;ve found something
-        really wrong, or you&apos;re just not sure, feel free to open a GitHub
-        issue or email me.
+        really wrong, or you&apos;re just not sure, feel free to{' '}
+        <a href='https://github.com/zack/citibike/issues/new'>
+          open an issue on GitHub
+        </a>{' '}
+        or send me an email at{' '}
+        <a href='mailto:zack@citibikedata.nyc'>zack@citibikedata.nyc</a>.
       </Typography>
 
       <Typography sx={{ marginTop: 2 }}>
