@@ -1,10 +1,10 @@
 import React from 'react';
-import { Typography } from '@mui/material';
 import { exoFontFamily } from './ThemeProvider';
+import { Box, Typography } from '@mui/material';
 
 export default function FAQ() {
   return (
-    <>
+    <Box sx={{ pb: '10vh' }}>
       <Typography
         variant='h5'
         component='h2'
@@ -69,10 +69,10 @@ export default function FAQ() {
       </Typography>
 
       <Typography>
-        I&apos;m counting each docking and undocking as an individual use. That means
-        most trips generate two uses, and usually at two different docks. I
-        consider this the most valuable number because it shows how many times a
-        dock is providing value to someone in a day/month. If you are looking
+        I&apos;m counting each docking and undocking as an individual use. That
+        means most trips generate two uses, and usually at two different docks.
+        I consider this the most valuable number because it shows how many times
+        a dock is providing value to someone in a day/month. If you are looking
         for data about trips taken, you will have to find that elsewhere, sorry.
       </Typography>
 
@@ -102,7 +102,8 @@ export default function FAQ() {
         it at{' '}
         <a href='mailto:citibikedata.nyc@youngren.io'>
           citibikedata.nyc@youngren.io
-        </a>.
+        </a>
+        .
       </Typography>
 
       <Typography
@@ -126,6 +127,6 @@ export default function FAQ() {
       <Typography sx={{ marginTop: 2 }}>
         Oh, and I don&apos;t include docks in New Jersey or Canada.
       </Typography>
-    </>
+    </Box>
   );
 }
