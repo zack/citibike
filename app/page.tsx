@@ -52,7 +52,7 @@ export default memo(function Home() {
               CitiBike Dock Data
             </Typography>
 
-            <div style={{ display: 'flex-item' }}>
+            <Box sx={{ display: 'flex-item', mb: 1 }}>
               {faq ? (
                 <StyledButton onClick={() => setFaq(false)}>
                   <CancelIcon /> <Typography> Back </Typography>
@@ -62,7 +62,7 @@ export default memo(function Home() {
                   <HelpIcon /> <Typography> FAQ </Typography>
                 </StyledButton>
               )}
-            </div>
+            </Box>
           </div>
 
           {faq && <FAQ />}

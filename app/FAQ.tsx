@@ -1,10 +1,10 @@
 import React from 'react';
-import { Typography } from '@mui/material';
 import { exoFontFamily } from './ThemeProvider';
+import { Box, Typography } from '@mui/material';
 
 export default function FAQ() {
   return (
-    <>
+    <Box sx={{ pb: '10vh' }}>
       <Typography
         variant='h5'
         component='h2'
@@ -131,6 +131,6 @@ export default function FAQ() {
       <Typography sx={{ marginTop: 2 }}>
         Oh, and I don&apos;t include docks in New Jersey or Canada.
       </Typography>
-    </>
+    </Box>
   );
 }
