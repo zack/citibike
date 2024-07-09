@@ -174,7 +174,7 @@ export default memo(function DockData() {
           renderInput={(p) => (
             <TextField
               {...p}
-              label='Dock'
+              label={docksLoading ? 'Loading Docks...' : 'Dock'}
               InputProps={{
                 ...p.InputProps,
                 endAdornment: (
@@ -239,22 +239,24 @@ export default memo(function DockData() {
         </Box>
       )}
 
-      {!isLoading && (dock.name === '' || timeframe === undefined) && (
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: '100%',
-          }}
-        >
-          <Typography>
-            <>
-              Select a <Bold>{borough}</Bold> dock to see some data.
-            </>
-          </Typography>
-        </Box>
-      )}
+      {!isLoading
+        && !docksLoading
+        && (dock.name === '' || timeframe === undefined) && (
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: '100%',
+            }}
+          >
+            <Typography>
+              <>
+                Select a <Bold>{borough}</Bold> dock to see some data.
+              </>
+            </Typography>
+          </Box>
+        )}
 
       {!isLoading && dock.name !== '' && timeframe !== undefined && (
         <Topline

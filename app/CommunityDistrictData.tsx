@@ -107,7 +107,7 @@ export default memo(function CommunityDistrictData() {
       <Box sx={{ marginTop: 4, paddingTop: 1 }}>
         <FormControl fullWidth>
           <InputLabel id='community-district-options-label'>
-            Community District
+            Community District{communityDistrictsLoading && 's Loading...'}
           </InputLabel>
           <Select
             disabled={communityDistrictsLoading}
@@ -151,20 +151,22 @@ export default memo(function CommunityDistrictData() {
         </Box>
       )}
 
-      {!isLoading && communityDistrict === undefined && (
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: '100%',
-          }}
-        >
-          <Typography>
-            <>Select a community district to see some data.</>
-          </Typography>
-        </Box>
-      )}
+      {!isLoading
+        && !communityDistrictsLoading
+        && communityDistrict === undefined && (
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: '100%',
+            }}
+          >
+            <Typography>
+              <>Select a community district to see some data.</>
+            </Typography>
+          </Box>
+        )}
 
       {!isLoading && communityDistrict && timeframe !== undefined && (
         <Topline

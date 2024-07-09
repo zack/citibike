@@ -4,7 +4,7 @@ import React from 'react';
 
 export default function LoadingSpinner() {
   return (
-    <Box sx={{ paddingY: 3 }}>
+    <Box sx={{ paddingY: '15vh' }}>
       <Image
         className='swing'
         alt='loading spinner'
