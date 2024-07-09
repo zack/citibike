@@ -107,7 +107,7 @@ export default memo(function CouncilDistrictData() {
       <Box sx={{ marginTop: 4, paddingTop: 1 }}>
         <FormControl fullWidth>
           <InputLabel id='council-district-options-label'>
-            Council District
+            Council District{councilDistrictsLoading && 's Loading...'}
           </InputLabel>
           <Select
             disabled={councilDistrictsLoading}
@@ -151,20 +151,22 @@ export default memo(function CouncilDistrictData() {
         </Box>
       )}
 
-      {!isLoading && councilDistrict === undefined && (
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: '100%',
-          }}
-        >
-          <Typography>
-            <>Select a council district to see some data.</>
-          </Typography>
-        </Box>
-      )}
+      {!isLoading
+        && !councilDistrictsLoading
+        && councilDistrict === undefined && (
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: '100%',
+            }}
+          >
+            <Typography>
+              <>Select a council district to see some data.</>
+            </Typography>
+          </Box>
+        )}
 
       {!isLoading && councilDistrict && timeframe !== undefined && (
         <Topline
