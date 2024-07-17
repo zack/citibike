@@ -49,7 +49,7 @@ export default memo(function Home() {
                 display: 'flex-item',
               }}
             >
-              Citi Bike Dock Data
+              Citi Bike Station Data
             </Typography>
 
             <Box sx={{ display: 'flex-item', mb: 1 }}>

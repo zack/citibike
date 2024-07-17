@@ -47,7 +47,7 @@ export default memo(function ViewPicker() {
           </ToggleButton>
 
           <ToggleButton value='dock' aria-label='dock'>
-            Dock
+            Station
           </ToggleButton>
         </ToggleButtonGroup>
       </div>

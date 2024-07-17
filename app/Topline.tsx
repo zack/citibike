@@ -110,7 +110,7 @@ export default function Topline({
             <>
               {dockName && (
                 <>
-                  The dock at
+                  The station at
                   <Bold>{` ${dockName} `}</Bold>
                   in
                   <Bold>{` ${borough === 'Bronx' ? 'the Bronx' : borough} `}</Bold>
@@ -119,7 +119,7 @@ export default function Topline({
               )}
               {communityDistrict && (
                 <>
-                  Docks in
+                  Stations in
                   <Bold>{` Community District ${communityDistrict} `}</Bold>
                   in
                   <Bold>{` ${borough === 'Bronx' ? 'the Bronx' : borough} `}</Bold>
@@ -128,7 +128,7 @@ export default function Topline({
               )}
               {councilDistrict && (
                 <>
-                  Docks in
+                  Stations in
                   <Bold>{` Council District ${councilDistrict} `}</Bold>
                   in
                   <Bold>{` ${borough === 'Bronx' ? 'the Bronx' : borough} `}</Bold>
@@ -140,7 +140,7 @@ export default function Topline({
                 && !communityDistrict
                 && borough && (
                   <>
-                    Docks in
+                    Stations in
                     <Bold>{` ${borough === 'Bronx' ? 'the Bronx' : borough} `}</Bold>
                     have
                   </>
