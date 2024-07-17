@@ -174,7 +174,7 @@ export default memo(function DockData() {
           renderInput={(p) => (
             <TextField
               {...p}
-              label={docksLoading ? 'Loading Docks...' : 'Dock'}
+              label={docksLoading ? 'Loading stations...' : 'Station'}
               InputProps={{
                 ...p.InputProps,
                 endAdornment: (
@@ -221,7 +221,7 @@ export default memo(function DockData() {
 
       {dataIsNotUpToDate && (
         <Alert severity='warning' sx={{ mt: 3 }}>
-          <b>Warning:</b> There is no recent data for this dock. It may have
+          <b>Warning:</b> There is no recent data for this station. It may have
           been moved, removed, renamed, or perhaps destroyed in a{' '}
           <a href='https://crashnotaccident.com/'>car crash</a>.
         </Alert>
@@ -252,7 +252,7 @@ export default memo(function DockData() {
           >
             <Typography>
               <>
-                Select a <Bold>{borough}</Bold> dock to see some data.
+                Select a <Bold>{borough}</Bold> station to see some data.
               </>
             </Typography>
           </Box>

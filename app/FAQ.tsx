@@ -70,10 +70,11 @@ export default function FAQ() {
 
       <Typography>
         I&apos;m counting each docking and undocking as an individual use. That
-        means most trips generate two uses, and usually at two different docks.
-        I consider this the most valuable number because it shows how many times
-        a dock is providing value to someone in a day/month. If you are looking
-        for data about trips taken, you will have to find that elsewhere, sorry.
+        means most trips generate two uses, and usually at two different
+        stations. I consider this the most valuable number because it shows how
+        many times a station is providing value to someone in a day/month. If
+        you are looking for data about trips taken, you will have to find that
+        elsewhere, sorry.
       </Typography>
 
       <Typography
@@ -87,6 +88,29 @@ export default function FAQ() {
       <Typography>
         Citi Bike publishes data as far back as June 2013. All of that data is
         available here.
+      </Typography>
+
+      <Typography
+        variant='h6'
+        component='h3'
+        sx={{ fontFamily: exoFontFamily, marginTop: 2 }}
+      >
+        Didn&apos;t this used to be about docks? What are stations?
+      </Typography>
+
+      <Typography>
+        Citi Bike{' '}
+        <a href='https://help.citibikenyc.com/hc/en-us/articles/360032104712-What-is-a-station-A-dock-A-kiosk'>
+          defines
+        </a>{' '}
+        a dock as the device that holds an individual bicycle. A station is a
+        row of docks. I originally was accidentally using the term
+        &apos;dock&apos; when what I really meant was &apos;station&apos;. A
+        kind commenter on the{' '}
+        <a href='https://nyc.streetsblog.org/2024/07/17/wednesdays-headlines-citi-bike-by-the-numbers-edition'>
+          Streetsblog article
+        </a>{' '}
+        pointed out the mistake and I have now fixed it.
       </Typography>
 
       <Typography
@@ -111,16 +135,16 @@ export default function FAQ() {
         component='h3'
         sx={{ fontFamily: exoFontFamily, marginTop: 2 }}
       >
-        I think I found a missing dock, or something else looks weird
+        I think I found a missing station, or something else looks weird
       </Typography>
 
       <Typography>
         I&apos;ll be blunt: Citi Bike&apos;s data is pretty messy. Sometimes
-        they move docks and/or change names, which makes the data look kind of
-        weird, but there&apos;s not really anything I can do about that. I also
-        sometimes have to drop trips (a tiny fraction of a percent of trips)
-        because the row is malformed. If you think you&apos;ve found something
-        really wrong, or you&apos;re just not sure, feel free to{' '}
+        they move stations and/or change names, which makes the data look kind
+        of weird, but there&apos;s not really anything I can do about that. I
+        also sometimes have to drop trips (a tiny fraction of a percent of
+        trips) because the row is malformed. If you think you&apos;ve found
+        something really wrong, or you&apos;re just not sure, feel free to{' '}
         <a href='https://github.com/zack/citibike/issues/new'>
           open an issue on GitHub
         </a>{' '}
@@ -129,7 +153,7 @@ export default function FAQ() {
       </Typography>
 
       <Typography sx={{ marginTop: 2 }}>
-        Oh, and I don&apos;t include docks in New Jersey or Canada.
+        Oh, and I don&apos;t include stations in New Jersey or Canada.
       </Typography>
     </Box>
   );
