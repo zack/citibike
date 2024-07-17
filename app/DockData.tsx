@@ -5,7 +5,6 @@ import { Granularity } from './constants';
 import LoadingSpinner from './LoadingSpinner';
 import Topline from './Topline';
 import match from 'autosuggest-highlight/match';
-import { matchSorter } from 'match-sorter';
 import parse from 'autosuggest-highlight/parse';
 import {
   Alert,
@@ -171,9 +170,28 @@ export default memo(function DockData() {
           disabled={docksLoading}
           options={['', ...dockNames]}
           value={dock.name}
-          filterOptions={(options, { inputValue }) =>
-            matchSorter(options, inputValue)
-          }
+          filterOptions={(stations, { inputValue }) => {
+            const inputTokens = inputValue
+              .split(' ')
+              .map((v) => v.trim().toLowerCase())
+              .filter((t) => t !== '&');
+
+            return stations.filter((station) => {
+              const lowercaseStation = station.toLowerCase();
+
+              if (lowercaseStation.includes('&')) {
+                const [firstPart, secondPart] = lowercaseStation
+                  .split('&')
+                  .map((p) => p.trim());
+
+                return inputTokens.every(
+                  (v) => firstPart.includes(v) || secondPart.includes(v),
+                );
+              } else {
+                return inputTokens.every((v) => lowercaseStation.includes(v));
+              }
+            });
+          }}
           onChange={handleDockChange}
           renderInput={(p) => (
             <TextField
