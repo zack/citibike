@@ -5,6 +5,7 @@ import { Granularity } from './constants';
 import LoadingSpinner from './LoadingSpinner';
 import Topline from './Topline';
 import match from 'autosuggest-highlight/match';
+import { matchSorter } from 'match-sorter';
 import parse from 'autosuggest-highlight/parse';
 import {
   Alert,
@@ -170,6 +171,9 @@ export default memo(function DockData() {
           disabled={docksLoading}
           options={['', ...dockNames]}
           value={dock.name}
+          filterOptions={(options, { inputValue }) =>
+            matchSorter(options, inputValue)
+          }
           onChange={handleDockChange}
           renderInput={(p) => (
             <TextField
