@@ -174,7 +174,7 @@ export default memo(function DockData() {
           renderInput={(p) => (
             <TextField
               {...p}
-              label={docksLoading ? 'Loading Stations...' : 'Station'}
+              label={docksLoading ? 'Loading stations...' : 'Station'}
               InputProps={{
                 ...p.InputProps,
                 endAdornment: (
