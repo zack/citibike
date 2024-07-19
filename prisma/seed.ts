@@ -17,6 +17,27 @@ function randomColor() {
   return '#' + Math.floor(Math.random() * 16777215).toString(16);
 }
 
+function cleanStationName(stationName: string): string {
+  return (
+    stationName
+      // normalize all of the code points
+      .normalize('NFKC')
+      // I believe that any of these modifiers on dock names can be safely removed
+      // and the data associated with that dock can be safely merged with the
+      // original.
+      .replace('\t', ' ')
+      .replace('\\t', ' ')
+      .replace('[temporarily removed]', '')
+      .replace(/ +/, ' ')
+      .replace('_old', '')
+      .replace('_new', '')
+      .replace('[old]', '')
+      .replace('[new]', '')
+      .replace(/_[0-9]/, '')
+      .trim()
+  );
+}
+
 async function getMostRecentData(): Promise<{
   mostRecentMonth: number;
   mostRecentYear: number;
@@ -107,10 +128,10 @@ async function seedDocks(file: string, dateStr: string, length: number) {
         ?? record.start_lng;
 
       if (
-        // There are a few different docks that include this string in the data
-        // that we don't want to include. It's test data and somtimes
-        // malformed anyway.
+        // There are a few different substrings we can find in dock names that
+        // indicate docks that we don't want to include in our dataset
         !start_station_name.includes('Lab - NYC')
+        && !start_station_name.includes('TEMP')
         // Sometimes there are just malformed lines with missing dock names
         && start_station_name !== undefined
         && start_station_name !== ''
@@ -120,7 +141,7 @@ async function seedDocks(file: string, dateStr: string, length: number) {
         && start_station_latitude !== '0.0'
         && start_station_longitude !== '0.0'
       ) {
-        docks[start_station_name.normalize('NFKC')] = {
+        docks[cleanStationName(start_station_name)] = {
           latitude: start_station_latitude,
           longitude: start_station_longitude,
         };
@@ -144,6 +165,7 @@ async function seedDocks(file: string, dateStr: string, length: number) {
         // that we don't want to include. It's test data and somtimes
         // malformed anyway.
         !end_station_name.includes('Lab - NYC')
+        && !start_station_name.includes('TEMP')
         // Sometimes there are just malformed lines with missing dock names
         && end_station_name !== undefined
         && end_station_name !== ''
@@ -153,7 +175,7 @@ async function seedDocks(file: string, dateStr: string, length: number) {
         && end_station_latitude !== '0.0'
         && end_station_longitude !== '0.0'
       ) {
-        docks[end_station_name.normalize('NFKC')] = {
+        docks[cleanStationName(end_station_name)] = {
           latitude: end_station_latitude,
           longitude: end_station_longitude,
         };
