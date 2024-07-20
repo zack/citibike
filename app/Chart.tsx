@@ -1,5 +1,6 @@
 import { NamedChartData } from './DataContainer';
 import React from 'react';
+import { useSearchParams } from 'next/navigation';
 
 import {
   Bar,
@@ -23,6 +24,9 @@ export default function Chart({
   daily: boolean;
   chartData: NamedChartData[];
 }) {
+  const searchParams = useSearchParams();
+  const boring = searchParams.get('boring');
+
   const getMaxValueInData = React.useCallback(() => {
     return chartData.reduce((memo, val) => {
       const valSum = val.acoustic + val.electric;
@@ -150,7 +154,12 @@ export default function Chart({
             <span style={{ fontSize: '1.5rem', color: '#000' }}> {value} </span>
           )}
         />
-        <Bar dataKey='acoustic' stackId='a' fill='#0150B4' />
+        <Bar
+          dataKey='acoustic'
+          name={boring ? 'classic' : undefined}
+          stackId='a'
+          fill='#0150B4'
+        />
         <Bar dataKey='electric' stackId='a' fill='#C1BFBB' />
       </BarChart>
     </ResponsiveContainer>
