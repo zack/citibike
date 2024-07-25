@@ -9,27 +9,27 @@ datasource db {
   relationMode      = "prisma"
 }
 
-model Dock {
-  id                Int       @id @default(autoincrement())
+model Station {
+  id                Int          @id(map: "Station_Pkey") @default(autoincrement())
   borough           String?
   communityDistrict Int?
   councilDistrict   Int?
-  days              DockDay[] @relation("dockId")
   latitude          String
   longitude         String
-  name              String    @unique
+  name              String       @unique
+  days              StationDay[] @relation("stationId")
 }
 
-model DockDay {
-  id       Int  @id @default(autoincrement())
-  acoustic Int
-  day      Int
-  dock     Dock @relation("dockId", fields: [dockId], references: [id])
-  dockId   Int
-  electric Int
-  month    Int
-  year     Int
+model StationDay {
+  id        Int     @id @default(autoincrement())
+  acoustic  Int
+  day       Int
+  stationId Int
+  electric  Int
+  month     Int
+  year      Int
+  station   Station @relation("stationId", fields: [stationId], references: [id])
 
-  @@unique([day, month, year, dockId])
-  @@index(fields: [dockId])
+  @@unique([day, month, year, stationId])
+  @@index([stationId])
 }

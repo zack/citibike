@@ -67,7 +67,7 @@ export default function Chart({
         }}
       >
         <Typography>
-          There is no data for this dock in this time period.
+          There is no data for this station in this time period.
         </Typography>
       </Box>
     );

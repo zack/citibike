@@ -1,6 +1,6 @@
-# Citi Bike Dock Data
+# Citi Bike Station Data
 
-A website to allow users to look up usage for their favorite Citi Bike docks.
+A website to allow users to look up usage for their favorite Citi Bike stations.
 Also has views by borough, community district, and council district.
 
 # Frequently Asked Questions
@@ -18,7 +18,7 @@ Here.
 
 ## What are you counting?
 
-I'm counting each docking and undocking as an individual use. That means most trips generate two uses, and usually at two different docks. I consider this the most valuable number because it shows how many times a dock is providing value to someone in a day/month. If you are looking for data about trips taken, you will have to find that elsewhere, sorry.
+I'm counting each stationing and unstationing as an individual use. That means most trips generate two uses, and usually at two different stations. I consider this the most valuable number because it shows how many times a station is providing value to someone in a day/month. If you are looking for data about trips taken, you will have to find that elsewhere, sorry.
 
 ## How far back does the data go?
 
@@ -28,11 +28,11 @@ Citi Bike publishes data as far back as June 2013. All of that data is available
 
 Feel free to open an issue on GitHub or email me about it at zack@citibikedata.nyc.
 
-## I think I found a missing dock, or something else looks weird
+## I think I found a missing station, or something else looks weird
 
-I'll be blunt: Citi Bike's data is pretty messy. Sometimes they move docks and/or change names, which makes the data look kind of weird, but there's not really anything I can do about that. I also sometimes have to drop trips (a tiny fraction of a percent of trips) because the row is malformed. If you think you've found something really wrong, or you're just not sure, feel free to open an issue on GitHub or send me an email at zack@citibikedata.nyc.
+I'll be blunt: Citi Bike's data is pretty messy. Sometimes they move stations and/or change names, which makes the data look kind of weird, but there's not really anything I can do about that. I also sometimes have to drop trips (a tiny fraction of a percent of trips) because the row is malformed. If you think you've found something really wrong, or you're just not sure, feel free to open an issue on GitHub or send me an email at zack@citibikedata.nyc.
 
-Oh, and I don't include docks in New Jersey or Canada.
+Oh, and I don't include stations in New Jersey or Canada.
 
 # Local Setup
 
@@ -43,16 +43,16 @@ Oh, and I don't include docks in New Jersey or Canada.
    1. `$ sudo -u postgres psql`
    1. `postgres=# CREATE USER citibike WITH PASSWORD 'citibike'`
 1. Create a database and a shadow database
-   1. `postgres=# CREATE DATABASE dockdata;`
-   1. `postgres=# CREATE DATABASE dockdatashadow;`
+   1. `postgres=# CREATE DATABASE stationdata;`
+   1. `postgres=# CREATE DATABASE stationdatashadow;`
 1. Set permissions in psql to allow Prisma to perform actions
-   1. `postgres=# \c dockdata`
-   1. `dockdata=# GRANT ALL ON SCHEMA public TO citibike;`
-   1. `postgres=# \c dockdatashadow`
-   1. `dockdata=# GRANT ALL ON SCHEMA public TO citibike;`
+   1. `postgres=# \c stationdata`
+   1. `stationdata=# GRANT ALL ON SCHEMA public TO citibike;`
+   1. `postgres=# \c stationdatashadow`
+   1. `stationdata=# GRANT ALL ON SCHEMA public TO citibike;`
 1. Set your environment variables to reference these databases in `.env`
-   1. `DATABASE_URL='postgresql://citibike:citibike@localhost/dockdata'`
-   1. `SHADOW_DATABASE_URL='postgresql://citbike:citibike@localhost/dockdatashadow'`
+   1. `DATABASE_URL='postgresql://citibike:citibike@localhost/stationdata'`
+   1. `SHADOW_DATABASE_URL='postgresql://citbike:citibike@localhost/stationdatashadow'`
 
 # Development Commands
 

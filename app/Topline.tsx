@@ -28,7 +28,7 @@ export default function Topline({
   communityDistrict,
   councilDistrict,
   dataFetcherFunc,
-  dockName,
+  stationName,
   maxDate,
   minDate,
   outOfDate,
@@ -37,7 +37,7 @@ export default function Topline({
   communityDistrict?: number;
   councilDistrict?: number;
   dataFetcherFunc: () => Promise<ToplineData | undefined>;
-  dockName?: string;
+  stationName?: string;
   maxDate: Date;
   minDate: Date;
   outOfDate?: boolean;
@@ -46,7 +46,7 @@ export default function Topline({
   const [isLoading, setIsLoading] = React.useState(false);
 
   React.useEffect(() => {
-    if (borough || dockName || councilDistrict || communityDistrict) {
+    if (borough || stationName || councilDistrict || communityDistrict) {
       setIsLoading(true);
       dataFetcherFunc().then((newData) => {
         setData(newData);
@@ -58,7 +58,7 @@ export default function Topline({
     communityDistrict,
     councilDistrict,
     dataFetcherFunc,
-    dockName,
+    stationName,
     minDate,
     maxDate,
   ]);
@@ -94,8 +94,8 @@ export default function Topline({
       unit = 'community district';
     } else if (councilDistrict) {
       unit = 'council district';
-    } else if (dockName) {
-      unit = 'dock';
+    } else if (stationName) {
+      unit = 'station';
     } else if (borough) {
       // this needs to be last
       unit = 'borough';
@@ -108,10 +108,10 @@ export default function Topline({
         <Box sx={{ marginTop: 4, marginBottom: 2 }}>
           <Typography fontSize='2rem'>
             <>
-              {dockName && (
+              {stationName && (
                 <>
                   The station at
-                  <Bold>{` ${dockName} `}</Bold>
+                  <Bold>{` ${stationName} `}</Bold>
                   in
                   <Bold>{` ${borough === 'Bronx' ? 'the Bronx' : borough} `}</Bold>
                   has
@@ -135,7 +135,7 @@ export default function Topline({
                   have
                 </>
               )}
-              {!dockName
+              {!stationName
                 && !councilDistrict
                 && !communityDistrict
                 && borough && (

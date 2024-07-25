@@ -71,7 +71,7 @@ export default function FAQ() {
       </Typography>
 
       <Typography>
-        I&apos;m counting each docking and undocking as an individual use. That
+        I&apos;m counting each stationing and unstationing as an individual use. That
         means most trips generate two uses, and usually at two different
         stations. I consider this the most valuable number because it shows how
         many times a station is providing value to someone in a day/month. If
@@ -97,17 +97,17 @@ export default function FAQ() {
         component='h3'
         sx={{ fontFamily: exoFontFamily, marginTop: 2 }}
       >
-        Didn&apos;t this used to be about docks? What are stations?
+        Didn&apos;t this used to be about stations? What are stations?
       </Typography>
 
       <Typography>
         Citi Bike{' '}
-        <a href='https://help.citibikenyc.com/hc/en-us/articles/360032104712-What-is-a-station-A-dock-A-kiosk'>
+        <a href='https://help.citibikenyc.com/hc/en-us/articles/360032104712-What-is-a-station-A-station-A-kiosk'>
           defines
         </a>{' '}
-        a dock as the device that holds an individual bicycle. A station is a
-        row of docks. I originally was accidentally using the term
-        &apos;dock&apos; when what I really meant was &apos;station&apos;. A
+        a station as the device that holds an individual bicycle. A station is a
+        row of stations. I originally was accidentally using the term
+        &apos;station&apos; when what I really meant was &apos;station&apos;. A
         kind commenter on the{' '}
         <a href='https://nyc.streetsblog.org/2024/07/17/wednesdays-headlines-citi-bike-by-the-numbers-edition'>
           Streetsblog article
