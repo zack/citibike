@@ -1,10 +1,37 @@
 'use server';
 
+import { isBorough } from './utils';
+
 import prisma from '@/prisma/db';
+
+export type Borough = 'Bronx' | 'Brooklyn' | 'Manhattan' | 'Queens';
+
+export interface Station {
+  borough: Borough;
+  id: number;
+  name: string;
+}
+
+export interface Stations {
+  Bronx: Station[];
+  Brooklyn: Station[];
+  Manhattan: Station[];
+  Queens: Station[];
+}
+
+export interface CommunityDistrict {
+  communityDistrict: number;
+  borough: Borough;
+}
+
+export interface CouncilDistrict {
+  councilDistrict: number;
+  borough: Borough;
+}
 
 interface BoroughSpecifier {
   dock: {
-    borough: string;
+    borough: Borough;
   };
 }
 
@@ -173,9 +200,36 @@ export async function getChartData(
   }));
 }
 
-export async function getDocks(borough: string) {
-  const queryResults = await prisma.dock.findMany({ where: { borough } });
-  return queryResults;
+export async function getDocks(): Promise<Stations> {
+  const stations: Stations = {
+    Bronx: [],
+    Brooklyn: [],
+    Manhattan: [],
+    Queens: [],
+  };
+
+  interface StationResult {
+    name: string;
+    borough: string | null;
+    id: number;
+  }
+
+  function isValidStation(obj: StationResult): obj is Station {
+    return obj.borough !== null && isBorough(obj.borough);
+  }
+
+  const queryResults = await prisma.dock.findMany({
+    where: { NOT: { borough: null } },
+    select: { id: true, name: true, borough: true },
+  });
+
+  const validStations = queryResults.filter(isValidStation);
+
+  validStations.forEach((station) => {
+    stations[station.borough].push(station);
+  });
+
+  return stations;
 }
 
 // This function is extremely messy because for some reason prisma does not
@@ -187,14 +241,9 @@ export async function getCouncilDistricts() {
     borough: string | null;
   }
 
-  interface ValidCouncilDistrict {
-    councilDistrict: number;
-    borough: string;
-  }
-
   function isValidCouncilDistrict(
     obj: CouncilDistrictResult,
-  ): obj is ValidCouncilDistrict {
+  ): obj is CouncilDistrict {
     return obj.councilDistrict !== null && obj.borough !== null;
   }
 
@@ -223,14 +272,9 @@ export async function getCommunityDistricts() {
     borough: string | null;
   }
 
-  interface ValidCommunityDistrict {
-    communityDistrict: number;
-    borough: string;
-  }
-
   function isValidCommunityDistrict(
     obj: CommunityDistrictResult,
-  ): obj is ValidCommunityDistrict {
+  ): obj is CommunityDistrict {
     return obj.communityDistrict !== null && obj.borough !== null;
   }
 

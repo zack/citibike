@@ -3,7 +3,9 @@
 import DataContainer from './DataContainer';
 import { Granularity } from './constants';
 import LoadingSpinner from './LoadingSpinner';
+import { StationsContext } from './StationsProvider';
 import Topline from './Topline';
+import { isBorough } from './utils';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
 import {
@@ -11,20 +13,19 @@ import {
   Autocomplete,
   Box,
   Chip,
-  CircularProgress,
   FormControl,
   InputLabel,
   MenuItem,
   Select,
+  SelectChangeEvent,
   TextField,
   Typography,
 } from '@mui/material';
-import { ChartData, getMostRecentDateInDatabase } from './action';
-import React, { SyntheticEvent, memo } from 'react';
+import { Borough, ChartData, getMostRecentDateInDatabase } from './action';
+import React, { SyntheticEvent, memo, useContext } from 'react';
 import {
   Timeframe,
   getChartData,
-  getDocks,
   getTimeframeData,
   getToplineData,
 } from './action';
@@ -50,10 +51,8 @@ function Bold({ children }: { children: string }) {
 }
 
 export default memo(function DockData() {
-  const [borough, setBorough] = React.useState<string>('Brooklyn');
+  const [borough, setBorough] = React.useState<Borough>('Brooklyn');
   const [dock, setDock] = React.useState<Dock>({ name: '', id: 0 });
-  const [docks, setDocks] = React.useState<Dock[]>([]);
-  const [docksLoading, setDocksLoading] = React.useState<boolean>(true);
   const [isLoading, setIsLoading] = React.useState(false);
   const [mostRecentMonth, setMostRecentMonth] = React.useState<number>(0);
   const [mostRecentYear, setMostRecentYear] = React.useState<number>(0);
@@ -61,12 +60,26 @@ export default memo(function DockData() {
     undefined,
   );
 
+  function clearDock() {
+    setDock({ name: '', id: 0 });
+  }
+
+  const docks = useContext(StationsContext)[borough];
+
   const dockNames = docks.map((d) => d.name).sort((a, b) => (a > b ? 1 : -1));
+
+  function handleBoroughChange(event: SelectChangeEvent) {
+    const value = event.target.value;
+
+    if (isBorough(value)) {
+      setBorough(borough);
+      clearDock();
+    }
+  }
 
   function handleDockChange(event: SyntheticEvent, value: string | null) {
     if (value === null || value === '') {
-      // use cleared the input
-      setDock({ name: '', id: 0 });
+      clearDock();
     } else {
       const id = docks.find((d) => d.name === value)?.id;
       if (id !== undefined) {
@@ -87,17 +100,6 @@ export default memo(function DockData() {
 
     updateMostRecentMonthAndYear();
   }, []);
-
-  React.useEffect(() => {
-    setDocksLoading(true);
-    setDock({ name: '', id: 0 });
-    async function fn() {
-      const newDocks = await getDocks(borough);
-      setDocks([...newDocks]);
-      setDocksLoading(false);
-    }
-    fn();
-  }, [borough]);
 
   React.useEffect(() => {
     if (dock.name !== '') {
@@ -154,7 +156,7 @@ export default memo(function DockData() {
               id='borough-options'
               value={borough}
               label='borough'
-              onChange={(e) => setBorough(e.target.value)}
+              onChange={handleBoroughChange}
             >
               <MenuItem value={'Bronx'}> The Bronx </MenuItem>
               <MenuItem value={'Brooklyn'}> Brooklyn </MenuItem>
@@ -167,7 +169,6 @@ export default memo(function DockData() {
         <Autocomplete
           sx={{ width: '100%' }}
           id='player'
-          disabled={docksLoading}
           options={['', ...dockNames]}
           value={dock.name}
           filterOptions={(stations, { inputValue }) => {
@@ -196,17 +197,11 @@ export default memo(function DockData() {
           renderInput={(p) => (
             <TextField
               {...p}
-              label={docksLoading ? 'Loading stations...' : 'Station'}
+              label='Station'
               InputProps={{
                 ...p.InputProps,
                 endAdornment: (
-                  <React.Fragment>
-                    {docksLoading ? (
-                      <CircularProgress color='inherit' size={20} />
-                    ) : (
-                      p.InputProps.endAdornment
-                    )}
-                  </React.Fragment>
+                  <React.Fragment>{p.InputProps.endAdornment}</React.Fragment>
                 ),
               }}
             />
@@ -261,24 +256,22 @@ export default memo(function DockData() {
         </Box>
       )}
 
-      {!isLoading
-        && !docksLoading
-        && (dock.name === '' || timeframe === undefined) && (
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              height: '100%',
-            }}
-          >
-            <Typography>
-              <>
-                Select a <Bold>{borough}</Bold> station to see some data.
-              </>
-            </Typography>
-          </Box>
-        )}
+      {!isLoading && (dock.name === '' || timeframe === undefined) && (
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100%',
+          }}
+        >
+          <Typography>
+            <>
+              Select a <Bold>{borough}</Bold> station to see some data.
+            </>
+          </Typography>
+        </Box>
+      )}
 
       {!isLoading && dock.name !== '' && timeframe !== undefined && (
         <Topline

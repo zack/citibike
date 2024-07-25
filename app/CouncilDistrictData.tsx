@@ -1,6 +1,7 @@
 'use client';
 
 import { ChartData } from './action';
+import { CouncilDistrictsContext } from './CouncilDistrictsProvider';
 import DataContainer from './DataContainer';
 import { Granularity } from './constants';
 import LoadingSpinner from './LoadingSpinner';
@@ -14,11 +15,10 @@ import {
   Select,
   Typography,
 } from '@mui/material';
-import React, { memo } from 'react';
+import React, { memo, useContext } from 'react';
 import {
   Timeframe,
   getChartData,
-  getCouncilDistricts,
   getTimeframeData,
   getToplineData,
 } from './action';
@@ -32,28 +32,15 @@ export type CouncilDistrictDataFetcherFunction = (
 
 export default memo(function CouncilDistrictData() {
   const [borough, setBorough] = React.useState<string | undefined>(undefined);
-  const [councilDistricts, setCouncilDistricts] = React.useState<
-    { councilDistrict: number; borough: string }[]
-  >([]);
   const [councilDistrict, setCouncilDistrict] = React.useState<
     number | undefined
   >(undefined);
-  const [councilDistrictsLoading, setCouncilDistrictsLoading] =
-    React.useState(false);
   const [timeframe, setTimeframe] = React.useState<Timeframe | undefined>(
     undefined,
   );
   const [isLoading, setIsLoading] = React.useState(false);
 
-  React.useEffect(() => {
-    setCouncilDistrictsLoading(true);
-    async function fn() {
-      const councilDistricts = await getCouncilDistricts();
-      setCouncilDistricts([...councilDistricts]);
-      setCouncilDistrictsLoading(false);
-    }
-    fn();
-  }, []);
+  const councilDistricts = useContext(CouncilDistrictsContext);
 
   React.useEffect(() => {
     if (councilDistrict !== undefined) {
@@ -107,10 +94,9 @@ export default memo(function CouncilDistrictData() {
       <Box sx={{ marginTop: 4, paddingTop: 1 }}>
         <FormControl fullWidth>
           <InputLabel id='council-district-options-label'>
-            Council District{councilDistrictsLoading && 's Loading...'}
+            Council District
           </InputLabel>
           <Select
-            disabled={councilDistrictsLoading}
             labelId='council-district-options-label'
             id='council-district-options'
             value={councilDistrict}
@@ -151,22 +137,20 @@ export default memo(function CouncilDistrictData() {
         </Box>
       )}
 
-      {!isLoading
-        && !councilDistrictsLoading
-        && councilDistrict === undefined && (
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              height: '100%',
-            }}
-          >
-            <Typography>
-              <>Select a council district to see some data.</>
-            </Typography>
-          </Box>
-        )}
+      {!isLoading && councilDistrict === undefined && (
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100%',
+          }}
+        >
+          <Typography>
+            <>Select a council district to see some data.</>
+          </Typography>
+        </Box>
+      )}
 
       {!isLoading && councilDistrict && timeframe !== undefined && (
         <Topline
