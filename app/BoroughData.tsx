@@ -5,21 +5,24 @@ import DataContainer from './DataContainer';
 import { Granularity } from './constants';
 import LoadingSpinner from './LoadingSpinner';
 import Topline from './Topline';
+import { isBorough } from './utils';
+import {
+  Borough,
+  Timeframe,
+  getChartData,
+  getTimeframeData,
+  getToplineData,
+} from './action';
 import {
   Box,
   FormControl,
   InputLabel,
   MenuItem,
   Select,
+  SelectChangeEvent,
   Typography,
 } from '@mui/material';
 import React, { memo } from 'react';
-import {
-  Timeframe,
-  getChartData,
-  getTimeframeData,
-  getToplineData,
-} from './action';
 
 export type BoroughDataFetcherFunction = (
   borough: string,
@@ -29,14 +32,21 @@ export type BoroughDataFetcherFunction = (
 ) => Promise<ChartData[]>;
 
 export default memo(function BoroughData() {
-  const [borough, setBorough] = React.useState<string | undefined>(undefined);
+  const [borough, setBorough] = React.useState<Borough | undefined>(undefined);
   const [timeframe, setTimeframe] = React.useState<Timeframe | undefined>(
     undefined,
   );
   const [isLoading, setIsLoading] = React.useState(false);
 
+  function handleBoroughChange(event: SelectChangeEvent<Borough>) {
+    const value = event.target.value;
+    if (isBorough(value)) {
+      setBorough(value);
+    }
+  }
+
   React.useEffect(() => {
-    if (borough !== undefined) {
+    if (borough) {
       setIsLoading(true);
       setTimeframe(undefined);
       getTimeframeData({ dock: { borough } }).then((newData) => {
@@ -53,7 +63,19 @@ export default memo(function BoroughData() {
     endDate: Date,
   ) => {
     const daily = granularity === Granularity.Daily;
-    return getChartData({ dock: { borough } }, daily, startDate, endDate);
+
+    // Unfortunately due to how the function is used, we cannot require the
+    // borough parameter is Borough
+    if (isBorough(borough)) {
+      return getChartData({ dock: { borough } }, daily, startDate, endDate);
+    } else {
+      return getChartData(
+        { dock: { borough: 'Brooklyn' } },
+        daily,
+        startDate,
+        endDate,
+      );
+    }
   };
 
   return (
@@ -66,7 +88,7 @@ export default memo(function BoroughData() {
             id='borough-options'
             value={borough}
             label='borough'
-            onChange={(e) => setBorough(e.target.value)}
+            onChange={handleBoroughChange}
           >
             <MenuItem value={'Bronx'}> The Bronx </MenuItem>
             <MenuItem value={'Brooklyn'}> Brooklyn </MenuItem>
@@ -88,7 +110,7 @@ export default memo(function BoroughData() {
         </Box>
       )}
 
-      {!isLoading && borough === undefined && (
+      {!isLoading && !borough && (
         <Box
           sx={{
             display: 'flex',

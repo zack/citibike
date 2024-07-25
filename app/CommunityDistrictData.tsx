@@ -1,6 +1,7 @@
 'use client';
 
 import { ChartData } from './action';
+import { CommunityDistrictsContext } from './CommunityDistrictsProvider';
 import DataContainer from './DataContainer';
 import { Granularity } from './constants';
 import LoadingSpinner from './LoadingSpinner';
@@ -14,11 +15,10 @@ import {
   Select,
   Typography,
 } from '@mui/material';
-import React, { memo } from 'react';
+import React, { memo, useContext } from 'react';
 import {
   Timeframe,
   getChartData,
-  getCommunityDistricts,
   getTimeframeData,
   getToplineData,
 } from './action';
@@ -32,28 +32,15 @@ export type CommunityDistrictDataFetcherFunction = (
 
 export default memo(function CommunityDistrictData() {
   const [borough, setBorough] = React.useState<string | undefined>(undefined);
-  const [communityDistricts, setCommunityDistricts] = React.useState<
-    { communityDistrict: number; borough: string }[]
-  >([]);
   const [communityDistrict, setCommunityDistrict] = React.useState<
     number | undefined
   >(undefined);
-  const [communityDistrictsLoading, setCommunityDistrictsLoading] =
-    React.useState(false);
   const [timeframe, setTimeframe] = React.useState<Timeframe | undefined>(
     undefined,
   );
   const [isLoading, setIsLoading] = React.useState(false);
 
-  React.useEffect(() => {
-    setCommunityDistrictsLoading(true);
-    async function fn() {
-      const communityDistricts = await getCommunityDistricts();
-      setCommunityDistricts([...communityDistricts]);
-      setCommunityDistrictsLoading(false);
-    }
-    fn();
-  }, []);
+  const communityDistricts = useContext(CommunityDistrictsContext);
 
   React.useEffect(() => {
     if (communityDistrict !== undefined) {
@@ -107,10 +94,9 @@ export default memo(function CommunityDistrictData() {
       <Box sx={{ marginTop: 4, paddingTop: 1 }}>
         <FormControl fullWidth>
           <InputLabel id='community-district-options-label'>
-            Community District{communityDistrictsLoading && 's Loading...'}
+            Community District
           </InputLabel>
           <Select
-            disabled={communityDistrictsLoading}
             labelId='community-district-options-label'
             id='community-district-options'
             value={communityDistrict}
@@ -151,22 +137,20 @@ export default memo(function CommunityDistrictData() {
         </Box>
       )}
 
-      {!isLoading
-        && !communityDistrictsLoading
-        && communityDistrict === undefined && (
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              height: '100%',
-            }}
-          >
-            <Typography>
-              <>Select a community district to see some data.</>
-            </Typography>
-          </Box>
-        )}
+      {!isLoading && communityDistrict === undefined && (
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100%',
+          }}
+        >
+          <Typography>
+            <>Select a community district to see some data.</>
+          </Typography>
+        </Box>
+      )}
 
       {!isLoading && communityDistrict && timeframe !== undefined && (
         <Topline
