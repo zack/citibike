@@ -1,5 +1,7 @@
 import React from 'react';
+
 import { exoFontFamily } from './ThemeProvider';
+
 import { Box, Typography } from '@mui/material';
 
 export default function FAQ() {
