@@ -26,7 +26,7 @@ const TMP_DIR = process.env.TMP_DIR;
 const BUCKET_NAME = 'tripdata';
 
 async function getMostRecentData() {
-  const mostRecentDay = await prisma.dockDay.findFirst({
+  const mostRecentDay = await prisma.stationDay.findFirst({
     orderBy: [{ year: 'desc' }, { month: 'desc' }, { day: 'desc' }],
   });
 

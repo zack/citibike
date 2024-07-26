@@ -7,11 +7,15 @@ import React from 'react';
 import StationsProvider from './StationsProvider';
 import ThemeProvider from './ThemeProvider';
 
-import { getCommunityDistricts, getCouncilDistricts, getDocks } from './action';
+import {
+  getCommunityDistricts,
+  getCouncilDistricts,
+  getStations,
+} from './action';
 
 export const metadata: Metadata = {
-  title: 'Citi Bike Dock Data',
-  description: 'Explore trip data for your favorite Citi Bike docks',
+  title: 'Citi Bike Station Data',
+  description: 'Explore trip data for your favorite Citi Bike stations',
 };
 
 interface RootLayoutProps {
@@ -19,7 +23,7 @@ interface RootLayoutProps {
 }
 
 export default async function RootLayout({ children }: RootLayoutProps) {
-  const stations = await getDocks();
+  const stations = await getStations();
   const councilDistricts = await getCouncilDistricts();
   const communityDistricts = await getCommunityDistricts();
 

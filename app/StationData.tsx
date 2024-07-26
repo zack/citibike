@@ -30,14 +30,14 @@ import {
   getToplineData,
 } from './action';
 
-export type DockDataFetcherFunction = (
-  dockId: string,
+export type StationDataFetcherFunction = (
+  stationId: string,
   granularity: Granularity,
   startDate: Date,
   endDate: Date,
 ) => Promise<ChartData[]>;
 
-interface Dock {
+interface Station {
   id: number;
   name: string;
 }
@@ -50,9 +50,9 @@ function Bold({ children }: { children: string }) {
   );
 }
 
-export default memo(function DockData() {
+export default memo(function StationData() {
   const [borough, setBorough] = React.useState<Borough>('Brooklyn');
-  const [dock, setDock] = React.useState<Dock>({ name: '', id: 0 });
+  const [station, setStation] = React.useState<Station>({ name: '', id: 0 });
   const [isLoading, setIsLoading] = React.useState(false);
   const [mostRecentMonth, setMostRecentMonth] = React.useState<number>(0);
   const [mostRecentYear, setMostRecentYear] = React.useState<number>(0);
@@ -60,30 +60,32 @@ export default memo(function DockData() {
     undefined,
   );
 
-  function clearDock() {
-    setDock({ name: '', id: 0 });
+  function clearStation() {
+    setStation({ name: '', id: 0 });
   }
 
-  const docks = useContext(StationsContext)[borough];
+  const stations = useContext(StationsContext)[borough];
 
-  const dockNames = docks.map((d) => d.name).sort((a, b) => (a > b ? 1 : -1));
+  const stationNames = stations
+    .map((d) => d.name)
+    .sort((a, b) => (a > b ? 1 : -1));
 
   function handleBoroughChange(event: SelectChangeEvent) {
     const value = event.target.value;
 
     if (isBorough(value)) {
-      setBorough(borough);
-      clearDock();
+      setBorough(value);
+      clearStation();
     }
   }
 
-  function handleDockChange(event: SyntheticEvent, value: string | null) {
+  function handleStationChange(event: SyntheticEvent, value: string | null) {
     if (value === null || value === '') {
-      clearDock();
+      clearStation();
     } else {
-      const id = docks.find((d) => d.name === value)?.id;
+      const id = stations.find((d) => d.name === value)?.id;
       if (id !== undefined) {
-        setDock({
+        setStation({
           name: value,
           id,
         });
@@ -102,25 +104,25 @@ export default memo(function DockData() {
   }, []);
 
   React.useEffect(() => {
-    if (dock.name !== '') {
+    if (station.name !== '') {
       setIsLoading(true);
       setTimeframe(undefined);
-      getTimeframeData({ dockId: dock.id }).then((newData) => {
+      getTimeframeData({ stationId: station.id }).then((newData) => {
         setTimeframe(newData);
         setIsLoading(false);
       });
     }
-  }, [dock]);
+  }, [station]);
 
-  const dataFetcherFunc: DockDataFetcherFunction = (
-    dockId: string,
+  const dataFetcherFunc: StationDataFetcherFunction = (
+    stationId: string,
     granularity: Granularity,
     startDate: Date,
     endDate: Date,
   ) => {
     const daily = granularity === Granularity.Daily;
     return getChartData(
-      { dockId: parseInt(dockId) },
+      { stationId: parseInt(stationId) },
       daily,
       startDate,
       endDate,
@@ -169,8 +171,8 @@ export default memo(function DockData() {
         <Autocomplete
           sx={{ width: '100%' }}
           id='player'
-          options={['', ...dockNames]}
-          value={dock.name}
+          options={['', ...stationNames]}
+          value={station.name}
           filterOptions={(stations, { inputValue }) => {
             const inputTokens = inputValue
               .split(' ')
@@ -193,7 +195,7 @@ export default memo(function DockData() {
               }
             });
           }}
-          onChange={handleDockChange}
+          onChange={handleStationChange}
           renderInput={(p) => (
             <TextField
               {...p}
@@ -256,7 +258,7 @@ export default memo(function DockData() {
         </Box>
       )}
 
-      {!isLoading && (dock.name === '' || timeframe === undefined) && (
+      {!isLoading && (station.name === '' || timeframe === undefined) && (
         <Box
           sx={{
             display: 'flex',
@@ -273,24 +275,24 @@ export default memo(function DockData() {
         </Box>
       )}
 
-      {!isLoading && dock.name !== '' && timeframe !== undefined && (
+      {!isLoading && station.name !== '' && timeframe !== undefined && (
         <Topline
           borough={borough}
-          dataFetcherFunc={() => getToplineData({ dockId: dock.id })}
-          dockName={dock.name}
+          dataFetcherFunc={() => getToplineData({ stationId: station.id })}
+          stationName={station.name}
           maxDate={timeframe.lastDate}
           minDate={timeframe.firstDate}
           outOfDate={dataIsNotUpToDate}
         />
       )}
 
-      {dock.name && (
+      {station.name && (
         <Box sx={{ paddingBottom: 5 }}>
           <DataContainer
             dataFetcherFunc={dataFetcherFunc}
             maxDate={timeframe?.lastDate}
             minDate={timeframe?.firstDate}
-            userSelection={`${dock.id}`}
+            userSelection={`${station.id}`}
           />
         </Box>
       )}

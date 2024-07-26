@@ -22,8 +22,8 @@ function cleanStationName(stationName: string): string {
     stationName
       // normalize all of the code points
       .normalize('NFKC')
-      // I believe that any of these modifiers on dock names can be safely removed
-      // and the data associated with that dock can be safely merged with the
+      // I believe that any of these modifiers on station names can be safely removed
+      // and the data associated with that station can be safely merged with the
       // original.
       .replace('\t', ' ')
       .replace('\\t', ' ')
@@ -42,7 +42,7 @@ async function getMostRecentData(): Promise<{
   mostRecentMonth: number;
   mostRecentYear: number;
 }> {
-  const mostRecentDay = await prisma.dockDay.findFirst({
+  const mostRecentDay = await prisma.stationDay.findFirst({
     orderBy: [{ year: 'desc' }, { month: 'desc' }, { day: 'desc' }],
   });
 
@@ -59,7 +59,7 @@ async function processFiles(files: Record<string, number>) {
   const { mostRecentMonth, mostRecentYear } = await getMostRecentData();
   console.log(`Most recent data from ${mostRecentYear}-${mostRecentMonth}`);
 
-  // Seed docks and generate data for days
+  // Seed stations and generate data for days
   for (const file of Object.keys(files)) {
     const dateMatch = /\d{6}/.exec(file);
     if (dateMatch === null) {
@@ -75,26 +75,26 @@ async function processFiles(files: Record<string, number>) {
       || (parseInt(year) === mostRecentYear
         && parseInt(month) > mostRecentMonth)
     ) {
-      await seedDocks(file, dateStr, files[file]);
+      await seedStations(file, dateStr, files[file]);
       await seedDays(dateStr, file, files[file]);
     }
   }
 }
 
-// Iterates over a file, gets all of the dock names, and inserts them into the
-// database. Will skip inserting any docks that already are present in the
-// database (based on the unique dock name).
-async function seedDocks(file: string, dateStr: string, length: number) {
+// Iterates over a file, gets all of the station names, and inserts them into the
+// database. Will skip inserting any stations that already are present in the
+// database (based on the unique station name).
+async function seedStations(file: string, dateStr: string, length: number) {
   const parser = fs
     .createReadStream(file)
     .pipe(parse({ columns: true, trim: true }));
 
   const progressBar = new ProgressBar({
-    schema: `[${dateStr}][Docks].bold[:bar.gradient(${randomColor()},${randomColor()})][:percent].bold`,
+    schema: `[${dateStr}][Stations].bold[:bar.gradient(${randomColor()},${randomColor()})][:percent].bold`,
     total: length,
   });
 
-  const docks: Record<string, { latitude: string; longitude: string }> = {};
+  const stations: Record<string, { latitude: string; longitude: string }> = {};
 
   parser.on('readable', async () => {
     let record;
@@ -128,20 +128,20 @@ async function seedDocks(file: string, dateStr: string, length: number) {
         ?? record.start_lng;
 
       if (
-        // There are a few different substrings we can find in dock names that
-        // indicate docks that we don't want to include in our dataset
+        // There are a few different substrings we can find in station names that
+        // indicate stations that we don't want to include in our dataset
         !start_station_name.includes('Lab - NYC')
         && !start_station_name.includes('TEMP')
-        // Sometimes there are just malformed lines with missing dock names
+        // Sometimes there are just malformed lines with missing station names
         && start_station_name !== undefined
         && start_station_name !== ''
         && start_station_name !== 'NULL'
-        // Sometimes docks have lats or lons or 0.0. I don't know why, but we
+        // Sometimes stations have lats or lons or 0.0. I don't know why, but we
         // don't want them
         && start_station_latitude !== '0.0'
         && start_station_longitude !== '0.0'
       ) {
-        docks[cleanStationName(start_station_name)] = {
+        stations[cleanStationName(start_station_name)] = {
           latitude: start_station_latitude,
           longitude: start_station_longitude,
         };
@@ -161,21 +161,21 @@ async function seedDocks(file: string, dateStr: string, length: number) {
         ?? record.end_lng;
 
       if (
-        // There are a few different docks that include this string in the data
+        // There are a few different stations that include this string in the data
         // that we don't want to include. It's test data and somtimes
         // malformed anyway.
         !end_station_name.includes('Lab - NYC')
         && !start_station_name.includes('TEMP')
-        // Sometimes there are just malformed lines with missing dock names
+        // Sometimes there are just malformed lines with missing station names
         && end_station_name !== undefined
         && end_station_name !== ''
         && end_station_name !== 'NULL'
-        // Sometimes docks have lats or lons or 0.0. I don't know why, but we
+        // Sometimes stations have lats or lons or 0.0. I don't know why, but we
         // don't want them
         && end_station_latitude !== '0.0'
         && end_station_longitude !== '0.0'
       ) {
-        docks[cleanStationName(end_station_name)] = {
+        stations[cleanStationName(end_station_name)] = {
           latitude: end_station_latitude,
           longitude: end_station_longitude,
         };
@@ -186,16 +186,16 @@ async function seedDocks(file: string, dateStr: string, length: number) {
   });
 
   await finished(parser).then(async () => {
-    // Some lines in the CSV are missing dock names and this results in a dock
+    // Some lines in the CSV are missing station names and this results in a station
     // with an empty string for a name being recorded. Delete this. Elsewhere
-    // in the code we'll prevent trip data for the empty dock from being
+    // in the code we'll prevent trip data for the empty station from being
     // entered.
-    delete docks[''];
-    await prisma.dock.createMany({
-      data: Object.keys(docks).map((dockName) => ({
-        latitude: docks[dockName].latitude,
-        longitude: docks[dockName].longitude,
-        name: dockName,
+    delete stations[''];
+    await prisma.station.createMany({
+      data: Object.keys(stations).map((stationName) => ({
+        latitude: stations[stationName].latitude,
+        longitude: stations[stationName].longitude,
+        name: stationName,
       })),
       skipDuplicates: true,
     });
@@ -203,10 +203,10 @@ async function seedDocks(file: string, dateStr: string, length: number) {
 }
 
 async function seedDays(fileDateStr: string, file: string, length: number) {
-  const docks = await prisma.dock.findMany({});
-  const dockMap: Record<string, number> = {};
-  docks.forEach((dock) => {
-    dockMap[dock.name] = dock.id;
+  const stations = await prisma.station.findMany({});
+  const stationMap: Record<string, number> = {};
+  stations.forEach((station) => {
+    stationMap[station.name] = station.id;
   });
 
   const parser = fs
@@ -245,7 +245,7 @@ async function seedDays(fileDateStr: string, file: string, length: number) {
         continue;
       }
 
-      // Both the start and end docks for each trip will be associated with
+      // Both the start and end stations for each trip will be associated with
       // the start date of the trip. This is relevant in the case where a trip
       // starts on one day and ends on the next.
       const dateStr = new Date(
@@ -280,43 +280,43 @@ async function seedDays(fileDateStr: string, file: string, length: number) {
 
       [start_station_name, end_station_name].forEach((stationName) => {
         // Sometimes there's bad data in the CSVs and one or both sides of a trip
-        // will be missing a dock name. In that case, we will still record the
+        // will be missing a station name. In that case, we will still record the
         // side of the trip that we know, but we'll drop the other one since we
-        // don't have a dock with which to associate that end.
+        // don't have a station with which to associate that end.
         if (
           stationName !== ''
           && stationName !== 'NULL'
           && stationName !== undefined
         ) {
-          const dockId = dockMap[stationName];
+          const stationId = stationMap[stationName];
 
-          // Get rid of trips without an associated dock. This happens when
+          // Get rid of trips without an associated station. This happens when
           // there is the occasional trip associated with a fake or temporary
-          // dock. These docks didn't have latitude or longitude. I don't know
+          // station. These stations didn't have latitude or longitude. I don't know
           // why Citi Bike's data is so gross.
           //
           // Sorry to my freshman Comp Sci Fundamentals professor about all the
           // nested `if` statements.
-          if (dockId) {
-            if (processedData[dockId] && processedData[dockId][dateStr]) {
+          if (stationId) {
+            if (processedData[stationId] && processedData[stationId][dateStr]) {
               if (electric) {
-                processedData[dockId][dateStr].electric += 1;
+                processedData[stationId][dateStr].electric += 1;
               } else {
-                processedData[dockId][dateStr].acoustic += 1;
+                processedData[stationId][dateStr].acoustic += 1;
               }
-            } else if (processedData[dockId]) {
+            } else if (processedData[stationId]) {
               if (electric) {
-                processedData[dockId][dateStr] = { electric: 1, acoustic: 0 };
+                processedData[stationId][dateStr] = { electric: 1, acoustic: 0 };
               } else {
-                processedData[dockId][dateStr] = { electric: 0, acoustic: 1 };
+                processedData[stationId][dateStr] = { electric: 0, acoustic: 1 };
               }
             } else {
               if (electric) {
-                processedData[dockId] = {
+                processedData[stationId] = {
                   [dateStr]: { electric: 1, acoustic: 0 },
                 };
               } else {
-                processedData[dockId] = {
+                processedData[stationId] = {
                   [dateStr]: { electric: 0, acoustic: 1 },
                 };
               }
@@ -330,16 +330,16 @@ async function seedDays(fileDateStr: string, file: string, length: number) {
   });
 
   await finished(parser).then(async () => {
-    for (const dockId of Object.keys(processedData)) {
-      const dockData = processedData[dockId];
-      const dates: string[] = Object.keys(dockData);
+    for (const stationId of Object.keys(processedData)) {
+      const stationData = processedData[stationId];
+      const dates: string[] = Object.keys(stationData);
 
-      await prisma.dockDay.createMany({
+      await prisma.stationDay.createMany({
         data: dates.map((date: string) => ({
-          acoustic: dockData[date].acoustic,
+          acoustic: stationData[date].acoustic,
           day: parseInt(date.slice(8, 10)),
-          dockId: parseInt(dockId),
-          electric: dockData[date].electric,
+          stationId: parseInt(stationId),
+          electric: stationData[date].electric,
           month: parseInt(date.slice(5, 7)),
           year: parseInt(date.slice(0, 4)),
         })),
@@ -348,40 +348,40 @@ async function seedDays(fileDateStr: string, file: string, length: number) {
   });
 }
 
-// Add borough, community district, and council district to the docks. Makes
+// Add borough, community district, and council district to the stations. Makes
 // use of an external python script.
-async function updateDockExtras() {
-  console.log('Updating dock extras...');
+async function updateStationExtras() {
+  console.log('Updating station extras...');
 
-  const docks = await prisma.dock.findMany({});
+  const stations = await prisma.station.findMany({});
 
   const columns = ['name', 'latitude', 'longitude'];
-  const filename = `${TMP_DIR}/docks.csv`;
+  const filename = `${TMP_DIR}/stations.csv`;
   const writableStream = fs.createWriteStream(filename);
   const stringifier = stringify({ header: true, columns: columns });
 
-  docks.forEach((dock) => {
+  stations.forEach((station) => {
     stringifier.write({
-      name: dock.name,
-      latitude: dock.latitude,
-      longitude: dock.longitude,
+      name: station.name,
+      latitude: station.latitude,
+      longitude: station.longitude,
     });
   });
 
   stringifier.pipe(writableStream);
 
   const execPromise = util.promisify(exec);
-  await execPromise('python3 scripts/embellishDockData.py');
+  await execPromise('python3 scripts/embellishStationData.py');
 
   const parser = fs
-    .createReadStream(`${TMP_DIR}/docks_completed.csv`)
+    .createReadStream(`${TMP_DIR}/stations_completed.csv`)
     .pipe(parse({ columns: true, trim: true }));
 
   parser.on('readable', async () => {
     let record;
 
     while ((record = parser.read()) !== null) {
-      await prisma.dock.update({
+      await prisma.station.update({
         where: { name: record.name },
         data: {
           borough: record.borough,
@@ -412,7 +412,7 @@ exec(`wc -l ${TMP_DIR}/*`, (error, stdout) => {
 
   processFiles(files)
     .then(async () => {
-      await updateDockExtras();
+      await updateStationExtras();
     })
     .then(async () => {
       console.log('disconnecting');

@@ -46,7 +46,7 @@ export default memo(function CommunityDistrictData() {
     if (communityDistrict !== undefined) {
       setIsLoading(true);
       setTimeframe(undefined);
-      getTimeframeData({ dock: { communityDistrict } }).then((newData) => {
+      getTimeframeData({ station: { communityDistrict } }).then((newData) => {
         setTimeframe(newData);
         setIsLoading(false);
       });
@@ -61,7 +61,7 @@ export default memo(function CommunityDistrictData() {
   ) => {
     const daily = granularity === Granularity.Daily;
     return getChartData(
-      { dock: { communityDistrict: parseInt(communityDistrict) } },
+      { station: { communityDistrict: parseInt(communityDistrict) } },
       daily,
       startDate,
       endDate,
@@ -157,7 +157,7 @@ export default memo(function CommunityDistrictData() {
           borough={borough}
           communityDistrict={communityDistrict}
           dataFetcherFunc={() =>
-            getToplineData({ dock: { communityDistrict } })
+            getToplineData({ station: { communityDistrict } })
           }
           maxDate={timeframe.lastDate}
           minDate={timeframe.firstDate}

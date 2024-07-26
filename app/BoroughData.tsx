@@ -49,7 +49,7 @@ export default memo(function BoroughData() {
     if (borough) {
       setIsLoading(true);
       setTimeframe(undefined);
-      getTimeframeData({ dock: { borough } }).then((newData) => {
+      getTimeframeData({ station: { borough } }).then((newData) => {
         setTimeframe(newData);
         setIsLoading(false);
       });
@@ -67,10 +67,10 @@ export default memo(function BoroughData() {
     // Unfortunately due to how the function is used, we cannot require the
     // borough parameter is Borough
     if (isBorough(borough)) {
-      return getChartData({ dock: { borough } }, daily, startDate, endDate);
+      return getChartData({ station: { borough } }, daily, startDate, endDate);
     } else {
       return getChartData(
-        { dock: { borough: 'Brooklyn' } },
+        { station: { borough: 'Brooklyn' } },
         daily,
         startDate,
         endDate,
@@ -128,7 +128,7 @@ export default memo(function BoroughData() {
       {!isLoading && borough && timeframe !== undefined && (
         <Topline
           borough={borough}
-          dataFetcherFunc={() => getToplineData({ dock: { borough } })}
+          dataFetcherFunc={() => getToplineData({ station: { borough } })}
           maxDate={timeframe.lastDate}
           minDate={timeframe.firstDate}
         />

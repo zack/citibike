@@ -30,23 +30,23 @@ export interface CouncilDistrict {
 }
 
 interface BoroughSpecifier {
-  dock: {
+  station: {
     borough: Borough;
   };
 }
 
-interface DockSpecifier {
-  dockId: number;
+interface StationSpecifier {
+  stationId: number;
 }
 
 interface CommunityDistrictSpecifier {
-  dock: {
+  station: {
     communityDistrict: number;
   };
 }
 
 interface CouncilDistrictSpecifier {
-  dock: {
+  station: {
     councilDistrict: number;
   };
 }
@@ -55,7 +55,7 @@ type WhereSpecifier =
   | BoroughSpecifier
   | CommunityDistrictSpecifier
   | CouncilDistrictSpecifier
-  | DockSpecifier;
+  | StationSpecifier;
 
 export interface ChartData {
   acoustic: number;
@@ -73,12 +73,12 @@ export interface Timeframe {
 export async function getTimeframeData(
   specifier: WhereSpecifier,
 ): Promise<Timeframe | undefined> {
-  const first = await prisma.dockDay.findFirst({
+  const first = await prisma.stationDay.findFirst({
     where: specifier,
     orderBy: [{ year: 'asc' }, { month: 'asc' }, { day: 'asc' }],
   });
 
-  const last = await prisma.dockDay.findFirst({
+  const last = await prisma.stationDay.findFirst({
     where: specifier,
     orderBy: [{ year: 'desc' }, { month: 'desc' }, { day: 'desc' }],
   });
@@ -107,7 +107,7 @@ export interface ToplineData {
 export async function getToplineData(
   specifier: WhereSpecifier,
 ): Promise<ToplineData | undefined> {
-  const firstElectric = await prisma.dockDay.findFirst({
+  const firstElectric = await prisma.stationDay.findFirst({
     where: {
       ...specifier,
       electric: { gt: 0 },
@@ -115,13 +115,13 @@ export async function getToplineData(
     orderBy: [{ year: 'asc' }, { month: 'asc' }, { day: 'asc' }],
   });
 
-  const trips = await prisma.dockDay.aggregate({
+  const trips = await prisma.stationDay.aggregate({
     where: specifier,
     _sum: { acoustic: true, electric: true },
   });
 
   const tripsSinceFirstElectric = firstElectric
-    ? await prisma.dockDay.aggregate({
+    ? await prisma.stationDay.aggregate({
         where: {
           ...specifier,
           OR: [
@@ -161,7 +161,7 @@ export async function getChartData(
   const startMonth = (startDate?.getUTCMonth() ?? 7) + 1; // month is 0-indexed in getUTCMonth
   const startYear = startDate?.getUTCFullYear() || 2022;
 
-  const queryResult = await prisma.dockDay.groupBy({
+  const queryResult = await prisma.stationDay.groupBy({
     where: {
       AND: [
         specifier,
@@ -200,7 +200,7 @@ export async function getChartData(
   }));
 }
 
-export async function getDocks(): Promise<Stations> {
+export async function getStations(): Promise<Stations> {
   const stations: Stations = {
     Bronx: [],
     Brooklyn: [],
@@ -218,7 +218,7 @@ export async function getDocks(): Promise<Stations> {
     return obj.borough !== null && isBorough(obj.borough);
   }
 
-  const queryResults = await prisma.dock.findMany({
+  const queryResults = await prisma.station.findMany({
     where: { NOT: { borough: null } },
     select: { id: true, name: true, borough: true },
   });
@@ -247,7 +247,7 @@ export async function getCouncilDistricts() {
     return obj.councilDistrict !== null && obj.borough !== null;
   }
 
-  const queryResults = await prisma.dock.findMany({
+  const queryResults = await prisma.station.findMany({
     select: { councilDistrict: true, borough: true },
     where: { councilDistrict: { not: null }, borough: { not: null } },
     distinct: ['councilDistrict'],
@@ -278,7 +278,7 @@ export async function getCommunityDistricts() {
     return obj.communityDistrict !== null && obj.borough !== null;
   }
 
-  const queryResults = await prisma.dock.findMany({
+  const queryResults = await prisma.station.findMany({
     select: { communityDistrict: true, borough: true },
     where: { communityDistrict: { not: null }, borough: { not: null } },
     distinct: ['communityDistrict'],
@@ -295,7 +295,7 @@ export async function getCommunityDistricts() {
 }
 
 export async function getMostRecentDateInDatabase() {
-  const queryResults = await prisma.dockDay.findFirst({
+  const queryResults = await prisma.stationDay.findFirst({
     orderBy: [{ year: 'desc' }, { month: 'desc' }, { day: 'desc' }],
   });
 

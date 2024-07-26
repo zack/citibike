@@ -3,11 +3,11 @@ import ChartContainer from './ChartContainer';
 import ChartControls from './ChartControls';
 import { ChartData } from './action';
 import { CouncilDistrictDataFetcherFunction } from './CouncilDistrictData';
-import { DockDataFetcherFunction } from './DockData';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Granularity } from './constants';
 import LoadingSpinner from './LoadingSpinner';
 import React from 'react';
+import { StationDataFetcherFunction } from './StationData';
 import Table from './Table';
 
 import {
@@ -29,7 +29,7 @@ export enum View {
 type DataFetcherFunction =
   | BoroughDataFetcherFunction
   | CouncilDistrictDataFetcherFunction
-  | DockDataFetcherFunction;
+  | StationDataFetcherFunction;
 
 export interface NamedChartData extends ChartData {
   name: string;
@@ -67,12 +67,12 @@ export default function DataContainer({
   dataFetcherFunc,
   maxDate,
   minDate,
-  userSelection, // a dock id, borough, community district, or council district
+  userSelection, // a station id, borough, community district, or council district
 }: {
   dataFetcherFunc: DataFetcherFunction;
   maxDate: Date | undefined;
   minDate: Date | undefined;
-  userSelection: string; // stringifying dockIds just for this component
+  userSelection: string; // stringifying stationIds just for this component
 }) {
   const [accordionOpen, setAccordionOpen] = React.useState(false);
   const [selection, setSelection] = React.useState<View>(View.Chart);
