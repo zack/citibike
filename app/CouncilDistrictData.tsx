@@ -43,14 +43,22 @@ export default memo(function CouncilDistrictData() {
   const councilDistricts = useContext(CouncilDistrictsContext);
 
   React.useEffect(() => {
+    let ignore = false;
+
     if (councilDistrict !== undefined) {
       setIsLoading(true);
       setTimeframe(undefined);
       getTimeframeData({ station: { councilDistrict } }).then((newData) => {
-        setTimeframe(newData);
-        setIsLoading(false);
+        if (!ignore) {
+          setTimeframe(newData);
+          setIsLoading(false);
+        }
       });
     }
+
+    return () => {
+      ignore = true;
+    };
   }, [councilDistrict]);
 
   const dataFetcherFunc: CouncilDistrictDataFetcherFunction = (
@@ -156,7 +164,9 @@ export default memo(function CouncilDistrictData() {
         <Topline
           borough={borough}
           councilDistrict={councilDistrict}
-          dataFetcherFunc={() => getToplineData({ station: { councilDistrict } })}
+          dataFetcherFunc={() =>
+            getToplineData({ station: { councilDistrict } })
+          }
           maxDate={timeframe.lastDate}
           minDate={timeframe.firstDate}
         />

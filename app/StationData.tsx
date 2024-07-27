@@ -104,14 +104,22 @@ export default memo(function StationData() {
   }, []);
 
   React.useEffect(() => {
+    let ignore = false;
+
     if (station.name !== '') {
       setIsLoading(true);
       setTimeframe(undefined);
       getTimeframeData({ stationId: station.id }).then((newData) => {
-        setTimeframe(newData);
-        setIsLoading(false);
+        if (!ignore) {
+          setTimeframe(newData);
+          setIsLoading(false);
+        }
       });
     }
+
+    return () => {
+      ignore = true;
+    };
   }, [station]);
 
   const dataFetcherFunc: StationDataFetcherFunction = (

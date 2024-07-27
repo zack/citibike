@@ -46,13 +46,21 @@ export default function Topline({
   const [isLoading, setIsLoading] = React.useState(false);
 
   React.useEffect(() => {
+    let ignore = false;
+
     if (borough || stationName || councilDistrict || communityDistrict) {
       setIsLoading(true);
       dataFetcherFunc().then((newData) => {
-        setData(newData);
-        setIsLoading(false);
+        if (!ignore) {
+          setData(newData);
+          setIsLoading(false);
+        }
       });
     }
+
+    return () => {
+      ignore = true;
+    };
   }, [
     borough,
     communityDistrict,
