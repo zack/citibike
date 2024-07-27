@@ -3,4 +3,11 @@ enum Granularity {
   Monthly,
 }
 
-export { Granularity };
+const boroughs = [
+  'Bronx',
+  'Brooklyn',
+  'Manhattan',
+  'Queens',
+];
+
+export { boroughs, Granularity };

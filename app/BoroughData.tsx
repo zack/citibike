@@ -23,6 +23,7 @@ import {
   Typography,
 } from '@mui/material';
 import React, { memo } from 'react';
+import { createParser, useQueryState } from 'nuqs';
 
 export type BoroughDataFetcherFunction = (
   borough: string,
@@ -31,8 +32,21 @@ export type BoroughDataFetcherFunction = (
   endDate: Date,
 ) => Promise<ChartData[]>;
 
+const parseAsBorough = createParser({
+  parse(queryValue) {
+    return isBorough(queryValue) ? queryValue : '';
+  },
+  serialize(value) {
+    return value;
+  },
+});
+
 export default memo(function BoroughData() {
-  const [borough, setBorough] = React.useState<Borough | undefined>(undefined);
+  const [borough, setBorough] = useQueryState(
+    'borough',
+    parseAsBorough.withDefault(''),
+  );
+  // const [borough, setBorough] = React.useState<Borough | ''>('');
   const [timeframe, setTimeframe] = React.useState<Timeframe | undefined>(
     undefined,
   );
@@ -48,15 +62,20 @@ export default memo(function BoroughData() {
   React.useEffect(() => {
     let ignore = false;
 
+    console.log('a'); // eslint-disable-line
     if (borough) {
+      console.log('b'); // eslint-disable-line
       setIsLoading(true);
       setTimeframe(undefined);
-      getTimeframeData({ station: { borough } }).then((newData) => {
-        if (!ignore) {
-          setTimeframe(newData);
-          setIsLoading(false);
-        }
-      });
+      console.log('c'); // eslint-disable-line
+      getTimeframeData({ station: { borough } })
+        .then((newData) => {
+          if (!ignore) {
+            setTimeframe(newData);
+            setIsLoading(false);
+          }
+        })
+        .catch((e) => console.log({ e })); // eslint-disable-line
     }
 
     return () => {

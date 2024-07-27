@@ -3,14 +3,18 @@ import CommunityDistrictData from './CommunityDistrictData';
 import CouncilDistrictData from './CouncilDistrictData';
 import StationData from './StationData';
 import { Typography } from '@mui/material';
-import { Box, ToggleButton, ToggleButtonGroup } from '@mui/material';
 
+import { Box, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import React, { memo } from 'react';
+import { parseAsString, useQueryState } from 'nuqs';
 
 type View = 'station' | 'borough' | 'community' | 'council';
 
 export default memo(function ViewPicker() {
-  const [view, setView] = React.useState<View>('station');
+  const [view, setView] = useQueryState(
+    'view',
+    parseAsString.withDefault('station'),
+  );
 
   const handleViewChange = (
     _e: React.MouseEvent<HTMLElement>,
@@ -73,7 +77,9 @@ export default memo(function ViewPicker() {
         <CouncilDistrictData />
       </Box>
 
-      <Box sx={{ display: view === 'station' ? 'block' : 'none', height: '50vh' }}>
+      <Box
+        sx={{ display: view === 'station' ? 'block' : 'none', height: '50vh' }}
+      >
         <StationData />
       </Box>
     </Box>

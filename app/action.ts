@@ -73,6 +73,7 @@ export interface Timeframe {
 export async function getTimeframeData(
   specifier: WhereSpecifier,
 ): Promise<Timeframe | undefined> {
+  console.log('getTimeframeData called with specifier', specifier); // eslint-disable-line
   const first = await prisma.stationDay.findFirst({
     where: specifier,
     orderBy: [{ year: 'asc' }, { month: 'asc' }, { day: 'asc' }],
