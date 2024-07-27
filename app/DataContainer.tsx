@@ -135,16 +135,24 @@ export default function DataContainer({
 
   // If anything about the user's selections changes we should get new data.
   React.useEffect(() => {
+    let ignore = false;
+
     if (userSelection !== undefined && startDate && endDate) {
       setIsLoading(true);
       dataFetcherFunc(userSelection, granularity, startDate, endDate).then(
         (newData) => {
-          setData(newData);
-          setIsLoading(false);
-          scrollRef.current?.scrollIntoView();
+          if (!ignore) {
+            setData(newData);
+            setIsLoading(false);
+            scrollRef.current?.scrollIntoView();
+          }
         },
       );
     }
+
+    return () => {
+      ignore = true;
+    };
   }, [daily, dataFetcherFunc, granularity, endDate, startDate, userSelection]);
 
   if (data === undefined) {

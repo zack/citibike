@@ -46,14 +46,22 @@ export default memo(function BoroughData() {
   }
 
   React.useEffect(() => {
+    let ignore = false;
+
     if (borough) {
       setIsLoading(true);
       setTimeframe(undefined);
       getTimeframeData({ station: { borough } }).then((newData) => {
-        setTimeframe(newData);
-        setIsLoading(false);
+        if (!ignore) {
+          setTimeframe(newData);
+          setIsLoading(false);
+        }
       });
     }
+
+    return () => {
+      ignore = true;
+    };
   }, [borough]);
 
   const dataFetcherFunc: BoroughDataFetcherFunction = (

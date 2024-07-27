@@ -43,14 +43,22 @@ export default memo(function CommunityDistrictData() {
   const communityDistricts = useContext(CommunityDistrictsContext);
 
   React.useEffect(() => {
+    let ignore = false;
+
     if (communityDistrict !== undefined) {
       setIsLoading(true);
       setTimeframe(undefined);
       getTimeframeData({ station: { communityDistrict } }).then((newData) => {
-        setTimeframe(newData);
-        setIsLoading(false);
+        if (!ignore) {
+          setTimeframe(newData);
+          setIsLoading(false);
+        }
       });
     }
+
+    return () => {
+      ignore = true;
+    };
   }, [communityDistrict]);
 
   const dataFetcherFunc: CommunityDistrictDataFetcherFunction = (
