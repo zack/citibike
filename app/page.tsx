@@ -15,6 +15,7 @@ export default memo(function Home() {
         justifyContent='center'
         columns={{ xs: 6, sm: 8, md: 8, lg: 12 }}
         height='90vh'
+        width='97vw'
       >
         <Grid
           item
