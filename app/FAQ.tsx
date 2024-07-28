@@ -2,11 +2,26 @@ import React from 'react';
 
 import { exoFontFamily } from './ThemeProvider';
 
-import { Box, Typography } from '@mui/material';
+import { Alert, AlertTitle, Box, Typography } from '@mui/material';
 
 export default function FAQ() {
   return (
     <Box sx={{ pb: '10vh' }}>
+      <Alert severity='warning'>
+        <AlertTitle> Help save Congestion Pricing! </AlertTitle>
+        Governor Kathy Hochul is trying to kill congestion pricing. Congestion
+        pricing will improve safety, reduce traffic, speed up buses, improve air
+        quality, reduce local particulate pollution, reduce noise pollution,
+        result in an overall improvement quality of life for everyone in lower
+        manhattan, and raise billions of dollars for public transit
+        infrastructure. To find out how you can help fight to support congestion
+        pricing, visit{' '}
+        <a href='https://savecongestionpricing.org/'>
+          savecongestionpricing.com
+        </a>
+        .
+      </Alert>
+
       <Typography
         variant='h5'
         component='h2'
@@ -71,8 +86,8 @@ export default function FAQ() {
       </Typography>
 
       <Typography>
-        I&apos;m counting each stationing and unstationing as an individual use. That
-        means most trips generate two uses, and usually at two different
+        I&apos;m counting each stationing and unstationing as an individual use.
+        That means most trips generate two uses, and usually at two different
         stations. I consider this the most valuable number because it shows how
         many times a station is providing value to someone in a day/month. If
         you are looking for data about trips taken, you will have to find that
@@ -156,6 +171,31 @@ export default function FAQ() {
 
       <Typography sx={{ marginTop: 2 }}>
         Oh, and I don&apos;t include stations in New Jersey or Canada.
+      </Typography>
+
+      <Typography
+        variant='h6'
+        component='h3'
+        sx={{ fontFamily: exoFontFamily, marginTop: 2 }}
+      >
+        What podcasts should I listen to to learn more about urbanism, transit,
+        and related topics??
+      </Typography>
+
+      <Typography>
+        <ul>
+          <li>
+            <a href='https://thewaroncars.org/'>The War on Cars</a>
+          </li>
+          <li>
+            <a href='https://linktr.ee/deniersplaybook'>
+              The Climate Denier&apos;s Playbook
+            </a>
+          </li>
+          <li>
+            <a href='https://nebula.tv/agenda'>The Urbanist Agenda</a>
+          </li>
+        </ul>
       </Typography>
     </Box>
   );
