@@ -17,7 +17,7 @@ export default function FAQ() {
         infrastructure. To find out how you can help fight to support congestion
         pricing, visit{' '}
         <a href='https://savecongestionpricing.org/'>
-          savecongestionpricing.com
+          savecongestionpricing.org
         </a>
         .
       </Alert>
