@@ -214,7 +214,7 @@ async function seedDays(fileDateStr: string, file: string, length: number) {
     .pipe(parse({ columns: true, trim: true }));
 
   const progressBar = new ProgressBar({
-    schema: `[${fileDateStr}][Trips].bold[:bar.gradient(${randomColor()},${randomColor()})][:percent].bold`,
+    schema: `[${fileDateStr}][Trips   ].bold[:bar.gradient(${randomColor()},${randomColor()})][:percent].bold`,
     total: length,
   });
 
