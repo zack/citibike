@@ -69,4 +69,5 @@ A huge thanks to the following people who helped make this possible:
 - [Aileen Zhou](https://ayleinee.com/)
 - [Carly Jones](https://github.com/carly-jones)
 - [Catt Small](https://cattsmall.com/)
+- [Em Friedenberg](https://x.com/emfriedenberg)
 - All the fine folks at [Transportation Alternatives](https://transalt.org/)
