@@ -179,7 +179,7 @@ export default function FAQ() {
         sx={{ fontFamily: exoFontFamily, marginTop: 2 }}
       >
         What podcasts should I listen to to learn more about urbanism, transit,
-        and related topics??
+        and related topics?
       </Typography>
 
       <Typography>

@@ -1,5 +1,5 @@
 # This file adapted from the work of Nate at Transportation Alternatives.
-# Thanks, Nate!! Couldn't have done it without you. :)
+# Thanks, Nate! Couldn't have done it without you. :)
 
 import requests
 import csv
