@@ -132,7 +132,9 @@ async function downloadAndUnzipFiles(
     await writeFile(zipLocation, response.Body);
 
     const zip = new adm(zipLocation);
-    const zipEntries = zip.getEntries();
+    const zipEntries = zip
+      .getEntries()
+      .filter((entry) => !entry.entryName.includes('__MACOSX'));
 
     // Citi Bike maintains two different nested file structures
     const oldFormat = zipEntries.some((entry) => entry.entryName.includes('_'));
@@ -147,9 +149,7 @@ async function downloadAndUnzipFiles(
           const fileYear = parseInt(fileName.slice(0, 4));
           const fileMonth = parseInt(fileName.slice(4, 6));
 
-          if (entry.entryName[0] === '_') {
-            // This is in the __MACOSX subdirectory and we don't want it
-          } else if (fileYear > mostRecentYear || fileMonth > mostRecentMonth) {
+          if (fileYear > mostRecentYear || fileMonth > mostRecentMonth) {
             await zip.extractEntryTo(entry.entryName, TMP_DIR, false, true);
           }
         }
