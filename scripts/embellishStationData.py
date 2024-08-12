@@ -28,7 +28,7 @@ def update_citibike_data():
     # Load Stations
     with open("/tmp/citibike/stations.csv", "r") as csv_file:
         csv_reader = csv.DictReader(csv_file)
-        station_data = list(csv_reader)
+        station_data = list(filter(lambda e: e['longitude'] and e['latitude'], list(csv_reader)))
 
     # Create a new column for each category
     for data in station_data:

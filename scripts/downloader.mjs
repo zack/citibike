@@ -133,19 +133,54 @@ async function downloadAndUnzipFiles(
 
     const zip = new adm(zipLocation);
     const zipEntries = zip.getEntries();
-    for (const entry of zipEntries) {
-      // Based on the filtering we did at the point of choosing which files to
-      // download, the only CSVs here that we *don't* want are the ones with
-      // both year and month dated before our most recent data.
-      if (entry.entryName.match(/\.csv$/)) {
-        const fileName = entry.entryName.match(/\d{6}.*\.csv$/)[0];
-        const fileYear = parseInt(fileName.slice(0, 4));
-        const fileMonth = parseInt(fileName.slice(4, 6));
 
-        if (entry.entryName[0] === '_') {
-          // This is in the __MACOSX subdirectory and we don't want it
-        } else if (fileYear > mostRecentYear || fileMonth > mostRecentMonth) {
-          await zip.extractEntryTo(entry.entryName, TMP_DIR, false, true);
+    // Citi Bike maintains two different nested file structures
+    const oldFormat = zipEntries.some((entry) => entry.entryName.includes('_'));
+
+    if (oldFormat) {
+      for (const entry of zipEntries) {
+        // Based on the filtering we did at the point of choosing which files to
+        // download, the only CSVs here that we *don't* want are the ones with
+        // both year and month dated before our most recent data.
+        if (entry.entryName.match(/\.csv$/)) {
+          const fileName = entry.entryName.match(/\d{6}.*\.csv$/)[0];
+          const fileYear = parseInt(fileName.slice(0, 4));
+          const fileMonth = parseInt(fileName.slice(4, 6));
+
+          if (entry.entryName[0] === '_') {
+            // This is in the __MACOSX subdirectory and we don't want it
+          } else if (fileYear > mostRecentYear || fileMonth > mostRecentMonth) {
+            await zip.extractEntryTo(entry.entryName, TMP_DIR, false, true);
+          }
+        }
+      }
+    } else {
+      for (const entry of zipEntries) {
+        if (entry.entryName.match(/\.zip$/)) {
+          // Based on the filtering we did at the point of choosing which files to
+          // download, the only CSVs here that we *don't* want are the ones with
+          // both year and month dated before our most recent data.
+          const fileName = entry.entryName.match(/\d{6}.*\.zip/)[0];
+          const fileYear = parseInt(fileName.slice(0, 4));
+          const fileMonth = parseInt(fileName.slice(4, 6));
+
+          if (fileYear > mostRecentYear || fileMonth > mostRecentMonth) {
+            await zip.extractEntryTo(entry.entryName, TMP_DIR, false, true);
+          }
+
+          const innerZipName = `${TMP_DIR}/${fileName}`;
+          const innerZip = new adm(innerZipName);
+          const innerEntries = innerZip.getEntries();
+          for (const innerEntry of innerEntries) {
+            await innerZip.extractEntryTo(
+              innerEntry.entryName,
+              TMP_DIR,
+              false,
+              true,
+            );
+          }
+
+          fs.unlinkSync(`${TMP_DIR}/${fileName}`);
         }
       }
     }
@@ -154,10 +189,10 @@ async function downloadAndUnzipFiles(
   }
 }
 
-// Before Citi Bike migrated to a strictly dumber and worse file scheme, each
-// month was one file. The seeder expects this, and I don't want to rewrite
-// that, so I'm going to concatenate the multiple files per month into one
-// file and tell the seeder to skip the extra header rows.
+// Before Citi Bike migrated schemes, each month was one file. The seeder
+// expects this, and I don't want to rewrite that, so I'm going to concatenate
+// the multiple files per month into one file and tell the seeder to skip the
+// extra header rows.
 async function concatenateFiles() {
   const files = readdirSync(TMP_DIR);
   const months = new Set();
@@ -194,6 +229,10 @@ async function concatenateFiles() {
     mostRecentYear,
     mostRecentMonth,
   );
-  await downloadAndUnzipFiles(newFileNames, mostRecentYear, mostRecentMonth);
+  await downloadAndUnzipFiles(
+    newFileNames,
+    mostRecentYear,
+    mostRecentMonth,
+  );
   await concatenateFiles();
 })();
