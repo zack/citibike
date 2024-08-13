@@ -181,6 +181,7 @@ export default memo(function StationData() {
           id='player'
           options={['', ...stationNames]}
           value={station.name}
+          blurOnSelect='touch'
           filterOptions={(stations, { inputValue }) => {
             const inputTokens = inputValue
               .split(' ')
