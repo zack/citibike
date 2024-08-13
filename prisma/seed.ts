@@ -165,7 +165,7 @@ async function seedStations(file: string, dateStr: string, length: number) {
         // that we don't want to include. It's test data and somtimes
         // malformed anyway.
         !end_station_name.includes('Lab - NYC')
-        && !start_station_name.includes('TEMP')
+        && !end_station_name.includes('TEMP')
         // Sometimes there are just malformed lines with missing station names
         && end_station_name !== undefined
         && end_station_name !== ''
