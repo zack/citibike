@@ -32,7 +32,7 @@ export type BoroughDataFetcherFunction = (
 ) => Promise<ChartData[]>;
 
 export default memo(function BoroughData() {
-  const [borough, setBorough] = React.useState<Borough | undefined>(undefined);
+  const [borough, setBorough] = React.useState<Borough | ''>('');
   const [timeframe, setTimeframe] = React.useState<Timeframe | undefined>(
     undefined,
   );
@@ -98,6 +98,7 @@ export default memo(function BoroughData() {
             label='borough'
             onChange={handleBoroughChange}
           >
+            <MenuItem value={''}></MenuItem>
             <MenuItem value={'Bronx'}> The Bronx </MenuItem>
             <MenuItem value={'Brooklyn'}> Brooklyn </MenuItem>
             <MenuItem value={'Manhattan'}> Manhattan </MenuItem>
