@@ -2,26 +2,11 @@ import React from 'react';
 
 import { exoFontFamily } from './ThemeProvider';
 
-import { Alert, AlertTitle, Box, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 
 export default function FAQ() {
   return (
     <Box sx={{ pb: '10vh' }}>
-      <Alert severity='warning'>
-        <AlertTitle> Help save Congestion Pricing! </AlertTitle>
-        Governor Kathy Hochul is trying to kill congestion pricing. Congestion
-        pricing will improve safety, reduce traffic, speed up buses, improve air
-        quality, reduce local particulate pollution, reduce noise pollution,
-        result in an overall improvement quality of life for everyone in lower
-        manhattan, and raise billions of dollars for public transit
-        infrastructure. To find out how you can help fight to support congestion
-        pricing, visit{' '}
-        <a href='https://savecongestionpricing.org/'>
-          savecongestionpricing.org
-        </a>
-        .
-      </Alert>
-
       <Typography
         variant='h5'
         component='h2'
