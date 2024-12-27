@@ -4,8 +4,16 @@ import { ChartData } from './action';
 import { CommunityDistrictsContext } from './CommunityDistrictsProvider';
 import DataContainer from './DataContainer';
 import { Granularity } from './constants';
-import LoadingSpinner from './LoadingSpinner';
 import Topline from './Topline';
+import { isBorough } from './utils';
+import { useQueryState } from 'nuqs';
+import {
+  Borough,
+  Timeframe,
+  getChartData,
+  getTimeframeData,
+  getToplineData,
+} from './action';
 import {
   Box,
   FormControl,
@@ -15,13 +23,7 @@ import {
   Select,
   Typography,
 } from '@mui/material';
-import React, { memo, useContext } from 'react';
-import {
-  Timeframe,
-  getChartData,
-  getTimeframeData,
-  getToplineData,
-} from './action';
+import React, { useContext } from 'react';
 
 export type CommunityDistrictDataFetcherFunction = (
   communityDistrict: string,
@@ -30,11 +32,33 @@ export type CommunityDistrictDataFetcherFunction = (
   endDate: Date,
 ) => Promise<ChartData[]>;
 
-export default memo(function CommunityDistrictData() {
-  const [borough, setBorough] = React.useState<string | undefined>(undefined);
-  const [communityDistrict, setCommunityDistrict] = React.useState<
-    number | undefined
-  >(undefined);
+function parseBorough(input: string): Borough | '' {
+  if (isBorough(input)) {
+    return input;
+  } else {
+    return '';
+  }
+}
+
+function parseCommunityDistrict(input: string): number | '' {
+  if (!isNaN(parseInt(input))) {
+    return parseInt(input);
+  } else {
+    return '';
+  }
+}
+
+export default function CommunityDistrictData() {
+  const [borough, setBorough] = useQueryState('borough', {
+    parse: parseBorough,
+    defaultValue: '',
+    clearOnDefault: true,
+  });
+  const [communityDistrict, setCommunityDistrict] = useQueryState('district', {
+    parse: parseCommunityDistrict,
+    defaultValue: '',
+    clearOnDefault: true,
+  });
   const [timeframe, setTimeframe] = React.useState<Timeframe | undefined>(
     undefined,
   );
@@ -45,13 +69,15 @@ export default memo(function CommunityDistrictData() {
   React.useEffect(() => {
     let ignore = false;
 
-    if (communityDistrict !== undefined) {
-      setIsLoading(true);
-      setTimeframe(undefined);
+    // Wait for timeframe to be undefined to make sure Topline has an undefined
+    // timeframe, otherwise it will try to immediately call the data fetcher
+    // function, which prevents getTimeframeData from executing
+    // ...for some reason.
+    if (communityDistrict !== '' && timeframe === undefined) {
       getTimeframeData({ station: { communityDistrict } }).then((newData) => {
         if (!ignore) {
-          setTimeframe(newData);
           setIsLoading(false);
+          setTimeframe(newData);
         }
       });
     }
@@ -59,7 +85,7 @@ export default memo(function CommunityDistrictData() {
     return () => {
       ignore = true;
     };
-  }, [communityDistrict]);
+  }, [communityDistrict, timeframe]);
 
   const dataFetcherFunc: CommunityDistrictDataFetcherFunction = (
     communityDistrict: string,
@@ -110,12 +136,15 @@ export default memo(function CommunityDistrictData() {
             value={communityDistrict}
             label='community district'
             onChange={(e) => {
-              setBorough(
-                communityDistricts.find(
-                  (cd) => cd.communityDistrict === e.target.value,
-                )?.borough,
-              );
+              const newBorough = communityDistricts.find(
+                (cd) => cd.communityDistrict === e.target.value,
+              )?.borough;
+              if (isBorough(newBorough ?? '') && newBorough !== undefined) {
+                setBorough(newBorough);
+              }
               setCommunityDistrict(parseInt(`${e.target.value}`) ?? undefined);
+              setTimeframe(undefined);
+              setIsLoading(true);
             }}
           >
             {groupedMenuItems.map(({ borough, communityDistrict }) => {
@@ -133,18 +162,6 @@ export default memo(function CommunityDistrictData() {
         </FormControl>
       </Box>
 
-      {isLoading && (
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          <LoadingSpinner />
-        </Box>
-      )}
-
       {!isLoading && communityDistrict === undefined && (
         <Box
           sx={{
@@ -160,15 +177,16 @@ export default memo(function CommunityDistrictData() {
         </Box>
       )}
 
-      {!isLoading && communityDistrict && timeframe !== undefined && (
+      {communityDistrict && (
         <Topline
           borough={borough}
           communityDistrict={communityDistrict}
           dataFetcherFunc={() =>
             getToplineData({ station: { communityDistrict } })
           }
-          maxDate={timeframe.lastDate}
-          minDate={timeframe.firstDate}
+          maxDate={timeframe?.lastDate}
+          minDate={timeframe?.firstDate}
+          parentLoading={isLoading}
         />
       )}
 
@@ -178,10 +196,11 @@ export default memo(function CommunityDistrictData() {
             dataFetcherFunc={dataFetcherFunc}
             maxDate={timeframe?.lastDate}
             minDate={timeframe?.firstDate}
+            parentLoading={isLoading}
             userSelection={`${communityDistrict}`}
           />
         </Box>
       )}
     </>
   );
-});
+}

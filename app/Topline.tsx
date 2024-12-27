@@ -1,9 +1,23 @@
-import LoadingSpinner from './LoadingSpinner';
 import React from 'react';
 import { ToplineData } from './action';
 import { format as formatDate } from 'date-fns';
-import { Box, Tooltip, Typography } from '@mui/material';
+import { Box, Skeleton, Tooltip, Typography } from '@mui/material';
 import { differenceInCalendarDays, differenceInCalendarMonths } from 'date-fns';
+
+const InlineSkeleton = ({
+  width,
+  height,
+}: {
+  width: number;
+  height: number;
+}) => (
+  <Skeleton
+    sx={{ display: 'inline-block', mx: '10px', my: '-10px' }}
+    variant='rounded'
+    height={height}
+    width={width}
+  />
+);
 
 function Bold({
   children,
@@ -28,32 +42,47 @@ export default function Topline({
   communityDistrict,
   councilDistrict,
   dataFetcherFunc,
-  stationName,
   maxDate,
   minDate,
   outOfDate,
+  parentLoading,
+  stationName,
 }: {
   borough?: string;
   communityDistrict?: number;
   councilDistrict?: number;
   dataFetcherFunc: () => Promise<ToplineData | undefined>;
-  stationName?: string;
-  maxDate: Date;
-  minDate: Date;
+  maxDate?: Date;
+  minDate?: Date;
   outOfDate?: boolean;
+  parentLoading?: boolean;
+  stationName?: string;
 }) {
   const [data, setData] = React.useState<ToplineData | undefined>(undefined);
   const [isLoading, setIsLoading] = React.useState(false);
 
+  // The moment the parent starts loading, dump the data
+  React.useEffect(() => {
+    if (parentLoading) {
+      setData(undefined);
+    }
+  }, [parentLoading]);
+
   React.useEffect(() => {
     let ignore = false;
 
-    if (borough || stationName || councilDistrict || communityDistrict) {
+    if (
+      dataFetcherFunc
+      && !parentLoading
+      && maxDate
+      && minDate
+      && (borough || stationName || councilDistrict || communityDistrict)
+    ) {
       setIsLoading(true);
       dataFetcherFunc().then((newData) => {
         if (!ignore) {
-          setData(newData);
           setIsLoading(false);
+          setData(newData);
         }
       });
     }
@@ -66,155 +95,176 @@ export default function Topline({
     communityDistrict,
     councilDistrict,
     dataFetcherFunc,
-    stationName,
-    minDate,
     maxDate,
+    minDate,
+    parentLoading,
+    stationName,
   ]);
 
-  if (isLoading) {
-    return (
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-      >
-        <LoadingSpinner />
-      </Box>
-    );
-  } else if (data === undefined) {
-    return null;
-  } else {
-    const totalTrips = data.trips.electric + data.trips.acoustic;
-    const months = differenceInCalendarMonths(maxDate, minDate);
-    const days = differenceInCalendarDays(maxDate, minDate);
-    const perMonth = Math.round(totalTrips / months);
-    const perDay = Math.round(totalTrips / days);
-    const eBikes =
-      data.tripsSinceFirstElectric > 0
-        ? Math.round((data.trips.electric / data.tripsSinceFirstElectric) * 100)
-        : 0;
+  const totalTrips = data
+    ? data.trips.electric + data.trips.acoustic
+    : undefined;
+  const months =
+    maxDate && minDate
+      ? differenceInCalendarMonths(maxDate, minDate)
+      : undefined;
+  const days =
+    maxDate && minDate ? differenceInCalendarDays(maxDate, minDate) : undefined;
+  const perMonth =
+    totalTrips && months ? Math.round(totalTrips / months) : undefined;
+  const perDay = totalTrips && days ? Math.round(totalTrips / days) : undefined;
+  const eBikes = data
+    ? data.tripsSinceFirstElectric > 0
+      ? Math.round((data.trips.electric / data.tripsSinceFirstElectric) * 100)
+      : 0
+    : undefined;
 
-    let unit;
+  let unit;
 
-    if (communityDistrict) {
-      unit = 'community district';
-    } else if (councilDistrict) {
-      unit = 'council district';
-    } else if (stationName) {
-      unit = 'station';
-    } else if (borough) {
-      // this needs to be last
-      unit = 'borough';
-    }
+  if (communityDistrict) {
+    unit = 'community district';
+  } else if (councilDistrict) {
+    unit = 'council district';
+  } else if (stationName) {
+    unit = 'station';
+  } else if (borough) {
+    // this needs to be last
+    unit = 'borough';
+  }
 
-    const eBikeTooltipTitle = `Percent of trips that were on eBikes since this ${unit} saw its first eBike trip.`;
+  const eBikeTooltipTitle = `Percent of trips that were on eBikes since this ${unit} saw its first eBike trip.`;
+  const loading = isLoading || parentLoading === true;
 
-    return (
-      <>
-        <Box sx={{ marginTop: 4, marginBottom: 2 }}>
-          <Typography fontSize='2rem'>
-            <>
-              {stationName && (
-                <>
-                  The station at
-                  <Bold>{` ${stationName} `}</Bold>
-                  in
-                  <Bold>{` ${borough === 'Bronx' ? 'the Bronx' : borough} `}</Bold>
-                  has
-                </>
-              )}
-              {communityDistrict && (
+  return (
+    <>
+      <Box sx={{ marginTop: 4, marginBottom: 2 }}>
+        <Typography fontSize='2rem'>
+          <>
+            {stationName && (
+              <>
+                The station at
+                <Bold>{` ${stationName} `}</Bold>
+                in
+                <Bold>{` ${borough === 'Bronx' ? 'the Bronx' : borough} `}</Bold>
+                has
+              </>
+            )}
+            {communityDistrict && (
+              <>
+                Stations in
+                <Bold>{` Community District ${communityDistrict} `}</Bold>
+                in
+                <Bold>{` ${borough === 'Bronx' ? 'the Bronx' : borough} `}</Bold>
+                have
+              </>
+            )}
+            {councilDistrict && (
+              <>
+                Stations in
+                <Bold>{` Council District ${councilDistrict} `}</Bold>
+                in
+                <Bold>{` ${borough === 'Bronx' ? 'the Bronx' : borough} `}</Bold>
+                have
+              </>
+            )}
+            {!stationName
+              && !councilDistrict
+              && !communityDistrict
+              && borough && (
                 <>
                   Stations in
-                  <Bold>{` Community District ${communityDistrict} `}</Bold>
-                  in
                   <Bold>{` ${borough === 'Bronx' ? 'the Bronx' : borough} `}</Bold>
                   have
                 </>
-              )}
-              {councilDistrict && (
-                <>
-                  Stations in
-                  <Bold>{` Council District ${councilDistrict} `}</Bold>
-                  in
-                  <Bold>{` ${borough === 'Bronx' ? 'the Bronx' : borough} `}</Bold>
-                  have
-                </>
-              )}
-              {!stationName
-                && !councilDistrict
-                && !communityDistrict
-                && borough && (
-                  <>
-                    Stations in
-                    <Bold>{` ${borough === 'Bronx' ? 'the Bronx' : borough} `}</Bold>
-                    have
-                  </>
-                )}{' '}
-              been used
+              )}{' '}
+            been used
+            {!loading && totalTrips ? (
               <Bold>{` ${totalTrips.toLocaleString('en-US')} `}</Bold>
-              times between
+            ) : (
+              <InlineSkeleton height={40} width={150} />
+            )}
+            times between
+            {minDate ? (
               <Bold>{` ${formatDate(minDate, 'MMMM yyyy')} `}</Bold>
-              and{' '}
+            ) : (
+              <InlineSkeleton height={40} width={150} />
+            )}
+            and
+            {maxDate ? (
               <Bold
                 highlight={outOfDate}
-              >{`${formatDate(maxDate, 'MMMM yyyy')}`}</Bold>
-              .
-            </>
+              >{` ${formatDate(maxDate, 'MMMM yyyy')} `}</Bold>
+            ) : (
+              <InlineSkeleton height={40} width={150} />
+            )}
+            .
+          </>
+        </Typography>
+      </Box>
+
+      <Box
+        sx={{
+          alignItems: 'flex-start',
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: 3,
+          justifyContent: 'space-around',
+          marginBottom: 4,
+          width: '100%',
+        }}
+      >
+        <Box sx={{ textAlign: 'center' }}>
+          <Typography fontSize='4rem' fontWeight='bold'>
+            {!loading && perMonth ? (
+              perMonth.toLocaleString('en-US')
+            ) : (
+              <InlineSkeleton height={60} width={150} />
+            )}
+          </Typography>
+          <Typography sx={{ marginTop: '-1rem' }}>uses per month</Typography>
+        </Box>
+        <Box sx={{ textAlign: 'center' }}>
+          <Typography fontSize='4rem' fontWeight='bold'>
+            {!loading && perDay ? (
+              perDay.toLocaleString('en-US')
+            ) : (
+              <InlineSkeleton height={60} width={150} />
+            )}
+          </Typography>
+          <Typography sx={{ marginTop: '-1rem' }}> uses per day </Typography>
+        </Box>
+        <Box sx={{ textAlign: 'center' }}>
+          <Typography fontSize='4rem' fontWeight='bold'>
+            {!loading && eBikes ? (
+              `${eBikes}%`
+            ) : (
+              <span>
+                <InlineSkeleton height={60} width={100} />%
+              </span>
+            )}
+          </Typography>
+          <Typography sx={{ marginTop: '-1rem' }}>
+            on{' '}
+            <Tooltip title={eBikeTooltipTitle}>
+              <Typography component='span'>
+                {String.fromCodePoint(0x26a1)}eBikes
+                <Typography
+                  tabIndex={0}
+                  component='span'
+                  sx={{
+                    color: '#0034DF',
+                    cursor: 'pointer',
+                    display: 'inline',
+                    textDecoration: 'underline',
+                  }}
+                >
+                  *
+                </Typography>
+              </Typography>
+            </Tooltip>
           </Typography>
         </Box>
-        <Box
-          sx={{
-            alignItems: 'flex-start',
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: 3,
-            justifyContent: 'space-around',
-            marginBottom: 4,
-            width: '100%',
-          }}
-        >
-          <Box sx={{ textAlign: 'center' }}>
-            <Typography fontSize='4rem' fontWeight='bold'>
-              {perMonth.toLocaleString('en-US')}
-            </Typography>
-            <Typography sx={{ marginTop: '-1rem' }}>uses per month</Typography>
-          </Box>
-          <Box sx={{ textAlign: 'center' }}>
-            <Typography fontSize='4rem' fontWeight='bold'>
-              {perDay.toLocaleString('en-US')}
-            </Typography>
-            <Typography sx={{ marginTop: '-1rem' }}> uses per day </Typography>
-          </Box>
-          <Box sx={{ textAlign: 'center' }}>
-            <Typography fontSize='4rem' fontWeight='bold'>
-              {eBikes}%
-            </Typography>
-            <Typography sx={{ marginTop: '-1rem' }}>
-              on{' '}
-              <Tooltip title={eBikeTooltipTitle}>
-                <Typography component='span'>
-                  {String.fromCodePoint(0x26a1)}eBikes
-                  <Typography
-                    tabIndex={0}
-                    component='span'
-                    sx={{
-                      color: '#0034DF',
-                      cursor: 'pointer',
-                      display: 'inline',
-                      textDecoration: 'underline',
-                    }}
-                  >
-                    *
-                  </Typography>
-                </Typography>
-              </Tooltip>
-            </Typography>
-          </Box>
-        </Box>
-      </>
-    );
-  }
+      </Box>
+    </>
+  );
 }

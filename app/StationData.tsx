@@ -2,7 +2,6 @@
 
 import DataContainer from './DataContainer';
 import { Granularity } from './constants';
-import LoadingSpinner from './LoadingSpinner';
 import { StationsContext } from './StationsProvider';
 import Topline from './Topline';
 import { isBorough } from './utils';
@@ -22,13 +21,14 @@ import {
   Typography,
 } from '@mui/material';
 import { Borough, ChartData, getMostRecentDateInDatabase } from './action';
-import React, { SyntheticEvent, memo, useContext } from 'react';
+import React, { SyntheticEvent, useContext } from 'react';
 import {
   Timeframe,
   getChartData,
   getTimeframeData,
   getToplineData,
 } from './action';
+import { parseAsString, useQueryState } from 'nuqs';
 
 export type StationDataFetcherFunction = (
   stationId: string,
@@ -36,11 +36,6 @@ export type StationDataFetcherFunction = (
   startDate: Date,
   endDate: Date,
 ) => Promise<ChartData[]>;
-
-interface Station {
-  id: number;
-  name: string;
-}
 
 function Bold({ children }: { children: string }) {
   return (
@@ -50,9 +45,33 @@ function Bold({ children }: { children: string }) {
   );
 }
 
-export default memo(function StationData() {
-  const [borough, setBorough] = React.useState<Borough>('Brooklyn');
-  const [station, setStation] = React.useState<Station>({ name: '', id: 0 });
+function parseBorough(input: string): Borough {
+  if (isBorough(input)) {
+    return input;
+  } else {
+    return 'Brooklyn';
+  }
+}
+
+function parseStationId(input: string): number {
+  return !isNaN(parseInt(input)) ? parseInt(input) : 0;
+}
+
+export default function StationData() {
+  const [borough, setBorough] = useQueryState('borough', {
+    parse: parseBorough,
+    defaultValue: 'Brooklyn',
+    clearOnDefault: true,
+  });
+  const [stationName, setStationName] = useQueryState(
+    'name',
+    parseAsString.withDefault(''),
+  );
+  const [stationId, setStationId] = useQueryState('id', {
+    parse: parseStationId,
+    defaultValue: 0,
+    clearOnDefault: true,
+  });
   const [isLoading, setIsLoading] = React.useState(false);
   const [mostRecentMonth, setMostRecentMonth] = React.useState<number>(0);
   const [mostRecentYear, setMostRecentYear] = React.useState<number>(0);
@@ -61,7 +80,12 @@ export default memo(function StationData() {
   );
 
   function clearStation() {
-    setStation({ name: '', id: 0 });
+    setStationName('');
+    setStationId(0);
+  }
+
+  if (!isBorough(borough)) {
+    throw 'Borough is incorrectly defined';
   }
 
   const stations = useContext(StationsContext)[borough];
@@ -71,6 +95,7 @@ export default memo(function StationData() {
     .sort((a, b) => (a > b ? 1 : -1));
 
   function handleBoroughChange(event: SelectChangeEvent) {
+    setTimeframe(undefined);
     const value = event.target.value;
 
     if (isBorough(value)) {
@@ -80,15 +105,15 @@ export default memo(function StationData() {
   }
 
   function handleStationChange(event: SyntheticEvent, value: string | null) {
+    setTimeframe(undefined);
     if (value === null || value === '') {
       clearStation();
     } else {
+      setIsLoading(true);
       const id = stations.find((d) => d.name === value)?.id;
       if (id !== undefined) {
-        setStation({
-          name: value,
-          id,
-        });
+        setStationName(value);
+        setStationId(id);
       }
     }
   }
@@ -106,10 +131,8 @@ export default memo(function StationData() {
   React.useEffect(() => {
     let ignore = false;
 
-    if (station.name !== '') {
-      setIsLoading(true);
-      setTimeframe(undefined);
-      getTimeframeData({ stationId: station.id }).then((newData) => {
+    if (stationName !== '' && timeframe === undefined) {
+      getTimeframeData({ stationId }).then((newData) => {
         if (!ignore) {
           setTimeframe(newData);
           setIsLoading(false);
@@ -120,7 +143,7 @@ export default memo(function StationData() {
     return () => {
       ignore = true;
     };
-  }, [station]);
+  }, [stationId, stationName, timeframe]);
 
   const dataFetcherFunc: StationDataFetcherFunction = (
     stationId: string,
@@ -180,7 +203,7 @@ export default memo(function StationData() {
           sx={{ width: '100%' }}
           id='player'
           options={['', ...stationNames]}
-          value={station.name}
+          value={stationName}
           blurOnSelect='touch'
           filterOptions={(stations, { inputValue }) => {
             const inputTokens = inputValue
@@ -255,19 +278,7 @@ export default memo(function StationData() {
         </Alert>
       )}
 
-      {isLoading && (
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          <LoadingSpinner />
-        </Box>
-      )}
-
-      {!isLoading && (station.name === '' || timeframe === undefined) && (
+      {!isLoading && stationName === '' && (
         <Box
           sx={{
             display: 'flex',
@@ -284,27 +295,29 @@ export default memo(function StationData() {
         </Box>
       )}
 
-      {!isLoading && station.name !== '' && timeframe !== undefined && (
+      {stationName !== '' && (
         <Topline
           borough={borough}
-          dataFetcherFunc={() => getToplineData({ stationId: station.id })}
-          stationName={station.name}
-          maxDate={timeframe.lastDate}
-          minDate={timeframe.firstDate}
+          dataFetcherFunc={() => getToplineData({ stationId })}
+          maxDate={timeframe?.lastDate}
+          minDate={timeframe?.firstDate}
           outOfDate={dataIsNotUpToDate}
+          parentLoading={isLoading}
+          stationName={stationName}
         />
       )}
 
-      {station.name && (
+      {stationName !== '' && (
         <Box sx={{ paddingBottom: 5 }}>
           <DataContainer
             dataFetcherFunc={dataFetcherFunc}
             maxDate={timeframe?.lastDate}
             minDate={timeframe?.firstDate}
-            userSelection={`${station.id}`}
+            parentLoading={isLoading}
+            userSelection={`${stationId}`}
           />
         </Box>
       )}
     </>
   );
-});
+}

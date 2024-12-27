@@ -6,10 +6,8 @@ import { CouncilDistrictDataFetcherFunction } from './CouncilDistrictData';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Granularity } from './constants';
 import LoadingSpinner from './LoadingSpinner';
-import React from 'react';
 import { StationDataFetcherFunction } from './StationData';
 import Table from './Table';
-
 import {
   Accordion,
   AccordionDetails,
@@ -19,6 +17,7 @@ import {
   Tabs,
   Typography,
 } from '@mui/material';
+import React, { type JSX } from 'react';
 import { max as laterDate, sub as subDate } from 'date-fns';
 
 export enum View {
@@ -67,17 +66,19 @@ export default function DataContainer({
   dataFetcherFunc,
   maxDate,
   minDate,
+  parentLoading,
   userSelection, // a station id, borough, community district, or council district
 }: {
   dataFetcherFunc: DataFetcherFunction;
-  maxDate: Date | undefined;
-  minDate: Date | undefined;
+  maxDate?: Date;
+  minDate?: Date;
+  parentLoading?: boolean;
   userSelection: string; // stringifying stationIds just for this component
 }) {
   const [accordionOpen, setAccordionOpen] = React.useState(false);
   const [selection, setSelection] = React.useState<View>(View.Chart);
 
-  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const [isLoading, setLoading] = React.useState(false);
   const [data, setData] = React.useState<ChartData[] | undefined>(undefined);
 
   const [endDate, setEndDate] = React.useState<Date | undefined>(maxDate);
@@ -92,8 +93,9 @@ export default function DataContainer({
     Granularity.Monthly,
   );
 
-  const scrollRef = React.useRef<null | HTMLDivElement>();
+  const scrollRef = React.useRef<null | HTMLDivElement>(undefined);
   const daily = granularity === Granularity.Daily;
+  const loading = isLoading || parentLoading === true;
 
   // There's a lot going on with these useEffects. Basically what's going on is
   // that this component is handling its own data (the data used for the chart)
@@ -118,6 +120,13 @@ export default function DataContainer({
     setEndDate(undefined);
   }, [userSelection]);
 
+  // The moment the parent starts loading, dump the data
+  React.useEffect(() => {
+    if (parentLoading) {
+      setData(undefined);
+    }
+  }, [parentLoading]);
+
   // This handles the case when we minDate and maxDate come in from the parent
   // component and is not already set (because we just changed the selection).
   // We want to use those to set the default date range.
@@ -137,13 +146,13 @@ export default function DataContainer({
   React.useEffect(() => {
     let ignore = false;
 
-    if (userSelection !== undefined && startDate && endDate) {
-      setIsLoading(true);
+    if (userSelection !== undefined && !parentLoading && startDate && endDate) {
+      setLoading(true);
       dataFetcherFunc(userSelection, granularity, startDate, endDate).then(
         (newData) => {
           if (!ignore) {
+            setLoading(false);
             setData(newData);
-            setIsLoading(false);
             scrollRef.current?.scrollIntoView();
           }
         },
@@ -153,11 +162,15 @@ export default function DataContainer({
     return () => {
       ignore = true;
     };
-  }, [daily, dataFetcherFunc, granularity, endDate, startDate, userSelection]);
-
-  if (data === undefined) {
-    return null;
-  }
+  }, [
+    daily,
+    dataFetcherFunc,
+    endDate,
+    granularity,
+    parentLoading,
+    startDate,
+    userSelection,
+  ]);
 
   function handleAccordionChange() {
     setAccordionOpen(!accordionOpen);
@@ -209,15 +222,11 @@ export default function DataContainer({
                 <Tab label='Table' {...a11yProps(1)} />
               </Tabs>
               <TabPanel value={selection} index={0}>
-                <ChartContainer
-                  isLoading={isLoading}
-                  daily={daily}
-                  data={data}
-                />
+                <ChartContainer isLoading={loading} daily={daily} data={data} />
               </TabPanel>
 
               <TabPanel value={selection} index={1}>
-                <Table isLoading={isLoading} data={data} />
+                <Table isLoading={loading} data={data} />
               </TabPanel>
             </Box>
           ) : (

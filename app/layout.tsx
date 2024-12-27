@@ -3,6 +3,7 @@ import { Analytics } from '@vercel/analytics/react';
 import CommunityDistrictsProvider from './CommunityDistrictsProvider';
 import CouncilDistrictsProvider from './CouncilDistrictsProvider';
 import type { Metadata } from 'next';
+import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import React from 'react';
 import StationsProvider from './StationsProvider';
 import ThemeProvider from './ThemeProvider';
@@ -34,8 +35,10 @@ export default async function RootLayout({ children }: RootLayoutProps) {
           <CouncilDistrictsProvider councilDistricts={councilDistricts}>
             <CommunityDistrictsProvider communityDistricts={communityDistricts}>
               <ThemeProvider>
-                {children}
-                <Analytics />
+                <NuqsAdapter>
+                  {children}
+                  <Analytics />
+                </NuqsAdapter>
               </ThemeProvider>
             </CommunityDistrictsProvider>
           </CouncilDistrictsProvider>

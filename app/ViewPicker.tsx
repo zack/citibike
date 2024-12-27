@@ -3,20 +3,36 @@ import CommunityDistrictData from './CommunityDistrictData';
 import CouncilDistrictData from './CouncilDistrictData';
 import StationData from './StationData';
 import { Typography } from '@mui/material';
+import { useQueryState } from 'nuqs';
 import { Box, ToggleButton, ToggleButtonGroup } from '@mui/material';
 
 import React, { memo } from 'react';
+const views = ['station', 'borough', 'community', 'council'];
+type View = (typeof views)[number];
 
-type View = 'station' | 'borough' | 'community' | 'council';
+function parseView(input: string): View {
+  if (views.includes(input)) {
+    return input;
+  } else {
+    return '';
+  }
+}
 
 export default memo(function ViewPicker() {
-  const [view, setView] = React.useState<View>('station');
+  const [view, setView] = useQueryState('view', {
+    parse: parseView,
+    defaultValue: null,
+    clearOnDefault: true,
+  });
 
   const handleViewChange = (
     _e: React.MouseEvent<HTMLElement>,
     newView: View,
   ) => {
     if (newView) {
+      setTimeout(() => {
+        history.replaceState(null, '', location.pathname);
+      }, 0);
       setView(newView);
     }
   };
@@ -52,30 +68,37 @@ export default memo(function ViewPicker() {
         </ToggleButtonGroup>
       </div>
 
-      <Box
-        sx={{ display: view === 'borough' ? 'block' : 'none', height: '50vh' }}
-      >
-        <BoroughData />
-      </Box>
+      {view === 'borough' && (
+        <Box sx={{ height: '50vh' }}>
+          <React.Suspense>
+            <BoroughData />
+          </React.Suspense>
+        </Box>
+      )}
 
-      <Box
-        sx={{
-          display: view === 'community' ? 'block' : 'none',
-          height: '50vh',
-        }}
-      >
-        <CommunityDistrictData />
-      </Box>
+      {view === 'community' && (
+        <Box sx={{ height: '50vh' }}>
+          <React.Suspense>
+            <CommunityDistrictData />
+          </React.Suspense>
+        </Box>
+      )}
 
-      <Box
-        sx={{ display: view === 'council' ? 'block' : 'none', height: '50vh' }}
-      >
-        <CouncilDistrictData />
-      </Box>
+      {view === 'council' && (
+        <Box sx={{ height: '50vh' }}>
+          <React.Suspense>
+            <CouncilDistrictData />
+          </React.Suspense>
+        </Box>
+      )}
 
-      <Box sx={{ display: view === 'station' ? 'block' : 'none', height: '50vh' }}>
-        <StationData />
-      </Box>
+      {view === 'station' && (
+        <Box sx={{ height: '50vh' }}>
+          <React.Suspense>
+            <StationData />
+          </React.Suspense>
+        </Box>
+      )}
     </Box>
   );
 });

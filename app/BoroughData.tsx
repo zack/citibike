@@ -1,11 +1,11 @@
 'use client';
-
 import { ChartData } from './action';
 import DataContainer from './DataContainer';
 import { Granularity } from './constants';
-import LoadingSpinner from './LoadingSpinner';
+import React from 'react';
 import Topline from './Topline';
 import { isBorough } from './utils';
+import { useQueryState } from 'nuqs';
 import {
   Borough,
   Timeframe,
@@ -22,7 +22,6 @@ import {
   SelectChangeEvent,
   Typography,
 } from '@mui/material';
-import React, { memo } from 'react';
 
 export type BoroughDataFetcherFunction = (
   borough: string,
@@ -31,30 +30,46 @@ export type BoroughDataFetcherFunction = (
   endDate: Date,
 ) => Promise<ChartData[]>;
 
-export default memo(function BoroughData() {
-  const [borough, setBorough] = React.useState<Borough | ''>('');
+function parseBorough(input: string): Borough | '' {
+  if (isBorough(input)) {
+    return input;
+  } else {
+    return '';
+  }
+}
+
+export default function BoroughData() {
+  const [borough, setBorough] = useQueryState('borough', {
+    parse: parseBorough,
+    defaultValue: '',
+    clearOnDefault: true,
+  });
+  const [isLoading, setLoading] = React.useState(false);
   const [timeframe, setTimeframe] = React.useState<Timeframe | undefined>(
     undefined,
   );
-  const [isLoading, setIsLoading] = React.useState(false);
 
   function handleBoroughChange(event: SelectChangeEvent<Borough>) {
     const value = event.target.value;
     if (isBorough(value)) {
       setBorough(value);
+      setTimeframe(undefined);
+      setLoading(true);
     }
   }
 
   React.useEffect(() => {
     let ignore = false;
 
-    if (borough) {
-      setIsLoading(true);
-      setTimeframe(undefined);
+    // Wait for timeframe to be undefined to make sure Topline has an undefined
+    // timeframe, otherwise it will try to immediately call the data fetcher
+    // function, which prevents getTimeframeData from executing
+    // ...for some reason.
+    if (isBorough(borough) && timeframe === undefined) {
       getTimeframeData({ station: { borough } }).then((newData) => {
         if (!ignore) {
+          setLoading(false);
           setTimeframe(newData);
-          setIsLoading(false);
         }
       });
     }
@@ -62,7 +77,7 @@ export default memo(function BoroughData() {
     return () => {
       ignore = true;
     };
-  }, [borough]);
+  }, [borough, timeframe]);
 
   const dataFetcherFunc: BoroughDataFetcherFunction = (
     borough: string,
@@ -94,7 +109,7 @@ export default memo(function BoroughData() {
           <Select
             labelId='borough-options-label'
             id='borough-options'
-            value={borough}
+            value={isBorough(borough) ? borough : ''}
             label='borough'
             onChange={handleBoroughChange}
           >
@@ -106,20 +121,7 @@ export default memo(function BoroughData() {
           </Select>
         </FormControl>
       </Box>
-
-      {isLoading && (
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          <LoadingSpinner />
-        </Box>
-      )}
-
-      {!isLoading && !borough && (
+      {!isBorough(borough) && (
         <Box
           sx={{
             display: 'flex',
@@ -133,26 +135,27 @@ export default memo(function BoroughData() {
           </Typography>
         </Box>
       )}
-
-      {!isLoading && borough && timeframe !== undefined && (
-        <Topline
-          borough={borough}
-          dataFetcherFunc={() => getToplineData({ station: { borough } })}
-          maxDate={timeframe.lastDate}
-          minDate={timeframe.firstDate}
-        />
-      )}
-
-      {timeframe !== undefined && borough && (
-        <Box sx={{ paddingBottom: 5 }}>
-          <DataContainer
-            dataFetcherFunc={dataFetcherFunc}
+      {isBorough(borough) && (
+        <>
+          <Topline
+            borough={borough}
+            dataFetcherFunc={() => getToplineData({ station: { borough } })}
             maxDate={timeframe?.lastDate}
             minDate={timeframe?.firstDate}
-            userSelection={borough}
+            parentLoading={isLoading}
           />
-        </Box>
+
+          <Box sx={{ paddingBottom: 5 }}>
+            <DataContainer
+              dataFetcherFunc={dataFetcherFunc}
+              maxDate={timeframe?.lastDate}
+              minDate={timeframe?.firstDate}
+              parentLoading={isLoading}
+              userSelection={borough}
+            />
+          </Box>
+        </>
       )}
     </>
   );
-});
+}
