@@ -134,7 +134,8 @@ async function downloadAndUnzipFiles(
     const zip = new adm(zipLocation);
     const zipEntries = zip
       .getEntries()
-      .filter((entry) => !entry.entryName.includes('__MACOSX'));
+      .filter((entry) => !entry.entryName.includes('__MACOSX'))
+      .filter((entry) => !entry.entryName.includes('.DS_Store'));
 
     // Citi Bike maintains two different nested file structures
     const oldFormat = zipEntries.some((entry) => entry.entryName.includes('_'));
