@@ -111,7 +111,9 @@ export default function Topline({
   const days =
     maxDate && minDate ? differenceInCalendarDays(maxDate, minDate) : undefined;
   const perMonth =
-    totalTrips && months ? Math.round(totalTrips / months) : undefined;
+    totalTrips && months !== undefined
+      ? Math.round(totalTrips / Math.max(months, 1))
+      : undefined;
   const perDay = totalTrips && days ? Math.round(totalTrips / days) : undefined;
   const eBikes = data
     ? data.tripsSinceFirstElectric > 0
@@ -133,7 +135,7 @@ export default function Topline({
   }
 
   const eBikeTooltipTitle = `Percent of trips that were on eBikes since this ${unit} saw its first eBike trip.`;
-  const loading = isLoading || parentLoading === true;
+  const loading = isLoading || parentLoading;
 
   return (
     <>
@@ -221,7 +223,7 @@ export default function Topline({
             {!loading && perMonth ? (
               perMonth.toLocaleString('en-US')
             ) : (
-              <InlineSkeleton height={60} width={150} />
+              <InlineSkeleton height={60} width={120} />
             )}
           </Typography>
           <Typography sx={{ marginTop: '-1rem' }}>uses per month</Typography>
@@ -231,20 +233,20 @@ export default function Topline({
             {!loading && perDay ? (
               perDay.toLocaleString('en-US')
             ) : (
-              <InlineSkeleton height={60} width={150} />
+              <InlineSkeleton height={60} width={120} />
             )}
           </Typography>
           <Typography sx={{ marginTop: '-1rem' }}> uses per day </Typography>
         </Box>
         <Box sx={{ textAlign: 'center' }}>
           <Typography fontSize='4rem' fontWeight='bold'>
-            {!loading && eBikes ? (
-              `${eBikes}%`
-            ) : (
+            {!loading && eBikes && eBikes > 0 ? `${eBikes}%` : null}
+            {!loading && eBikes === 0 ? 'n/a' : null}
+            {loading || eBikes === undefined ? (
               <span>
-                <InlineSkeleton height={60} width={100} />%
+                <InlineSkeleton height={60} width={120} />
               </span>
-            )}
+            ) : null}
           </Typography>
           <Typography sx={{ marginTop: '-1rem' }}>
             on{' '}
