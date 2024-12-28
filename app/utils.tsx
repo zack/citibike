@@ -1,9 +1,8 @@
-function isBorough(value: string) {
-  return (
-    value === 'Bronx'
-    || value === 'Brooklyn'
-    || value === 'Manhattan'
-    || value === 'Queens'
+import { Borough } from './action';
+
+function isBorough(value: string): value is Borough {
+  return ['Bronx', 'Brooklyn', 'Manhattan', 'Queens'].includes(
+    value as Borough,
   );
 }
 

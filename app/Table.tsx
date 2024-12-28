@@ -30,10 +30,10 @@ export default function Table({
   data,
   isLoading,
 }: {
-  data: ChartData[];
+  data?: ChartData[];
   isLoading: boolean;
 }) {
-  const daily = data[0].day !== undefined;
+  const daily = data ? data[0].day !== undefined : true;
 
   const columns: GridColDef[] = [
     {
@@ -58,7 +58,7 @@ export default function Table({
     },
   ];
 
-  const tableData = data.map((row): ChartDataRow => {
+  const tableData = data?.map((row): ChartDataRow => {
     const base = {
       acoustic: row.acoustic,
       electric: row.electric,
@@ -82,7 +82,7 @@ export default function Table({
     }
   });
 
-  tableData.sort((a, b) => {
+  tableData?.sort((a, b) => {
     if (a.date && b.date) {
       return b.date.localeCompare(a.date);
     } else if (a.month && b.month) {
@@ -110,7 +110,7 @@ export default function Table({
       >
         <LoadingSpinner />
       </Box>
-      {isLoading ? null : (
+      {isLoading || !tableData ? null : (
         <DataGrid
           columns={columns}
           rows={tableData}

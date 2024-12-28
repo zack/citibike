@@ -167,21 +167,25 @@ export default function FAQ() {
         and related topics?
       </Typography>
 
-      <Typography>
-        <ul>
-          <li>
+      <ul>
+        <li>
+          <Typography>
             <a href='https://thewaroncars.org/'>The War on Cars</a>
-          </li>
-          <li>
+          </Typography>
+        </li>
+        <li>
+          <Typography>
             <a href='https://linktr.ee/deniersplaybook'>
               The Climate Denier&apos;s Playbook
             </a>
-          </li>
-          <li>
+          </Typography>
+        </li>
+        <li>
+          <Typography>
             <a href='https://nebula.tv/agenda'>The Urbanist Agenda</a>
-          </li>
-        </ul>
-      </Typography>
+          </Typography>
+        </li>
+      </ul>
     </Box>
   );
 }

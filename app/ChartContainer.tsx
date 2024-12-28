@@ -33,9 +33,9 @@ export default function ChartContainer({
 }: {
   isLoading: boolean;
   daily: boolean;
-  data: ChartData[];
+  data?: ChartData[];
 }) {
-  const chartData: NamedChartData[] = data
+  const chartData: NamedChartData[] | undefined = data
     ?.map((data) => ({
       acoustic: data.acoustic,
       day: data.day,
@@ -68,7 +68,9 @@ export default function ChartContainer({
       >
         <LoadingSpinner />
       </Box>
-      {isLoading ? null : <Chart daily={daily} chartData={chartData} />}
+      {isLoading || !chartData ? null : (
+        <Chart daily={daily} chartData={chartData} />
+      )}
     </>
   );
 }

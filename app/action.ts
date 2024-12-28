@@ -1,7 +1,6 @@
 'use server';
 
 import { isBorough } from './utils';
-
 import prisma from '@/prisma/db';
 
 export type Borough = 'Bronx' | 'Brooklyn' | 'Manhattan' | 'Queens';

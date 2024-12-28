@@ -16,7 +16,9 @@ export default function FAQContainer() {
 
       {/* Don't lose state when FAQ is opened */}
       <Box sx={{ display: faqOpen ? 'none' : 'block', height: '100%' }}>
-        <ViewPicker />
+        <React.Suspense>
+          <ViewPicker />
+        </React.Suspense>
       </Box>
     </>
   );

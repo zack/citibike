@@ -46,11 +46,15 @@ export default memo(function Home() {
             </Typography>
 
             <Box sx={{ display: 'flex-item', mb: 1 }}>
-              <FAQButton />
+              <React.Suspense>
+                <FAQButton />
+              </React.Suspense>
             </Box>
           </div>
 
-          <FAQContainer />
+          <React.Suspense>
+            <FAQContainer />
+          </React.Suspense>
         </Grid>
       </Grid>
     </main>
