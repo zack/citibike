@@ -191,9 +191,12 @@ export default function Topline({
             )}
             and
             {maxDate ? (
-              <Bold
-                highlight={outOfDate}
-              >{` ${formatDate(maxDate, 'MMMM yyyy')} `}</Bold>
+              <>
+                {' '}
+                <Bold
+                  highlight={outOfDate}
+                >{`${formatDate(maxDate, 'MMMM yyyy')}`}</Bold>
+              </>
             ) : (
               <InlineSkeleton height={40} width={150} />
             )}
