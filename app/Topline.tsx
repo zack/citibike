@@ -106,10 +106,12 @@ export default function Topline({
     : undefined;
   const months =
     maxDate && minDate
-      ? differenceInCalendarMonths(maxDate, minDate)
+      ? differenceInCalendarMonths(maxDate, minDate) + 1
       : undefined;
   const days =
-    maxDate && minDate ? differenceInCalendarDays(maxDate, minDate) : undefined;
+    maxDate && minDate
+      ? differenceInCalendarDays(maxDate, minDate) + 1
+      : undefined;
   const perMonth =
     totalTrips && months !== undefined
       ? Math.round(totalTrips / Math.max(months, 1))
