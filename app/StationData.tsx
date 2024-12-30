@@ -20,13 +20,9 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { Borough, ChartData, getMostRecentDateInDatabase } from './action';
+import { Borough, ChartData } from './action';
 import React, { SyntheticEvent, useContext } from 'react';
-import {
-  Timeframe,
-  getChartData,
-  getToplineData,
-} from './action';
+import { Timeframe, getChartData, getToplineData } from './action';
 import { parseAsString, useQueryState } from 'nuqs';
 
 export type StationDataFetcherFunction = (
@@ -117,13 +113,21 @@ export default function StationData() {
   }
 
   React.useEffect(() => {
-    const updateMostRecentMonthAndYear = async () => {
-      const { month, year } = await getMostRecentDateInDatabase();
-      setMostRecentMonth(month);
-      setMostRecentYear(year);
-    };
+    let ignore = false;
 
-    updateMostRecentMonthAndYear();
+    async function cb() {
+      const response = await fetch('/api/mostrecentdate');
+      if (!ignore) {
+        const { month, year } = await response.json();
+        setMostRecentMonth(month);
+        setMostRecentYear(year);
+      }
+    }
+    cb();
+
+    return () => {
+      ignore = true;
+    };
   }, []);
 
   React.useEffect(() => {
