@@ -7,13 +7,7 @@ import { Granularity } from './constants';
 import Topline from './Topline';
 import { isBorough } from './utils';
 import { useQueryState } from 'nuqs';
-import {
-  Borough,
-  Timeframe,
-  getChartData,
-  getTimeframeData,
-  getToplineData,
-} from './action';
+import { Borough, Timeframe, getChartData, getToplineData } from './action';
 import {
   Box,
   FormControl,
@@ -21,6 +15,7 @@ import {
   ListSubheader,
   MenuItem,
   Select,
+  SelectChangeEvent,
   Typography,
 } from '@mui/material';
 import React, { useContext } from 'react';
@@ -62,25 +57,46 @@ export default function CouncilDistrictData() {
   const [timeframe, setTimeframe] = React.useState<Timeframe | undefined>(
     undefined,
   );
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [isLoading, setLoading] = React.useState(false);
 
   const councilDistricts = useContext(CouncilDistrictsContext);
+
+  function handleDistrictChange(event: SelectChangeEvent<string>) {
+    const newDistrict = parseInt(event.target.value);
+    const newBorough =
+      councilDistricts.find((cd) => cd.councilDistrict === newDistrict)?.borough
+      ?? '';
+    if (isBorough(newBorough)) {
+      setBorough(newBorough);
+    }
+    setCouncilDistrict(newDistrict);
+    setTimeframe(undefined);
+  }
 
   React.useEffect(() => {
     let ignore = false;
 
-    // Wait for timeframe to be undefined to make sure Topline has an undefined
-    // timeframe, otherwise it will try to immediately call the data fetcher
-    // function, which prevents getTimeframeData from executing
-    // ...for some reason.
-    if (councilDistrict !== '' && timeframe === undefined) {
-      getTimeframeData({ station: { councilDistrict } }).then((newData) => {
+    async function cb() {
+      // Wait for timeframe to be undefined to make sure Topline has an undefined
+      // timeframe, otherwise it will try to immediately call the data fetcher
+      // function, which prevents getTimeframeData from executing
+      // ...for some reason.
+      if (councilDistrict !== '' && timeframe === undefined) {
+        setLoading(true);
+        const response = await fetch(
+          `/api/timeframe?type=council-district&specifier=${councilDistrict}`,
+        );
+        const data = await response.json();
         if (!ignore) {
-          setTimeframe(newData);
-          setIsLoading(false);
+          setLoading(false);
+          setTimeframe({
+            firstDate: new Date(data.firstDate),
+            lastDate: new Date(data.lastDate),
+          });
         }
-      });
+      }
     }
+    cb();
 
     return () => {
       ignore = true;
@@ -133,19 +149,9 @@ export default function CouncilDistrictData() {
           <Select
             labelId='council-district-options-label'
             id='council-district-options'
-            value={councilDistrict}
+            value={`${councilDistrict}`}
             label='council district'
-            onChange={(e) => {
-              const newBorough = councilDistricts.find(
-                (cd) => cd.councilDistrict === e.target.value,
-              )?.borough;
-              if (isBorough(newBorough ?? '') && newBorough !== undefined) {
-                setBorough(newBorough);
-              }
-              setCouncilDistrict(parseInt(`${e.target.value}`) ?? undefined);
-              setTimeframe(undefined);
-              setIsLoading(true);
-            }}
+            onChange={handleDistrictChange}
           >
             {groupedMenuItems.map(({ borough, councilDistrict }) => {
               if (borough) {

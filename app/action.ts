@@ -69,32 +69,6 @@ export interface Timeframe {
   lastDate: Date;
 }
 
-export async function getTimeframeData(
-  specifier: WhereSpecifier,
-): Promise<Timeframe | undefined> {
-  const first = await prisma.stationDay.findFirst({
-    where: specifier,
-    orderBy: [{ year: 'asc' }, { month: 'asc' }, { day: 'asc' }],
-  });
-
-  const last = await prisma.stationDay.findFirst({
-    where: specifier,
-    orderBy: [{ year: 'desc' }, { month: 'desc' }, { day: 'desc' }],
-  });
-
-  if (first && last) {
-    const firstDate = new Date(first.year, first.month - 1, first.day);
-    const lastDate = new Date(last.year, last.month - 1, last.day);
-
-    return {
-      firstDate,
-      lastDate,
-    };
-  } else {
-    return undefined;
-  }
-}
-
 export interface ToplineData {
   trips: {
     acoustic: number;

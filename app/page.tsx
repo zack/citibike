@@ -1,13 +1,10 @@
 import FAQButton from './FAQButton';
 import FAQContainer from './FAQContainer';
-
+import React from 'react';
 import { exoFontFamily } from './ThemeProvider';
-
 import { Box, Grid, Typography } from '@mui/material';
 
-import React, { memo } from 'react';
-
-export default memo(function Home() {
+export default function Home() {
   return (
     <main>
       <Grid
@@ -59,4 +56,4 @@ export default memo(function Home() {
       </Grid>
     </main>
   );
-});
+}

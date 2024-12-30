@@ -1,12 +1,12 @@
 import BoroughData from './BoroughData';
 import CommunityDistrictData from './CommunityDistrictData';
 import CouncilDistrictData from './CouncilDistrictData';
+import React from 'react';
 import StationData from './StationData';
 import { Typography } from '@mui/material';
 import { useQueryState } from 'nuqs';
 import { Box, ToggleButton, ToggleButtonGroup } from '@mui/material';
 
-import React, { memo } from 'react';
 const views = ['station', 'borough', 'community', 'council'];
 type View = (typeof views)[number];
 
@@ -18,7 +18,7 @@ function parseView(input: string): View {
   }
 }
 
-export default memo(function ViewPicker() {
+export default function ViewPicker() {
   const [view, setView] = useQueryState('view', {
     parse: parseView,
     defaultValue: null,
@@ -101,4 +101,4 @@ export default memo(function ViewPicker() {
       )}
     </Box>
   );
-});
+}
