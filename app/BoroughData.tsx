@@ -6,13 +6,7 @@ import React from 'react';
 import Topline from './Topline';
 import { isBorough } from './utils';
 import { useQueryState } from 'nuqs';
-import {
-  Borough,
-  Timeframe,
-  getChartData,
-  getTimeframeData,
-  getToplineData,
-} from './action';
+import { Borough, Timeframe, getChartData, getToplineData } from './action';
 import {
   Box,
   FormControl,
@@ -54,25 +48,33 @@ export default function BoroughData() {
     if (isBorough(value)) {
       setBorough(value);
       setTimeframe(undefined);
-      setLoading(true);
     }
   }
 
   React.useEffect(() => {
     let ignore = false;
 
-    // Wait for timeframe to be undefined to make sure Topline has an undefined
-    // timeframe, otherwise it will try to immediately call the data fetcher
-    // function, which prevents getTimeframeData from executing
-    // ...for some reason.
-    if (isBorough(borough) && timeframe === undefined) {
-      getTimeframeData({ station: { borough } }).then((newData) => {
+    async function cb() {
+      // Wait for timeframe to be undefined to make sure Topline has an undefined
+      // timeframe, otherwise it will try to immediately call the data fetcher
+      // function, which prevents getTimeframeData from executing
+      // ...for some reason.
+      if (isBorough(borough) && timeframe === undefined) {
+        setLoading(true);
+        const response = await fetch(
+          `/api/timeframe?type=borough&specifier=${borough}`,
+        );
+        const data = await response.json();
         if (!ignore) {
           setLoading(false);
-          setTimeframe(newData);
+          setTimeframe({
+            firstDate: new Date(data.firstDate),
+            lastDate: new Date(data.lastDate),
+          });
         }
-      });
+      }
     }
+    cb();
 
     return () => {
       ignore = true;
