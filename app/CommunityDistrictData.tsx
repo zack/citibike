@@ -7,7 +7,7 @@ import { Granularity } from './constants';
 import Topline from './Topline';
 import { isBorough } from './utils';
 import { useQueryState } from 'nuqs';
-import { Borough, Timeframe, getChartData, getToplineData } from './action';
+import { Borough, Timeframe, getChartData } from './action';
 import {
   Box,
   FormControl,
@@ -187,9 +187,7 @@ export default function CommunityDistrictData() {
         <Topline
           borough={borough}
           communityDistrict={communityDistrict}
-          dataFetcherFunc={() =>
-            getToplineData({ station: { communityDistrict } })
-          }
+          dataSpecifier={`type=community-district&specifier=${communityDistrict}`}
           maxDate={timeframe?.lastDate}
           minDate={timeframe?.firstDate}
           parentLoading={isLoading}

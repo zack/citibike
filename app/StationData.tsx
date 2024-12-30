@@ -22,7 +22,7 @@ import {
 } from '@mui/material';
 import { Borough, ChartData } from './action';
 import React, { SyntheticEvent, useContext } from 'react';
-import { Timeframe, getChartData, getToplineData } from './action';
+import { Timeframe, getChartData } from './action';
 import { parseAsString, useQueryState } from 'nuqs';
 
 export type StationDataFetcherFunction = (
@@ -313,7 +313,7 @@ export default function StationData() {
       {stationName !== '' && (
         <Topline
           borough={borough}
-          dataFetcherFunc={() => getToplineData({ stationId })}
+          dataSpecifier={`type=station&specifier=${stationId}`}
           maxDate={timeframe?.lastDate}
           minDate={timeframe?.firstDate}
           outOfDate={dataIsNotUpToDate}
