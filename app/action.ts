@@ -187,6 +187,7 @@ export async function getStations(): Promise<Stations> {
     id: number;
   }
 
+  // All of the filtering is to convince typescript that this is safe
   function isValidStation(obj: StationResult): obj is Station {
     return obj.borough !== null && isBorough(obj.borough);
   }

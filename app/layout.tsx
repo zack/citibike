@@ -24,9 +24,15 @@ interface RootLayoutProps {
 }
 
 export default async function RootLayout({ children }: RootLayoutProps) {
-  const stations = await getStations();
-  const councilDistricts = await getCouncilDistricts();
-  const communityDistricts = await getCommunityDistricts();
+  const stationsPromise = getStations();
+  const councilDistrictsPromise = getCouncilDistricts();
+  const communityDistrictsPromise = getCommunityDistricts();
+
+  const [stations, councilDistricts, communityDistricts] = await Promise.all([
+    stationsPromise,
+    councilDistrictsPromise,
+    communityDistrictsPromise,
+  ]);
 
   return (
     <html lang='en'>
