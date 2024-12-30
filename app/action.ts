@@ -266,14 +266,3 @@ export async function getCommunityDistricts() {
     .filter(isValidCommunityDistrict)
     .sort((a, b) => (a.communityDistrict > b.communityDistrict ? 1 : -1));
 }
-
-export async function getMostRecentDateInDatabase() {
-  const queryResults = await prisma.stationDay.findFirst({
-    orderBy: [{ year: 'desc' }, { month: 'desc' }, { day: 'desc' }],
-  });
-
-  return {
-    year: queryResults?.year || 0,
-    month: queryResults?.month || 0,
-  };
-}
