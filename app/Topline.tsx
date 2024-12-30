@@ -41,7 +41,7 @@ export default function Topline({
   borough,
   communityDistrict,
   councilDistrict,
-  dataFetcherFunc,
+  dataSpecifier,
   maxDate,
   minDate,
   outOfDate,
@@ -51,7 +51,7 @@ export default function Topline({
   borough?: string;
   communityDistrict?: number;
   councilDistrict?: number;
-  dataFetcherFunc: () => Promise<ToplineData | undefined>;
+  dataSpecifier: string;
   maxDate?: Date;
   minDate?: Date;
   outOfDate?: boolean;
@@ -72,21 +72,24 @@ export default function Topline({
   React.useEffect(() => {
     let ignore = false;
 
-    if (
-      dataFetcherFunc
-      && !parentLoading
-      && maxDate
-      && minDate
-      && (borough || stationName || councilDistrict || communityDistrict)
-    ) {
-      setIsLoading(true);
-      dataFetcherFunc().then((newData) => {
+    async function cb() {
+      if (
+        dataSpecifier
+        && !parentLoading
+        && maxDate
+        && minDate
+        && (borough || stationName || councilDistrict || communityDistrict)
+      ) {
+        setIsLoading(true);
+        const response = await fetch(`/api/topline?${dataSpecifier}`);
         if (!ignore) {
+          const newData = await response.json();
           setIsLoading(false);
           setData(newData);
         }
-      });
+      }
     }
+    cb();
 
     return () => {
       ignore = true;
@@ -95,7 +98,7 @@ export default function Topline({
     borough,
     communityDistrict,
     councilDistrict,
-    dataFetcherFunc,
+    dataSpecifier,
     maxDate,
     minDate,
     parentLoading,
