@@ -60,6 +60,7 @@ export default function Topline({
 }) {
   const [data, setData] = React.useState<ToplineData | undefined>(undefined);
   const [isLoading, setIsLoading] = React.useState(false);
+  const [tooltipOpen, setTooltipOpen] = React.useState(false);
 
   // The moment the parent starts loading, dump the data
   React.useEffect(() => {
@@ -250,26 +251,41 @@ export default function Topline({
               </span>
             ) : null}
           </Typography>
-          <Typography sx={{ marginTop: '-1rem' }}>
+          <Typography sx={{ marginTop: '-1rem' }} component='span'>
             on{' '}
-            <Tooltip title={eBikeTooltipTitle}>
-              <Typography component='span'>
-                {String.fromCodePoint(0x26a1)}eBikes
-                <Typography
-                  tabIndex={0}
-                  component='span'
-                  sx={{
-                    color: '#0034DF',
-                    cursor: 'pointer',
-                    display: 'inline',
-                    textDecoration: 'underline',
-                  }}
-                >
-                  *
-                </Typography>
-              </Typography>
-            </Tooltip>
           </Typography>
+          <Tooltip
+            onClose={() => setTooltipOpen(false)}
+            open={tooltipOpen}
+            disableFocusListener
+            disableHoverListener
+            disableTouchListener
+            title={eBikeTooltipTitle}
+            slotProps={{
+              popper: {
+                disablePortal: true,
+              },
+            }}
+          >
+            <Typography
+              component='span'
+              onClick={() => setTooltipOpen(!tooltipOpen)}
+            >
+              {String.fromCodePoint(0x26a1)}
+              <Typography
+                tabIndex={0}
+                component='span'
+                sx={{
+                  color: '#0034DF',
+                  cursor: 'pointer',
+                  display: 'inline',
+                  textDecoration: 'underline',
+                }}
+              >
+                eBikes
+              </Typography>
+            </Typography>
+          </Tooltip>
         </Box>
       </Box>
     </>
