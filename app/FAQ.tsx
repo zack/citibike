@@ -97,29 +97,6 @@ export default function FAQ() {
         component='h3'
         sx={{ fontFamily: exoFontFamily, marginTop: 2 }}
       >
-        Didn&apos;t this used to be about stations? What are stations?
-      </Typography>
-
-      <Typography>
-        Citi Bike{' '}
-        <a href='https://help.citibikenyc.com/hc/en-us/articles/360032104712-What-is-a-station-A-station-A-kiosk'>
-          defines
-        </a>{' '}
-        a station as the device that holds an individual bicycle. A station is a
-        row of stations. I originally was accidentally using the term
-        &apos;station&apos; when what I really meant was &apos;station&apos;. A
-        kind commenter on the{' '}
-        <a href='https://nyc.streetsblog.org/2024/07/17/wednesdays-headlines-citi-bike-by-the-numbers-edition'>
-          Streetsblog article
-        </a>{' '}
-        pointed out the mistake and I have now fixed it.
-      </Typography>
-
-      <Typography
-        variant='h6'
-        component='h3'
-        sx={{ fontFamily: exoFontFamily, marginTop: 2 }}
-      >
         I found a bug or I have a feature request or suggestion
       </Typography>
 
