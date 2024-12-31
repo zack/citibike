@@ -1,10 +1,29 @@
 import { NextResponse } from 'next/server';
-import { Borough, WhereSpecifier } from './types';
+import { Borough, Timeframe, WhereSpecifier } from './types';
 
 export function isBorough(value: string): value is Borough {
   return ['Bronx', 'Brooklyn', 'Manhattan', 'Queens'].includes(
     value as Borough,
   );
+}
+
+export function isTimeframe(input: unknown): input is Timeframe {
+  if (typeof input !== 'object' || input === null) {
+    return false;
+  }
+
+  const obj = input as Record<string, unknown>;
+
+  const keys = Object.keys(obj);
+  if (
+    keys.length !== 2
+    || !keys.includes('firstDate')
+    || !keys.includes('lastDate')
+  ) {
+    return false;
+  }
+
+  return obj.firstDate instanceof Date && obj.lastDate instanceof Date;
 }
 
 export function getQueryString(params: Record<string, string>) {
