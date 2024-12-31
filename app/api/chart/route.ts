@@ -1,6 +1,6 @@
-import { isBorough } from '../../utils';
+import { ChartData } from '../../types';
+import { getWhereSpecifier } from '../../utils';
 import prisma from '@/prisma/db';
-import { ChartData, WhereSpecifier } from '../../types';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
@@ -27,21 +27,10 @@ export async function GET(
     );
   }
 
-  let where: WhereSpecifier = {};
-
-  if (type === 'station') {
-    where = { stationId: parseInt(specifier) };
-  } else if (type === 'borough' && isBorough(specifier)) {
-    where = { station: { borough: specifier } };
-  } else if (type === 'community-district') {
-    where = { station: { communityDistrict: parseInt(specifier) } };
-  } else if (type === 'council-district') {
-    where = { station: { councilDistrict: parseInt(specifier) } };
-  } else {
-    return NextResponse.json(
-      { error: 'Invalid type or specifier' },
-      { status: 400 },
-    );
+  const where = getWhereSpecifier(type, specifier);
+  if (where instanceof NextResponse) {
+    // error
+    return where;
   }
 
   const endMonth = (endDate?.getUTCMonth() ?? 6) + 1; // month is 0-indexed in getUTCMonth
