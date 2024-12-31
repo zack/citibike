@@ -1,50 +1,7 @@
 import { isBorough } from '../../utils';
 import prisma from '@/prisma/db';
 import { NextRequest, NextResponse } from 'next/server';
-
-export type Borough = 'Bronx' | 'Brooklyn' | 'Manhattan' | 'Queens';
-
-type WhereSpecifier =
-  | BoroughSpecifier
-  | CommunityDistrictSpecifier
-  | CouncilDistrictSpecifier
-  | StationSpecifier
-  | Record<string, never>;
-
-export interface Timeframe {
-  firstDate: Date;
-  lastDate: Date;
-}
-
-interface BoroughSpecifier {
-  station: {
-    borough: Borough;
-  };
-}
-
-interface StationSpecifier {
-  stationId: number;
-}
-
-interface CommunityDistrictSpecifier {
-  station: {
-    communityDistrict: number;
-  };
-}
-
-interface CouncilDistrictSpecifier {
-  station: {
-    councilDistrict: number;
-  };
-}
-
-export interface ToplineData {
-  trips: {
-    acoustic: number;
-    electric: number;
-  };
-  tripsSinceFirstElectric: number;
-}
+import { ToplineData, WhereSpecifier } from '../../types';
 
 export async function GET(
   request: NextRequest,

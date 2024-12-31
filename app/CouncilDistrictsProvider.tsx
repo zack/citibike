@@ -1,6 +1,6 @@
 'use client';
 
-import { CouncilDistrict } from './action';
+import { CouncilDistrict } from './types';
 
 import React from 'react';
 

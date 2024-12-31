@@ -1,10 +1,6 @@
-'use client';
-
 import DataContainer from './DataContainer';
-import { Granularity } from './constants';
 import { StationsContext } from './StationsProvider';
 import Topline from './Topline';
-import { isBorough } from './utils';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
 import {
@@ -20,17 +16,10 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { Borough, ChartData } from './action';
+import { Borough, Timeframe } from './types';
 import React, { SyntheticEvent, useContext } from 'react';
-import { Timeframe, getChartData } from './action';
+import { getQueryString, isBorough } from './utils';
 import { parseAsString, useQueryState } from 'nuqs';
-
-export type StationDataFetcherFunction = (
-  stationId: string,
-  granularity: Granularity,
-  startDate: Date,
-  endDate: Date,
-) => Promise<ChartData[]>;
 
 function Bold({ children }: { children: string }) {
   return (
@@ -140,9 +129,11 @@ export default function StationData() {
       // ...for some reason.
       if (stationName !== '' && timeframe === undefined) {
         setLoading(true);
-        const response = await fetch(
-          `/api/timeframe?type=station&specifier=${stationId}`,
-        );
+        const queryString = getQueryString({
+          type: 'station',
+          specifier: `${stationId}`,
+        });
+        const response = await fetch(`/api/timeframe?${queryString}`);
         const data = await response.json();
         if (!ignore) {
           setLoading(false);
@@ -159,21 +150,6 @@ export default function StationData() {
       ignore = true;
     };
   }, [stationId, stationName, timeframe]);
-
-  const dataFetcherFunc: StationDataFetcherFunction = (
-    stationId: string,
-    granularity: Granularity,
-    startDate: Date,
-    endDate: Date,
-  ) => {
-    const daily = granularity === Granularity.Daily;
-    return getChartData(
-      { stationId: parseInt(stationId) },
-      daily,
-      startDate,
-      endDate,
-    );
-  };
 
   const dataIsNotUpToDate = !!(
     timeframe
@@ -325,10 +301,10 @@ export default function StationData() {
       {stationName !== '' && (
         <Box sx={{ paddingBottom: 5 }}>
           <DataContainer
-            dataFetcherFunc={dataFetcherFunc}
             maxDate={timeframe?.lastDate}
             minDate={timeframe?.firstDate}
             parentLoading={isLoading}
+            type='station'
             userSelection={`${stationId}`}
           />
         </Box>

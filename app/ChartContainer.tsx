@@ -1,8 +1,6 @@
-'use client';
-
 import { Box } from '@mui/material';
 import Chart from './Chart';
-import { ChartData } from './action';
+import { ChartData } from './types';
 import LoadingSpinner from './LoadingSpinner';
 import { NamedChartData } from './DataContainer';
 import React from 'react';

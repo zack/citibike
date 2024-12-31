@@ -1,5 +1,5 @@
 import React from 'react';
-import { ToplineData } from './action';
+import { ToplineData } from './types';
 import { format as formatDate } from 'date-fns';
 import { Box, Skeleton, Tooltip, Typography } from '@mui/material';
 import { differenceInCalendarDays, differenceInCalendarMonths } from 'date-fns';

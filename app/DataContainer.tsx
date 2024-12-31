@@ -1,13 +1,11 @@
-import { BoroughDataFetcherFunction } from './BoroughData';
 import ChartContainer from './ChartContainer';
 import ChartControls from './ChartControls';
-import { ChartData } from './action';
-import { CouncilDistrictDataFetcherFunction } from './CouncilDistrictData';
+import { ChartData } from './types';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Granularity } from './constants';
 import LoadingSpinner from './LoadingSpinner';
-import { StationDataFetcherFunction } from './StationData';
 import Table from './Table';
+import { getQueryString } from './utils';
 import {
   Accordion,
   AccordionDetails,
@@ -24,11 +22,6 @@ export enum View {
   Chart,
   Table,
 }
-
-type DataFetcherFunction =
-  | BoroughDataFetcherFunction
-  | CouncilDistrictDataFetcherFunction
-  | StationDataFetcherFunction;
 
 export interface NamedChartData extends ChartData {
   name: string;
@@ -63,16 +56,16 @@ function TabPanel({
 }
 
 export default function DataContainer({
-  dataFetcherFunc,
   maxDate,
   minDate,
   parentLoading,
+  type,
   userSelection, // a station id, borough, community district, or council district
 }: {
-  dataFetcherFunc: DataFetcherFunction;
   maxDate?: Date;
   minDate?: Date;
   parentLoading?: boolean;
+  type: string;
   userSelection: string; // stringifying stationIds just for this component
 }) {
   const [accordionOpen, setAccordionOpen] = React.useState(false);
@@ -146,29 +139,41 @@ export default function DataContainer({
   React.useEffect(() => {
     let ignore = false;
 
-    if (userSelection !== undefined && !parentLoading && startDate && endDate) {
-      setLoading(true);
-      dataFetcherFunc(userSelection, granularity, startDate, endDate).then(
-        (newData) => {
-          if (!ignore) {
-            setLoading(false);
-            setData(newData);
-            scrollRef.current?.scrollIntoView();
-          }
-        },
-      );
+    async function cb() {
+      if (
+        userSelection !== undefined
+        && !parentLoading
+        && startDate
+        && endDate
+      ) {
+        setLoading(true);
+        const queryString = getQueryString({
+          daily: granularity === Granularity.Daily ? 'true' : 'false',
+          start: startDate.toString(),
+          end: endDate.toString(),
+          type,
+          specifier: userSelection,
+        });
+        const data = await fetch(`/api/chart?${queryString}`);
+        if (!ignore) {
+          setLoading(false);
+          setData(await data.json());
+          scrollRef.current?.scrollIntoView();
+        }
+      }
     }
+    cb();
 
     return () => {
       ignore = true;
     };
   }, [
     daily,
-    dataFetcherFunc,
     endDate,
     granularity,
     parentLoading,
     startDate,
+    type,
     userSelection,
   ]);
 
