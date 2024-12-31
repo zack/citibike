@@ -1,3 +1,4 @@
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import React from 'react';
 import { ToplineData } from './types';
 import { format as formatDate } from 'date-fns';
@@ -279,13 +280,21 @@ export default function Topline({
                 tabIndex={0}
                 component='span'
                 sx={{
-                  color: '#0034DF',
+                  color: '#333333',
                   cursor: 'pointer',
                   display: 'inline',
-                  textDecoration: 'underline',
+                  textDecorationStyle: 'dotted',
+                  textDecorationLine: 'underline',
                 }}
               >
                 eBikes
+                <HelpOutlineIcon
+                  sx={{
+                    height: '16px',
+                    width: '16px',
+                    marginBottom: '-2px',
+                  }}
+                />
               </Typography>
             </Typography>
           </Tooltip>
