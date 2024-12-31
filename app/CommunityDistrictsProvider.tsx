@@ -1,6 +1,6 @@
 'use client';
 
-import { CommunityDistrict } from './action';
+import { CommunityDistrict } from './types';
 
 import React from 'react';
 

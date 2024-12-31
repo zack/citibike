@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Stations } from './action';
+import { Stations } from './types';
 
 import { createContext } from 'react';
 

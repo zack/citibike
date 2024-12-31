@@ -1,13 +1,8 @@
-'use client';
-
-import { ChartData } from './action';
 import { CommunityDistrictsContext } from './CommunityDistrictsProvider';
 import DataContainer from './DataContainer';
-import { Granularity } from './constants';
 import Topline from './Topline';
-import { isBorough } from './utils';
 import { useQueryState } from 'nuqs';
-import { Borough, Timeframe, getChartData } from './action';
+import { Borough, Timeframe } from './types';
 import {
   Box,
   FormControl,
@@ -19,13 +14,7 @@ import {
   Typography,
 } from '@mui/material';
 import React, { useContext } from 'react';
-
-export type CommunityDistrictDataFetcherFunction = (
-  communityDistrict: string,
-  granularity: Granularity,
-  startDate: Date,
-  endDate: Date,
-) => Promise<ChartData[]>;
+import { getQueryString, isBorough } from './utils';
 
 function parseBorough(input: string): Borough | '' {
   if (isBorough(input)) {
@@ -83,9 +72,11 @@ export default function CommunityDistrictData() {
       // ...for some reason.
       if (communityDistrict !== '' && timeframe === undefined) {
         setLoading(true);
-        const response = await fetch(
-          `/api/timeframe?type=community-district&specifier=${communityDistrict}`,
-        );
+        const queryString = getQueryString({
+          type: 'community-district',
+          specifier: `${communityDistrict}`,
+        });
+        const response = await fetch(`/api/timeframe?${queryString}`);
         const data = await response.json();
         if (!ignore) {
           setLoading(false);
@@ -102,21 +93,6 @@ export default function CommunityDistrictData() {
       ignore = true;
     };
   }, [communityDistrict, timeframe]);
-
-  const dataFetcherFunc: CommunityDistrictDataFetcherFunction = (
-    communityDistrict: string,
-    granularity: Granularity,
-    startDate: Date,
-    endDate: Date,
-  ) => {
-    const daily = granularity === Granularity.Daily;
-    return getChartData(
-      { station: { communityDistrict: parseInt(communityDistrict) } },
-      daily,
-      startDate,
-      endDate,
-    );
-  };
 
   const generateGroupedMenuItems = (
     communityDistricts: { borough: string; communityDistrict: number }[],
@@ -197,7 +173,7 @@ export default function CommunityDistrictData() {
       {communityDistrict && (
         <Box sx={{ paddingBottom: 5 }}>
           <DataContainer
-            dataFetcherFunc={dataFetcherFunc}
+            type='community-district'
             maxDate={timeframe?.lastDate}
             minDate={timeframe?.firstDate}
             parentLoading={isLoading}

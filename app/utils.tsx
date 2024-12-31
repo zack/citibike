@@ -1,4 +1,4 @@
-import { Borough } from './action';
+import { Borough } from './types';
 
 function isBorough(value: string): value is Borough {
   return ['Bronx', 'Brooklyn', 'Manhattan', 'Queens'].includes(
@@ -6,4 +6,8 @@ function isBorough(value: string): value is Borough {
   );
 }
 
-export { isBorough };
+function getQueryString(params: Record<string, string>) {
+  return new URLSearchParams(params).toString();
+}
+
+export { getQueryString, isBorough };
