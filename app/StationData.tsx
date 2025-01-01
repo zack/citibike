@@ -18,7 +18,7 @@ import {
 } from '@mui/material';
 import { Borough, Timeframe } from './types';
 import React, { SyntheticEvent, useContext } from 'react';
-import { getQueryString, isBorough } from './utils';
+import { isBorough, timeframeFetcher } from './utils';
 import { parseAsString, useQueryState } from 'nuqs';
 
 function Bold({ children }: { children: string }) {
@@ -122,29 +122,16 @@ export default function StationData() {
   React.useEffect(() => {
     let ignore = false;
 
-    async function cb() {
-      // Wait for timeframe to be undefined to make sure Topline has an undefined
-      // timeframe, otherwise it will try to immediately call the data fetcher
-      // function, which prevents getTimeframeData from executing
-      // ...for some reason.
-      if (stationName !== '' && timeframe === undefined) {
-        setLoading(true);
-        const queryString = getQueryString({
-          type: 'station',
-          specifier: `${stationId}`,
-        });
-        const response = await fetch(`/api/timeframe?${queryString}`);
-        const data = await response.json();
-        if (!ignore) {
-          setLoading(false);
-          setTimeframe({
-            firstDate: new Date(data.firstDate),
-            lastDate: new Date(data.lastDate),
-          });
-        }
-      }
+    if (stationName !== '') {
+      timeframeFetcher(
+        timeframe,
+        'station',
+        stationId,
+        ignore,
+        setLoading,
+        setTimeframe,
+      );
     }
-    cb();
 
     return () => {
       ignore = true;

@@ -56,3 +56,33 @@ export function getWhereSpecifier(
     );
   }
 }
+
+export async function timeframeFetcher(
+  timeframe: Timeframe | undefined,
+  type: string,
+  specifier: string | number,
+  ignore: boolean,
+  setLoading: (arg0: boolean) => void,
+  setTimeframe: (arg0: Timeframe) => void,
+) {
+  // Wait for timeframe to be undefined to make sure Topline has an undefined
+  // timeframe, otherwise it will try to immediately call the data fetcher
+  // function, which prevents getTimeframeData from executing
+  // ...for some reason.
+  if (timeframe === undefined) {
+    setLoading(true);
+    const queryString = getQueryString({
+      type,
+      specifier: `${specifier}`,
+    });
+    const response = await fetch(`/api/timeframe?${queryString}`);
+    if (!ignore) {
+      const data = await response.json();
+      setLoading(false);
+      setTimeframe({
+        firstDate: new Date(data.firstDate),
+        lastDate: new Date(data.lastDate),
+      });
+    }
+  }
+}

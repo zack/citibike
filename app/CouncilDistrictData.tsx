@@ -14,7 +14,7 @@ import {
   Typography,
 } from '@mui/material';
 import React, { useContext } from 'react';
-import { getQueryString, isBorough } from './utils';
+import { isBorough, timeframeFetcher } from './utils';
 
 function parseBorough(input: string): Borough | '' {
   if (isBorough(input)) {
@@ -65,29 +65,16 @@ export default function CouncilDistrictData() {
   React.useEffect(() => {
     let ignore = false;
 
-    async function cb() {
-      // Wait for timeframe to be undefined to make sure Topline has an undefined
-      // timeframe, otherwise it will try to immediately call the data fetcher
-      // function, which prevents getTimeframeData from executing
-      // ...for some reason.
-      if (councilDistrict !== '' && timeframe === undefined) {
-        setLoading(true);
-        const queryString = getQueryString({
-          type: 'council-district',
-          specifier: `${councilDistrict}`,
-        });
-        const response = await fetch(`/api/timeframe?${queryString}`);
-        const data = await response.json();
-        if (!ignore) {
-          setLoading(false);
-          setTimeframe({
-            firstDate: new Date(data.firstDate),
-            lastDate: new Date(data.lastDate),
-          });
-        }
-      }
+    if (councilDistrict !== '') {
+      timeframeFetcher(
+        timeframe,
+        'council-district',
+        councilDistrict,
+        ignore,
+        setLoading,
+        setTimeframe,
+      );
     }
-    cb();
 
     return () => {
       ignore = true;

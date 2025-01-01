@@ -12,7 +12,7 @@ import {
   SelectChangeEvent,
   Typography,
 } from '@mui/material';
-import { getQueryString, isBorough } from './utils';
+import { isBorough, timeframeFetcher } from './utils';
 
 function parseBorough(input: string): Borough | '' {
   if (isBorough(input)) {
@@ -44,29 +44,16 @@ export default function BoroughData() {
   React.useEffect(() => {
     let ignore = false;
 
-    async function cb() {
-      // Wait for timeframe to be undefined to make sure Topline has an undefined
-      // timeframe, otherwise it will try to immediately call the data fetcher
-      // function, which prevents getTimeframeData from executing
-      // ...for some reason.
-      if (isBorough(borough) && timeframe === undefined) {
-        setLoading(true);
-        const queryString = getQueryString({
-          type: 'borough',
-          specifier: borough,
-        });
-        const response = await fetch(`/api/timeframe?${queryString}`);
-        const data = await response.json();
-        if (!ignore) {
-          setLoading(false);
-          setTimeframe({
-            firstDate: new Date(data.firstDate),
-            lastDate: new Date(data.lastDate),
-          });
-        }
-      }
+    if (isBorough(borough)) {
+      timeframeFetcher(
+        timeframe,
+        'borough',
+        borough,
+        ignore,
+        setLoading,
+        setTimeframe,
+      );
     }
-    cb();
 
     return () => {
       ignore = true;
@@ -85,7 +72,6 @@ export default function BoroughData() {
             label='borough'
             onChange={handleBoroughChange}
           >
-            <MenuItem value={''}></MenuItem>
             <MenuItem value={'Bronx'}> The Bronx </MenuItem>
             <MenuItem value={'Brooklyn'}> Brooklyn </MenuItem>
             <MenuItem value={'Manhattan'}> Manhattan </MenuItem>
