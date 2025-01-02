@@ -36,3 +36,6 @@ next-env.d.ts
 
 # don't even think about it
 .env
+
+# Sentry Config File
+.env.sentry-build-plugin
