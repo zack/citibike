@@ -6,10 +6,10 @@ import React from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 
 interface ChartDataRowBase {
-  acoustic: number;
-  electric: number;
+  acoustic: string;
+  electric: string;
   id: number;
-  total: number;
+  total: string;
 }
 
 interface ChartDataRowDaily extends ChartDataRowBase {
@@ -58,9 +58,9 @@ export default function Table({
 
   const tableData = data?.map((row): ChartDataRow => {
     const base = {
-      acoustic: row.acoustic,
-      electric: row.electric,
-      total: row.acoustic + row.electric,
+      acoustic: row.acoustic.toLocaleString('en-US'),
+      electric: row.electric.toLocaleString('en-US'),
+      total: (row.acoustic + row.electric).toLocaleString('en-US'),
     };
 
     if (daily) {
