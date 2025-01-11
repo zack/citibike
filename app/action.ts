@@ -1,14 +1,10 @@
 'use server';
 
-import { unstable_cacheTag as cacheTag } from 'next/cache';
 import { isBorough } from './utils';
 import prisma from '@/prisma/db';
 import { CommunityDistrict, CouncilDistrict, Station, Stations } from './types';
 
 export async function getStations(): Promise<Stations> {
-  'use cache';
-  cacheTag('stations');
-
   const stations: Stations = {
     Bronx: [],
     Brooklyn: [],
@@ -45,9 +41,6 @@ export async function getStations(): Promise<Stations> {
 // correct generate the type for the results where we specified councilDistict
 // is not null. This is a known issue.
 export async function getCouncilDistricts() {
-  'use cache';
-  cacheTag('council-districts');
-
   interface CouncilDistrictResult {
     councilDistrict: number | null;
     borough: string | null;
@@ -79,9 +72,6 @@ export async function getCouncilDistricts() {
 // correct generate the type for the results where we specified communityDistict
 // is not null. This is a known issue.
 export async function getCommunityDistricts() {
-  'use cache';
-  cacheTag('community-districts');
-
   interface CommunityDistrictResult {
     communityDistrict: number | null;
     borough: string | null;
