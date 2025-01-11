@@ -306,9 +306,15 @@ async function seedDays(fileDateStr: string, file: string, length: number) {
               }
             } else if (processedData[stationId]) {
               if (electric) {
-                processedData[stationId][dateStr] = { electric: 1, acoustic: 0 };
+                processedData[stationId][dateStr] = {
+                  electric: 1,
+                  acoustic: 0,
+                };
               } else {
-                processedData[stationId][dateStr] = { electric: 0, acoustic: 1 };
+                processedData[stationId][dateStr] = {
+                  electric: 0,
+                  acoustic: 1,
+                };
               }
             } else {
               if (electric) {
@@ -425,6 +431,9 @@ exec(`wc -l ${TMP_DIR}/*`, (error, stdout) => {
     })
     .finally(async () => {
       if (ENV === 'production') {
+        await fetch(
+          `https://citibikedata.nyc/api/revalidate?pass=${process.env.PASS}`,
+        );
         exec(`rm -rf ${TMP_DIR}`);
       }
     });
