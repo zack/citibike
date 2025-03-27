@@ -411,30 +411,34 @@ exec(`wc -l ${TMP_DIR}/*`, (error, stdout) => {
       );
     });
 
-  const files: Record<string, number> = {};
-  lines.forEach((line) => {
-    files[line[1]] = parseInt(line[0]);
-  });
+  if (lines.length > 0) {
+    const files: Record<string, number> = {};
 
-  processFiles(files)
-    .then(async () => {
-      await updateStationExtras();
-    })
-    .then(async () => {
-      console.log('disconnecting');
-      await prisma.$disconnect();
-    })
-    .catch(async (e) => {
-      console.error(e);
-      await prisma.$disconnect();
-      process.exit(1);
-    })
-    .finally(async () => {
-      if (ENV === 'production') {
-        await fetch(
-          `https://citibikedata.nyc/api/revalidate?pass=${process.env.PASS}`,
-        );
-        exec(`rm -rf ${TMP_DIR}`);
-      }
+    lines.forEach((line) => {
+      files[line[1]] = parseInt(line[0]);
     });
+    processFiles(files)
+      .then(async () => {
+        await updateStationExtras();
+      })
+      .then(async () => {
+        console.log('disconnecting');
+        await prisma.$disconnect();
+      })
+      .catch(async (e) => {
+        console.error(e);
+        await prisma.$disconnect();
+        process.exit(1);
+      })
+      .finally(async () => {
+        if (ENV === 'production') {
+          await fetch(
+            `https://citibikedata.nyc/api/revalidate?pass=${process.env.PASS}`,
+          );
+          exec(`rm -rf ${TMP_DIR}`);
+        }
+      });
+  } else {
+    console.log('No files found. Skipping seed.');
+  }
 });
