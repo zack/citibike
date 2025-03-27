@@ -439,6 +439,7 @@ exec(`wc -l ${TMP_DIR}/*`, (error, stdout) => {
         }
       });
   } else {
+    exec(`rm -rf ${TMP_DIR}`);
     console.log('No files found. Skipping seed.');
   }
 });
