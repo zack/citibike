@@ -139,8 +139,16 @@ async function downloadAndUnzipFiles(
 
     // Citi Bike maintains two different nested file structures
     const oldFormat = zipEntries.some((entry) => entry.entryName.includes('_'));
+    const oneFile = file.endsWith('.csv.zip');
 
-    if (oldFormat) {
+    // When there's not enough data in the month to require multiple csvs, they
+    // name the archive ".csv.zip" and do not use a _1 at the end of the archived
+    // csv. Why can't they just be consistent? No idea. Just more work for us.
+    if (oneFile) {
+      for (const entry of zipEntries) {
+        zip.extractEntryTo(entry.entryName, TMP_DIR, false, true);
+      }
+    } else if (oldFormat) {
       for (const entry of zipEntries) {
         // Based on the filtering we did at the point of choosing which files to
         // download, the only CSVs here that we *don't* want are the ones with
@@ -151,7 +159,7 @@ async function downloadAndUnzipFiles(
           const fileMonth = parseInt(fileName.slice(4, 6));
 
           if (fileYear > mostRecentYear || fileMonth > mostRecentMonth) {
-            await zip.extractEntryTo(entry.entryName, TMP_DIR, false, true);
+            zip.extractEntryTo(entry.entryName, TMP_DIR, false, true);
           }
         }
       }
@@ -166,14 +174,14 @@ async function downloadAndUnzipFiles(
           const fileMonth = parseInt(fileName.slice(4, 6));
 
           if (fileYear > mostRecentYear || fileMonth > mostRecentMonth) {
-            await zip.extractEntryTo(entry.entryName, TMP_DIR, false, true);
+            zip.extractEntryTo(entry.entryName, TMP_DIR, false, true);
           }
 
           const innerZipName = `${TMP_DIR}/${fileName}`;
           const innerZip = new adm(innerZipName);
           const innerEntries = innerZip.getEntries();
           for (const innerEntry of innerEntries) {
-            await innerZip.extractEntryTo(
+            innerZip.extractEntryTo(
               innerEntry.entryName,
               TMP_DIR,
               false,
