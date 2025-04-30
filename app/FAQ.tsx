@@ -71,12 +71,12 @@ export default function FAQ() {
       </Typography>
 
       <Typography>
-        I&apos;m counting each stationing and unstationing as an individual use.
+        I&apos;m counting each docking and undocking as an individual use.
         That means most trips generate two uses, and usually at two different
-        stations. I consider this the most valuable number because it shows how
-        many times a station is providing value to someone in a day/month. If
-        you are looking for data about trips taken, you will have to find that
-        elsewhere, sorry.
+        stations. This is the most useful number to present because it shows how
+        many times a station is providing value to someone. If for whatever
+        reason you only care about docking or undocking, dividing by two
+        should get you pretty close.
       </Typography>
 
       <Typography
