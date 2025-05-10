@@ -1,7 +1,14 @@
 name: 'Cypress'
+
 run-name: ${{ github.actor }} is running Cypress tests
 on:
   pull_request:
+
+env:
+  ENVIRONMENT: ${{env.ENVIRONMENT}}
+  DATABASE_URL: ${{env.DATABASE_URL}}
+  REDIS_URL: ${{env.REDIS_URL}}
+
 jobs:
   cypress:
     runs-on: ubuntu-22.04
