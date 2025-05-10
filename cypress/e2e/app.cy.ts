@@ -52,7 +52,7 @@ describe('Render', () => {
         .click();
 
       // nuqs
-      cy.url().should('include', '?view=borough&borough=Bronx');
+      cy.url().should('include', '?view=borough&borough=Brooklyn');
 
       // topline
       cy.contains('Stations in Brooklyn have been used 8,729,291 times between May 2020 and April 2025.');
@@ -85,15 +85,15 @@ describe('Render', () => {
       // just one of the cells
       cy.contains('24,529');
     });
-  })
 
-  describe('with params', () => {
-    it('should work with params', () => {
-      cy.visit('https://www.citibikedata.nyc/?view=borough&borough=Bronx');
+    describe('query params', () => {
+      it('should work with params in the url', () => {
+        cy.visit('https://www.citibikedata.nyc/?view=borough&borough=Brooklyn');
 
-      cy.contains('145,488'); // uses per month
-      cy.contains('4,796'); // uses per day
-      cy.contains('82%'); // on ebikes
+        cy.contains('145,488'); // uses per month
+        cy.contains('4,796'); // uses per day
+        cy.contains('82%'); // on ebikes
+      });
     });
   });
 });
