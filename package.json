@@ -19,7 +19,9 @@
     "download": "node scripts/downloader.mjs",
     "postinstall": "prisma generate",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx,.mjs,.mts",
-    "prepare": "husky"
+    "prepare": "husky",
+    "cypress": "cypress open",
+    "cypress:cli": "cypress run"
   },
   "lint-staged": {
     "**/*.js": [
@@ -60,6 +62,7 @@
     "@next/eslint-plugin-next": "^15.3.2",
     "@stylistic/eslint-plugin-js": "^2.3.0",
     "@types/autosuggest-highlight": "^3.2.3",
+    "@types/cypress": "^0.1.6",
     "@types/node": "^20.14.9",
     "@typescript-eslint/eslint-plugin": "^7.14.1",
     "@typescript-eslint/parser": "^7.14.1",
@@ -68,6 +71,7 @@
     "babel-plugin-react-compiler": "^19.0.0-beta-b2e8e9c-20241220",
     "csv-parse": "^5.5.6",
     "csv-stringify": "^6.5.0",
+    "cypress": "^14.3.3",
     "eslint": "^8.48.0",
     "eslint-config-next": "^15.1.1",
     "eslint-config-prettier": "^9.1.0",
