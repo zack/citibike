@@ -41,7 +41,7 @@
     "@mui/material": "^6.3.0",
     "@mui/x-data-grid": "^8.3.0",
     "@mui/x-date-pickers": "^7.7.1",
-    "@prisma/client": "^5.16.1",
+    "@prisma/client": "^6.7.0",
     "@types/react": "19.0.2",
     "@types/react-dom": "19.0.2",
     "@vercel/analytics": "^1.5.0",
@@ -82,9 +82,9 @@
     "lint-staged": "^15.2.7",
     "postcss": "^8.4.38",
     "prettier": "npm:@btmills/prettier@^3.2.5",
-    "prisma": "^5.16.1",
+    "prisma": "^6.7.0",
     "ts-node": "^10.9.2",
-    "typescript": "<=5.6.0"
+    "typescript": "^5.8.3"
   },
   "overrides": {
     "@types/react": "19.0.2",
