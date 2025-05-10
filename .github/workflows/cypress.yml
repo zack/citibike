@@ -31,4 +31,4 @@ jobs:
           wait-on: 'http://localhost:3000'
           wait-on-timeout: 90
           spec: |
-            cypress/e2e/features/**/*.cy.ts
+            cypress/e2e/**/*.cy.ts
