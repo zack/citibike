@@ -11,6 +11,8 @@ export interface ChartData {
 export interface Station {
   borough: Borough;
   id: number;
+  latitude: string;
+  longitude: string;
   name: string;
 }
 
@@ -19,6 +21,15 @@ export interface Stations {
   Brooklyn: Station[];
   Manhattan: Station[];
   Queens: Station[];
+}
+
+export interface StationDay {
+  acoustic: number,
+  day: number,
+  electric: number,
+  month: number,
+  stationId: number,
+  year: number,
 }
 
 export interface CommunityDistrict {

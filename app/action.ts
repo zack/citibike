@@ -28,7 +28,7 @@ export async function getStations(): Promise<Stations> {
     select: { id: true, name: true, borough: true },
   });
 
-  const validStations = queryResults.filter(isValidStation);
+  const validStations : Station[] = queryResults.filter(isValidStation);
 
   validStations.forEach((station) => {
     stations[station.borough].push(station);
@@ -58,14 +58,16 @@ export async function getCouncilDistricts() {
     distinct: ['councilDistrict'],
   });
 
+
   // For some reason prisma does not correctly generate the type for the results
   // where we specified councilDistict is not null. This is a known issue.
   // Further, typescript can't figure out the correct type from a simple
   // filter, so we need to use the special filtering function and interfaces
   // from above to get this to work.
+  type StationWithCouncilDistrict = Station & { councilDistrict : string }
   return queryResults
     .filter(isValidCouncilDistrict)
-    .sort((a, b) => (a.councilDistrict > b.councilDistrict ? 1 : -1));
+    .sort((a: StationWithCouncilDistrict,  b: StationWithCouncilDistrict ) => (a.councilDistrict > b.councilDistrict ? 1 : -1));
 }
 
 // This function is extremely messy because for some reason prisma does not
@@ -94,7 +96,8 @@ export async function getCommunityDistricts() {
   // Further, typescript can't figure out the correct type from a simple
   // filter, so we need to use the special filtering function and interfaces
   // from above to get this to work.
+  type StationWithCommunityDistrict = Station & { communityDistrict : string }
   return queryResults
     .filter(isValidCommunityDistrict)
-    .sort((a, b) => (a.communityDistrict > b.communityDistrict ? 1 : -1));
+    .sort((a: StationWithCommunityDistrict, b: StationWithCommunityDistrict) => (a.communityDistrict > b.communityDistrict ? 1 : -1));
 }

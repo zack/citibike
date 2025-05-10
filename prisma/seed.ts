@@ -2,6 +2,7 @@
 
 import { PrismaClient } from '@prisma/client';
 import { ProgressBar } from 'ascii-progress';
+import { Station } from '../app/types';
 import { exec } from 'child_process';
 import { finished } from 'stream/promises';
 import fs from 'fs';
@@ -205,7 +206,7 @@ async function seedStations(file: string, dateStr: string, length: number) {
 async function seedDays(fileDateStr: string, file: string, length: number) {
   const stations = await prisma.station.findMany({});
   const stationMap: Record<string, number> = {};
-  stations.forEach((station) => {
+  stations.forEach((station: Station) => {
     stationMap[station.name] = station.id;
   });
 
@@ -366,7 +367,7 @@ async function updateStationExtras() {
   const writableStream = fs.createWriteStream(filename);
   const stringifier = stringify({ header: true, columns: columns });
 
-  stations.forEach((station) => {
+  stations.forEach((station: Station) => {
     stringifier.write({
       name: station.name,
       latitude: station.latitude,

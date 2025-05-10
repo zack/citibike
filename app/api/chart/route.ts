@@ -1,4 +1,5 @@
 import { ChartData } from '../../types';
+import { StationDay} from '../../types';
 import { getWhereSpecifier } from '../../utils';
 import prisma from '@/prisma/db';
 import { NextRequest, NextResponse } from 'next/server';
@@ -69,8 +70,9 @@ export async function GET(
     },
   });
 
+  type StationDayWithSums = StationDay & { _sum: { acoustic: number, electric: number}};
   return NextResponse.json(
-    queryResult.map((r) => ({
+    queryResult.map((r: StationDayWithSums) => ({
       acoustic: r._sum.acoustic || 0,
       day: r.day,
       electric: r._sum.electric || 0,
