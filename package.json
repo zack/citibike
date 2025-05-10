@@ -48,7 +48,7 @@
     "adm-zip": "^0.5.14",
     "autosuggest-highlight": "^3.3.4",
     "concat-files": "^0.1.1",
-    "date-fns": "^3.6.0",
+    "date-fns": "^4.1.0",
     "immer": "^10.1.1",
     "next": "^15.3.2",
     "nuqs": "^2.4.3",
