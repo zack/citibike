@@ -88,10 +88,12 @@ describe('Render', () => {
   })
 
   describe('with params', () => {
-    cy.visit('https://www.citibikedata.nyc/?view=borough&borough=Bronx');
+    it('should work with params', () => {
+      cy.visit('https://www.citibikedata.nyc/?view=borough&borough=Bronx');
 
-    cy.contains('145,488'); // uses per month
-    cy.contains('4,796'); // uses per day
-    cy.contains('82%'); // on ebikes
+      cy.contains('145,488'); // uses per month
+      cy.contains('4,796'); // uses per day
+      cy.contains('82%'); // on ebikes
+    });
   });
 });
