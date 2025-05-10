@@ -5,9 +5,9 @@ on:
   pull_request:
 
 env:
-  ENVIRONMENT: ${{env.ENVIRONMENT}}
-  DATABASE_URL: ${{env.DATABASE_URL}}
-  REDIS_URL: ${{env.REDIS_URL}}
+  ENVIRONMENT: ${{ secrets.ENVIRONMENT }}
+  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+  REDIS_URL: ${{ secrets.REDIS_URL }}
 
 jobs:
   cypress:
