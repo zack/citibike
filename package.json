@@ -83,7 +83,7 @@
     "lint-staged": "^16.0.0",
     "postcss": "^8.4.38",
     "prettier": "npm:@btmills/prettier@^3.2.5",
-    "prisma": "^5.16.1",
+    "prisma": "^6.8.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   },
