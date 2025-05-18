@@ -1,10 +1,10 @@
-import { Box } from '@mui/material';
 import Chart from './Chart';
 import { ChartData } from './types';
 import LoadingSpinner from './LoadingSpinner';
 import { NamedChartData } from './DataContainer';
 import React from 'react';
 import { format as formatDate } from 'date-fns';
+import { Box, Checkbox, FormControlLabel } from '@mui/material';
 
 function pad(num: number | undefined) {
   if (num === undefined) {
@@ -33,13 +33,23 @@ export default function ChartContainer({
   daily: boolean;
   data?: ChartData[];
 }) {
+  const [splitByType, setSplitByType] = React.useState(true);
+  const [splitByDirection, setSplitByDirection] = React.useState(true);
+
   const chartData: NamedChartData[] | undefined = data
     ?.map((data) => ({
       acoustic: data.acoustic,
+      acousticArrive: data.acousticArrive,
+      acousticDepart: data.acousticDepart,
+      arrive: data.arrive,
       day: data.day,
+      depart: data.depart,
       electric: data.electric,
+      electricArrive: data.electricArrive,
+      electricDepart: data.electricDepart,
       month: data.month,
       name: getDataLabel(data.day, data.month, data.year),
+      total: data.total,
       year: data.year,
     }))
     .sort((a, b) =>
@@ -67,7 +77,15 @@ export default function ChartContainer({
         <LoadingSpinner />
       </Box>
       {isLoading || !chartData ? null : (
-        <Chart daily={daily} chartData={chartData} />
+        <>
+          <FormControlLabel control={
+          <Checkbox checked={splitByType} onChange={() => setSplitByType(!splitByType)} />
+            } label="Split by type" />
+          <FormControlLabel control={
+          <Checkbox checked={splitByDirection} onChange={() => setSplitByDirection(!splitByDirection)} />
+            } label="Split by direction" />
+          <Chart daily={daily} chartData={chartData} chartConfig={{type: splitByType, direction: splitByDirection}} />
+        </>
       )}
     </>
   );

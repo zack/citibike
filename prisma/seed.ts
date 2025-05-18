@@ -224,8 +224,10 @@ async function seedDays(fileDateStr: string, file: string, length: number) {
       string,
       {
         // yyyy-mm-dd formatted date
-        acoustic: number;
-        electric: number;
+        acousticArrive: number;
+        acousticDepart: number;
+        electricArrive: number;
+        electricDepart: number;
       }
     >
   > = {};
@@ -278,7 +280,11 @@ async function seedDays(fileDateStr: string, file: string, length: number) {
         ?? record['End Station Name']
       ).normalize('NFKC');
 
-      [start_station_name, end_station_name].forEach((stationName) => {
+      [start_station_name, end_station_name].forEach((stationName, index) => {
+        const acousticKey = index === 0 ? 'acousticDepart' : 'acousticArrive';
+        const electricKey = index === 0 ? 'electricDepart' : 'electricArrive';
+        const key = electric ? electricKey : acousticKey;
+
         // Sometimes there's bad data in the CSVs and one or both sides of a trip
         // will be missing a station name. In that case, we will still record the
         // side of the trip that we know, but we'll drop the other one since we
@@ -299,33 +305,27 @@ async function seedDays(fileDateStr: string, file: string, length: number) {
           // nested `if` statements.
           if (stationId) {
             if (processedData[stationId] && processedData[stationId][dateStr]) {
-              if (electric) {
-                processedData[stationId][dateStr].electric += 1;
-              } else {
-                processedData[stationId][dateStr].acoustic += 1;
-              }
-            } else if (processedData[stationId]) {
-              if (electric) {
-                processedData[stationId][dateStr] = {
-                  electric: 1,
-                  acoustic: 0,
-                };
-              } else {
-                processedData[stationId][dateStr] = {
-                  electric: 0,
-                  acoustic: 1,
-                };
-              }
+              processedData[stationId][dateStr][key] += 1;
             } else {
-              if (electric) {
-                processedData[stationId] = {
-                  [dateStr]: { electric: 1, acoustic: 0 },
+              if (processedData[stationId]) {
+                processedData[stationId][dateStr] = {
+                  acousticArrive: 0,
+                  acousticDepart: 0,
+                  electricArrive: 0,
+                  electricDepart: 0,
                 };
               } else {
                 processedData[stationId] = {
-                  [dateStr]: { electric: 0, acoustic: 1 },
+                  [dateStr]: {
+                    acousticArrive: 0,
+                    acousticDepart: 0,
+                    electricArrive: 0,
+                    electricDepart: 0,
+                  },
                 };
               }
+
+              processedData[stationId][dateStr][key] = 1;
             }
           }
         }
@@ -342,10 +342,12 @@ async function seedDays(fileDateStr: string, file: string, length: number) {
 
       await prisma.stationDay.createMany({
         data: dates.map((date: string) => ({
-          acoustic: stationData[date].acoustic,
+          acousticArrive: stationData[date].acousticArrive,
+          acousticDepart: stationData[date].acousticDepart,
           day: parseInt(date.slice(8, 10)),
           stationId: parseInt(stationId),
-          electric: stationData[date].electric,
+          electricArrive: stationData[date].electricArrive,
+          electricDepart: stationData[date].electricDepart,
           month: parseInt(date.slice(5, 7)),
           year: parseInt(date.slice(0, 4)),
         })),

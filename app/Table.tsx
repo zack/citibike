@@ -6,8 +6,10 @@ import React from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 
 interface ChartDataRowBase {
-  acoustic: string;
-  electric: string;
+  acousticArrive: string;
+  acousticDepart: string;
+  electricArrive: string;
+  electricDepart: string;
   id: number;
   total: string;
 }
@@ -40,13 +42,23 @@ export default function Table({
       flex: 1,
     },
     {
-      field: 'acoustic',
-      headerName: 'Trips (acoustic)',
+      field: 'acousticArrive',
+      headerName: 'Trips Arriving (acoustic)',
       flex: 1,
     },
     {
-      field: 'electric',
-      headerName: 'Trips (electric)',
+      field: 'acousticDepart',
+      headerName: 'Trips Departing (acoustic)',
+      flex: 1,
+    },
+    {
+      field: 'electricArrive',
+      headerName: 'Trips Arriving (electric)',
+      flex: 1,
+    },
+    {
+      field: 'electricDepart',
+      headerName: 'Trips Departing (electric)',
       flex: 1,
     },
     {
@@ -58,9 +70,11 @@ export default function Table({
 
   const tableData = data?.map((row): ChartDataRow => {
     const base = {
-      acoustic: row.acoustic.toLocaleString('en-US'),
-      electric: row.electric.toLocaleString('en-US'),
-      total: (row.acoustic + row.electric).toLocaleString('en-US'),
+      acousticArrive: row.acousticArrive.toLocaleString('en-US'),
+      acousticDepart: row.acousticDepart.toLocaleString('en-US'),
+      electricArrive: row.electricArrive.toLocaleString('en-US'),
+      electricDepart: row.electricDepart.toLocaleString('en-US'),
+      total: (row.acousticArrive + row.acousticDepart + row.electricArrive + row.electricDepart).toLocaleString('en-US'),
     };
 
     if (daily) {

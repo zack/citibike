@@ -18,15 +18,16 @@ import { exoFontFamily, ubuntuMonoFontFamily } from './ThemeProvider';
 
 export default function Chart({
   daily,
+  chartConfig,
   chartData,
 }: {
   daily: boolean;
+  chartConfig: {type: boolean, direction: boolean};
   chartData: NamedChartData[];
 }) {
   const getMaxValueInData = React.useCallback(() => {
     return chartData.reduce((memo, val) => {
-      const valSum = val.acoustic + val.electric;
-      return valSum > memo ? valSum : memo;
+      return val.total > memo ? val.total : memo;
     }, -1);
   }, [chartData]);
 
@@ -49,7 +50,7 @@ export default function Chart({
 
     return Array.from(
       { length: (maxValueInData + tickValue) / tickValue + 1 },
-      (value, index) => index * tickValue,
+      (_value, index) => index * tickValue,
     );
   }, [maxValueInData]);
 
@@ -60,10 +61,10 @@ export default function Chart({
       <Box
         sx={{
           display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '100%',
-          marginY: '200px',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100%',
+            marginY: '200px',
         }}
       >
         <Typography>
@@ -94,9 +95,9 @@ export default function Chart({
         data={chartData}
         margin={{
           top: 10,
-          right: 10,
-          left: getBarChartLeftMargin(),
-          bottom: 10,
+            right: 10,
+            left: getBarChartLeftMargin(),
+            bottom: 10,
         }}
       >
         <CartesianGrid strokeDasharray='3 3' />
@@ -112,13 +113,12 @@ export default function Chart({
           ticks={ticks}
           domain={[0, ...ticks.slice(-1)]}
         />
+
         <Tooltip
           cursor={{ fill: '#EEE' }}
           content={({ active, payload, label }) => {
             if (active && payload && payload.length) {
-              const total =
-                parseInt(`${payload[0].value}`, 10)
-                + parseInt(`${payload[1].value}`, 10);
+              const total = payload.reduce((memo, val) => memo + parseInt(`${val.value}`, 10), 0);
 
               return (
                 <Paper elevation={2} sx={{ p: 2 }}>
@@ -129,30 +129,74 @@ export default function Chart({
                   >
                     {label}
                   </Typography>
-                  <Typography>
-                    total: {total.toLocaleString('en-US')}
-                  </Typography>
-                  <Typography>
-                    {payload[1].name}:{' '}
-                    {payload[1].value?.toLocaleString('en-US')}
-                  </Typography>
-                  <Typography>
-                    {payload[0].name}:{' '}
-                    {payload[0].value?.toLocaleString('en-US')}
-                  </Typography>
+
+                  { payload.length > 1 && payload.map((p, index) => (
+                    <div key={index}style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <Typography style={{ paddingRight: '36px' }}>{p.name}:</Typography>
+                        <Typography>{p.value?.toLocaleString('en-US')}</Typography>
+                    </div>
+                  ))}
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Typography style={{ paddingRight: '36px' }}>
+                      <b>Total:</b>
+                    </Typography>
+                    <Typography>
+                      <b>{total.toLocaleString('en-US')}</b>
+                    </Typography>
+                  </div>
                 </Paper>
               );
-            }
+          }
           }}
-        />
+          />
+
         <Legend
+          height={36}
           formatter={(value) => (
             <span style={{ fontSize: '1.5rem', color: '#000' }}> {value} </span>
           )}
         />
-        <Bar dataKey='acoustic' stackId='a' fill='#0150B4' />
-        <Bar dataKey='electric' stackId='a' fill='#C1BFBB' />
-      </BarChart>
-    </ResponsiveContainer>
+
+        {/* An unfortunately messy solution, but react fragments break the chart,
+        so using a helper function doesn't work */}
+
+        {/* Break up bars by both type & direction */}
+        {chartConfig.type && chartConfig.direction &&
+          <Bar name="Acoustic Arrivals" dataKey='acousticArrive' stackId='a' fill='#0150B4' isAnimationActive={false} />
+        }
+        {chartConfig.type && chartConfig.direction &&
+          <Bar name="Acoustic Departures" dataKey='acousticDepart' stackId='a' fill='#01285A' isAnimationActive={false} />
+        }
+        {chartConfig.type && chartConfig.direction &&
+          <Bar name="Electric Departures" dataKey='electricDepart' stackId='a' fill='#61605E' isAnimationActive={false} />
+        }
+        {chartConfig.type && chartConfig.direction &&
+          <Bar name="Electric Arrivals" dataKey='electricArrive' stackId='a' fill='#C1BFBB' isAnimationActive={false} />
+        }
+
+        {/* Break up bars by only type */}
+        {chartConfig.type && !chartConfig.direction &&
+          <Bar name="Acoustic" dataKey='acoustic' stackId='a' fill='#0150B4' isAnimationActive={false} />
+        }
+        {chartConfig.type && !chartConfig.direction &&
+          <Bar name="Electric" dataKey='electric' stackId='a' fill='#C1BFBB' isAnimationActive={false} />
+        }
+
+        {/* Break up bars by only direction */}
+        {!chartConfig.type && chartConfig.direction &&
+          <Bar name="Arrivals" dataKey='arrive' stackId='a' fill='#309898' isAnimationActive={false} />
+        }
+        {!chartConfig.type && chartConfig.direction &&
+          <Bar name="Departures" dataKey='depart' stackId='a' fill='#F4631E' isAnimationActive={false} />
+        }
+
+        {/* Don't break up bars at all */}
+        {!chartConfig.type && !chartConfig.direction &&
+          <Bar name="Total uses" dataKey="total" stackId='a' fill='#0150B4' isAnimationActive={false} />
+        }
+
+        </BarChart>
+      </ResponsiveContainer>
   );
 }
