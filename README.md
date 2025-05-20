@@ -54,6 +54,10 @@ Oh, and I don't include stations in New Jersey or Canada.
    1. `DATABASE_URL='postgresql://citibike:citibike@localhost/stationdata'`
    1. `SHADOW_DATABASE_URL='postgresql://citbike:citibike@localhost/stationdatashadow'`
 
+## Redis
+1. Install redis
+1. Set the connection string in `.env` to `'redis://localhost:6379'`
+
 # Development Commands
 
 - Start the web server

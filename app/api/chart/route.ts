@@ -64,16 +64,25 @@ export async function GET(
     },
     by: daily === 'true' ? ['month', 'year', 'day'] : ['month', 'year'],
     _sum: {
-      acoustic: true,
-      electric: true,
+      acousticArrive: true,
+      acousticDepart: true,
+      electricArrive: true,
+      electricDepart: true,
     },
   });
 
   return NextResponse.json(
     queryResult.map((r) => ({
-      acoustic: r._sum.acoustic || 0,
+      acoustic: (r._sum.acousticArrive || 0) + (r._sum.acousticDepart || 0),
+      acousticArrive: r._sum.acousticArrive || 0,
+      acousticDepart: r._sum.acousticDepart || 0,
       day: r.day,
-      electric: r._sum.electric || 0,
+      electric: (r._sum.electricArrive || 0) + (r._sum.electricDepart || 0),
+      electricArrive: r._sum.electricArrive || 0,
+      electricDepart: r._sum.electricDepart || 0,
+      arrive: (r._sum.electricArrive || 0) + (r._sum.acousticArrive || 0),
+      depart: (r._sum.electricDepart || 0) + (r._sum.acousticDepart || 0),
+      total: (r._sum.electricArrive || 0) + (r._sum.electricDepart || 0) + (r._sum.acousticArrive || 0) + (r._sum.acousticDepart || 0),
       month: r.month,
       year: r.year,
     })),

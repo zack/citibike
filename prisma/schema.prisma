@@ -21,14 +21,16 @@ model Station {
 }
 
 model StationDay {
-  id        Int     @id @default(autoincrement())
-  acoustic  Int
-  day       Int
-  stationId Int
-  electric  Int
-  month     Int
-  year      Int
-  station   Station @relation("stationId", fields: [stationId], references: [id])
+  id             Int     @id @default(autoincrement())
+  acousticArrive Int
+  acousticDepart Int
+  day            Int
+  stationId      Int
+  electricArrive Int
+  electricDepart Int
+  month          Int
+  year           Int
+  station        Station @relation("stationId", fields: [stationId], references: [id])
 
   @@unique([day, month, year, stationId])
   @@index([stationId])

@@ -2,9 +2,16 @@ export type Borough = 'Bronx' | 'Brooklyn' | 'Manhattan' | 'Queens';
 
 export interface ChartData {
   acoustic: number;
+  acousticArrive: number;
+  acousticDepart: number;
+  arrive: number;
   day: number | undefined;
+  depart: number;
   electric: number;
+  electricArrive: number;
+  electricDepart: number;
   month: number;
+  total: number;
   year: number;
 }
 
@@ -76,12 +83,4 @@ interface CouncilDistrictSpecifier {
   station: {
     councilDistrict: number;
   };
-}
-
-export interface ToplineData {
-  trips: {
-    acoustic: number;
-    electric: number;
-  };
-  tripsSinceFirstElectric: number;
 }

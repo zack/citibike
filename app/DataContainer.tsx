@@ -217,7 +217,7 @@ export default function DataContainer({
               <Tabs
                 sx={{ my: 2 }}
                 value={selection}
-                onChange={(e, v) => {
+                onChange={(_e, v) => {
                   setSelection(v);
                   scrollRef.current?.scrollIntoView();
                 }}
