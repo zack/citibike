@@ -83,7 +83,7 @@ describe('Render', () => {
       cy.get('button').contains('Table').click();
 
       // just one of the cells
-      cy.contains('24,529');
+      cy.contains('286,334');
     });
 
     describe('query params', () => {
