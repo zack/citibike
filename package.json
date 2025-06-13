@@ -40,7 +40,7 @@
     "@mui/icons-material": "^6.3.0",
     "@mui/material": "^6.3.0",
     "@mui/x-data-grid": "^8.5.2",
-    "@mui/x-date-pickers": "^7.7.1",
+    "@mui/x-date-pickers": "^8.5.2",
     "@prisma/client": "^6.9.0",
     "@types/react": "19.0.2",
     "@types/react-dom": "19.0.2",
