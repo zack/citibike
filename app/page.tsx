@@ -15,6 +15,7 @@ export default function Home() {
         width='97vw'
       >
         <Grid
+          size={{ xs: 6 }}
           sx={{
             height: '100%',
             display: 'flex',
