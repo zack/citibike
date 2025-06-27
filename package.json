@@ -39,7 +39,7 @@
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^7.1.2",
     "@mui/material": "^7.1.1",
-    "@mui/x-data-grid": "^8.5.3",
+    "@mui/x-data-grid": "^8.6.0",
     "@mui/x-date-pickers": "^8.6.0",
     "@prisma/client": "^6.10.1",
     "@types/react": "19.0.2",
