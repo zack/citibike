@@ -2,7 +2,7 @@ import FAQButton from './FAQButton';
 import FAQContainer from './FAQContainer';
 import React from 'react';
 import { exoFontFamily } from './ThemeProvider';
-import { Box, Grid, Typography } from '@mui/material';
+import { Alert, Box, Grid, Typography } from '@mui/material';
 
 export default function Home() {
   return (
@@ -23,6 +23,8 @@ export default function Home() {
             flexDirection: 'column',
           }}
         >
+          <Alert severity="warning"> I am aware of an error with Manhattan stations right now. I am working on a fix and will get it out as soon as possible. Thank you for your understanding. </Alert>
+
           <div
             style={{
               display: 'flex',
