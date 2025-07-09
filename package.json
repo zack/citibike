@@ -55,7 +55,7 @@
     "prisma-repl": "^1.4.0",
     "react": "19.0.0",
     "react-dom": "19.0.0",
-    "recharts": "^3.0.2",
+    "recharts": "^3.1.0",
     "redis": "^5.5.6"
   },
   "devDependencies": {
