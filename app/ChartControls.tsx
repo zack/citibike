@@ -90,7 +90,7 @@ export default function ChartControls({
             }
             sx={{ width: '100%' }}
             value={startDate}
-            views={['year', 'month']}
+            views={['month', 'year']}
             slotProps={{
               textField: {
                 error: isError,
@@ -107,7 +107,7 @@ export default function ChartControls({
             }
             sx={{ width: '100%' }}
             value={endDate}
-            views={['year', 'month']}
+            views={['month', 'year']}
             slotProps={{
               textField: {
                 error: isError,
