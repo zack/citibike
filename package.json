@@ -63,7 +63,7 @@
     "@stylistic/eslint-plugin": "^5.2.2",
     "@stylistic/eslint-plugin-js": "^4.4.1",
     "@types/autosuggest-highlight": "^3.2.3",
-    "@types/cypress": "^0.1.6",
+    "@types/cypress": "^1.1.6",
     "@types/node": "^24.1.0",
     "@typescript-eslint/eslint-plugin": "^8.38.0",
     "@typescript-eslint/parser": "^8.36.0",
