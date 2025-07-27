@@ -18,7 +18,7 @@
       "./shared/types",
       "./environment.d.ts"
     ],
-    "types": ["cypress", "node"],
+    "types": ["node"],
     "plugins": [
       {
         "name": "next"
