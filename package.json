@@ -34,14 +34,14 @@
     ]
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.863.0",
+    "@aws-sdk/client-s3": "^3.864.0",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^7.3.1",
     "@mui/material": "^7.3.1",
     "@mui/x-data-grid": "^8.10.0",
     "@mui/x-date-pickers": "^8.10.0",
-    "@prisma/client": "^6.13.0",
+    "@prisma/client": "^6.14.0",
     "@types/react": "19.0.2",
     "@types/react-dom": "19.0.2",
     "@vercel/analytics": "^1.5.0",
@@ -56,7 +56,7 @@
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "recharts": "^3.1.2",
-    "redis": "^5.8.0"
+    "redis": "^5.8.1"
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^15.4.6",
@@ -72,7 +72,7 @@
     "csv-parse": "^6.1.0",
     "csv-stringify": "^6.6.0",
     "cypress": "^14.5.4",
-    "eslint": "^9.32.0",
+    "eslint": "^9.33.0",
     "eslint-config-next": "^15.4.6",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-react": "^7.37.5",
@@ -82,7 +82,7 @@
     "lint-staged": "^16.1.5",
     "postcss": "^8.5.6",
     "prettier": "npm:@btmills/prettier@^3.2.5",
-    "prisma": "^6.13.0",
+    "prisma": "^6.14.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.2"
   },
