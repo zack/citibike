@@ -84,7 +84,7 @@
     "prettier": "npm:@btmills/prettier@^3.2.5",
     "prisma": "^6.16.2",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.3"
   },
   "overrides": {
     "@types/react": "19.0.2",
