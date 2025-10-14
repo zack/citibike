@@ -59,7 +59,7 @@
     "redis": "^5.8.3"
   },
   "devDependencies": {
-    "@next/eslint-plugin-next": "^15.5.2",
+    "@next/eslint-plugin-next": "^15.5.5",
     "@stylistic/eslint-plugin": "^5.4.0",
     "@stylistic/eslint-plugin-js": "^4.4.1",
     "@types/autosuggest-highlight": "^3.2.3",
