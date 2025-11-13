@@ -30,10 +30,10 @@ export default function ViewPicker() {
     newView: View,
   ) => {
     if (newView) {
+      history.replaceState(null, '', location.pathname);
       setTimeout(() => {
-        history.replaceState(null, '', location.pathname);
+        setView(newView);
       }, 0);
-      setView(newView);
     }
   };
 
