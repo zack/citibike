@@ -1,61 +1,57 @@
-import { FlatCompat } from '@eslint/eslintrc';
-import { fileURLToPath } from 'node:url';
-
-import js from '@eslint/js';
-import path from 'node:path';
+import eslint from '@eslint/js';
+import nextTs from 'eslint-config-next/typescript';
+import nextVitals from 'eslint-config-next/core-web-vitals';
+import prettier from 'eslint-config-prettier/flat';
+import react from 'eslint-plugin-react';
 import reactCompiler from 'eslint-plugin-react-compiler';
+import stylistic from '@stylistic/eslint-plugin'
 import tsParser from '@typescript-eslint/parser';
-import typescriptEslint from '@typescript-eslint/eslint-plugin';
+import tseslint from 'typescript-eslint';
 
 import { defineConfig, globalIgnores } from 'eslint/config';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const compat = new FlatCompat({
-    baseDirectory: __dirname,
-    recommendedConfig: js.configs.recommended,
-    allConfig: js.configs.all
-});
-
 export default defineConfig([
+  ...nextVitals,
+  ...nextTs,
+  prettier,
+
   globalIgnores([
     '.next',
+    '.next/**',
+    'build/**',
+    'next-env.d.ts',
+    'out/**',
   ]),
 
   {
-    extends: compat.extends(
-        'eslint:recommended',
-        'next',
-        'next/core-web-vitals',
-        'plugin:@typescript-eslint/stylistic',
-        'plugin:@typescript-eslint/recommended',
-        'plugin:react/recommended',
-        'prettier',
-    ),
-
     plugins: {
-        '@typescript-eslint': typescriptEslint,
-        'react-compiler': reactCompiler,
+      react,
+      '@stylistic': stylistic,
     },
 
     languageOptions: {
-        globals: {},
-        parser: tsParser,
+      globals: {},
+      parser: tsParser,
     },
 
     rules: {
-        'react-compiler/react-compiler': 'error',
-        'sort-imports': ['error', {
-            memberSyntaxSortOrder: ['none', 'all', 'single', 'multiple'],
-        }],
-        'no-console': ['error'],
-        '@/quotes': ['error', 'single', {
-            avoidEscape: true,
-        }],
-        'no-unused-vars': 'off',
-        '@typescript-eslint/no-unused-vars': ['error', {
-            argsIgnorePattern: '^_',
-            varsIgnorePattern: '^_',
-        }],
+      'react-compiler/react-compiler': 'error',
+      'sort-imports': ['error', {
+        memberSyntaxSortOrder: ['none', 'all', 'single', 'multiple'],
+      }],
+      'no-console': ['error'],
+      '@/quotes': ['error', 'single', {
+        avoidEscape: true,
+      }],
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': ['error', {
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_',
+      }],
     },
-}]);
+  },
+
+  eslint.configs.recommended,
+  tseslint.configs.recommended,
+  reactCompiler.configs.recommended,
+]);

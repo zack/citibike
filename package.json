@@ -42,24 +42,25 @@
     "@mui/x-data-grid": "^8.15.0",
     "@mui/x-date-pickers": "^8.15.0",
     "@prisma/client": "^6.19.0",
-    "@types/react": "19.0.2",
-    "@types/react-dom": "19.0.2",
+    "@types/react": "19.2.4",
+    "@types/react-dom": "19.2.3",
     "@vercel/analytics": "^1.5.0",
     "adm-zip": "^0.5.14",
     "autosuggest-highlight": "^3.3.4",
     "concat-files": "^0.1.1",
     "date-fns": "^4.1.0",
     "immer": "^10.2.0",
-    "next": "^15.5.6",
+    "next": "16.0.3",
     "nuqs": "^2.4.3",
     "prisma-repl": "^1.4.0",
-    "react": "19.0.0",
-    "react-dom": "19.0.0",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
     "recharts": "^3.3.0",
     "redis": "^5.9.0"
   },
   "devDependencies": {
-    "@next/eslint-plugin-next": "^15.5.5",
+    "@eslint/js": "^9.39.1",
+    "@next/eslint-plugin-next": "16.0.3",
     "@stylistic/eslint-plugin": "^5.5.0",
     "@stylistic/eslint-plugin-js": "^4.4.1",
     "@types/autosuggest-highlight": "^3.2.3",
@@ -72,8 +73,8 @@
     "csv-parse": "^6.1.0",
     "csv-stringify": "^6.6.0",
     "cypress": "^15.6.0",
-    "eslint": "^9.38.0",
-    "eslint-config-next": "^15.5.6",
+    "eslint": "^9.39.1",
+    "eslint-config-next": "^16.0.3",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-compiler": "^19.1.0-rc.2",
@@ -84,10 +85,11 @@
     "prettier": "npm:@btmills/prettier@^3.2.5",
     "prisma": "^6.18.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.46.4"
   },
   "overrides": {
-    "@types/react": "19.0.2",
-    "@types/react-dom": "19.0.2"
+    "@types/react": "19.2.4",
+    "@types/react-dom": "19.2.3"
   }
 }
