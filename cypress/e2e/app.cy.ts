@@ -18,7 +18,7 @@ describe('Render', () => {
     cy.get('h2').contains('Frequently Asked Questions');
 
     // and close it
-    cy.get('button').contains('Back').click();
+    cy.get('button').contains('Back').realClick();
 
     cy.contains('h2', 'Frequently Asked Questions').should('not.exist');
   });
@@ -44,12 +44,12 @@ describe('Render', () => {
     it('should render borough data', () => {
       cy.visit('http://localhost:3000/');
 
-      cy.get("button[value='borough']").click();
+      cy.get('button').contains('Borough').realClick();
       cy.get('#borough-options')
         .parent()
-        .click()
+        .realClick()
         .get("ul > li[data-value='Brooklyn']")
-        .click();
+        .realClick();
 
       // nuqs
       cy.url().should('include', '?view=borough&borough=Brooklyn');
@@ -65,22 +65,23 @@ describe('Render', () => {
     it('should render the advanced data', () => {
       cy.visit('http://localhost:3000/');
 
-      cy.get("button[value='borough']").click();
+      cy.get("button[value='borough']").realClick();
       cy.get('#borough-options')
         .parent()
-        .click()
+        .realClick()
         .get("ul > li[data-value='Brooklyn']")
-        .click();
+        .realClick();
 
 
       // expand the advanced data
+      // For some reason, 'realClick' doesn't work on this one
       cy.get('button').contains('Show more data').click();
 
       // test that the chart at least rendered
       cy.get('.recharts-cartesian-grid'); // not sure how to test better than this
 
-      // click over to the table
-      cy.get('button').contains('Table').click();
+      // realClick over to the table
+      cy.get('button').contains('Table').realClick();
 
       // just one of the cells
       cy.contains('286,334');
@@ -88,7 +89,7 @@ describe('Render', () => {
 
     describe('query params', () => {
       it('should work with params in the url', () => {
-        cy.visit('https://www.citibikedata.nyc/?view=borough&borough=Brooklyn');
+        cy.visit('http://localhost:3000?view=borough&borough=Brooklyn');
 
         cy.contains('145,488'); // uses per month
         cy.contains('4,796'); // uses per day
