@@ -40,7 +40,7 @@
     "@mui/icons-material": "^7.3.5",
     "@mui/material": "^7.3.2",
     "@mui/x-data-grid": "^8.19.0",
-    "@mui/x-date-pickers": "^8.18.0",
+    "@mui/x-date-pickers": "^8.19.0",
     "@prisma/client": "^7.0.0",
     "@types/react": "19.2.4",
     "@types/react-dom": "19.2.3",
@@ -60,7 +60,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
-    "@next/eslint-plugin-next": "16.0.3",
+    "@next/eslint-plugin-next": "16.0.4",
     "@stylistic/eslint-plugin": "^5.6.1",
     "@stylistic/eslint-plugin-js": "^4.4.1",
     "@types/autosuggest-highlight": "^3.2.3",
