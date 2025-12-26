@@ -22,8 +22,11 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v6.8.0
         timeout-minutes: 10
+        env:
+          ELECTRONC_EXTRA_LAUNCH_ARGS: '--disable-gpu'
         with:
-          browser: firefox
+          browser: chrome
+          video: false
           build: npm run build
           start: npm run start
           wait-on: 'http://localhost:3000'
