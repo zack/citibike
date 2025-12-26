@@ -1,5 +1,6 @@
 name: 'Node Linter'
 run-name: ${{ github.actor }} is linting Typescript
+run: echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> $GITHUB_ENV
 on:
   pull_request:
 jobs:
