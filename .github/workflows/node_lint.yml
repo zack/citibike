@@ -3,9 +3,9 @@ run-name: ${{ github.actor }} is linting Typescript
 on:
   pull_request:
 jobs:
+  run-linter:
     env:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
-  run-linter:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
