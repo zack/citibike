@@ -1,9 +1,10 @@
 name: 'Node Linter'
 run-name: ${{ github.actor }} is linting Typescript
-run: echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> $GITHUB_ENV
 on:
   pull_request:
 jobs:
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
   run-linter:
     runs-on: ubuntu-latest
     steps:
