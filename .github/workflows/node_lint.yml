@@ -4,11 +4,13 @@ on:
   pull_request:
 jobs:
   run-linter:
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
     - uses: actions/setup-node@v3
       with:
-        node-version: 22.5.1
+        node-version: lts/jod
     - run: npm ci --legacy-peer-deps
     - run: npm run lint

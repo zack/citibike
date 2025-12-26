@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from './generated/prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
 import { ProgressBar } from 'ascii-progress';
 import { exec } from 'child_process';
 import { finished } from 'stream/promises';
@@ -9,7 +10,10 @@ import { parse } from 'csv-parse';
 import { stringify } from 'csv-stringify';
 import util from 'node:util';
 
-const prisma = new PrismaClient();
+const adapter = new PrismaPg({
+  connectionString: process.env.DATABASE_URL
+});
+const prisma = new PrismaClient({ adapter });
 const TMP_DIR = process.env.TMP_DIR;
 const ENV = process.env.ENVIRONMENT;
 
@@ -358,7 +362,7 @@ async function seedDays(fileDateStr: string, file: string, length: number) {
 
 // Add borough, community district, and council district to the stations. Makes
 // use of an external python script.
-async function _updateStationExtras() {
+async function updateStationExtras() {
   console.log('Updating station extras...');
 
   const stations = await prisma.station.findMany({});
@@ -421,7 +425,7 @@ exec(`wc -l ${TMP_DIR}/*`, (error, stdout) => {
     });
     processFiles(files)
       .then(async () => {
-        // await updateStationExtras();
+        await updateStationExtras();
       })
       .then(async () => {
         console.log('disconnecting');
