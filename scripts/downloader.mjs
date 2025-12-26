@@ -5,7 +5,9 @@
 // 2. Determine whether there is any more recent data available
 // 3. Download and unzip newer data if it is available
 
-import { PrismaClient } from '@prisma/client';
+import 'dotenv/config';
+import { PrismaClient } from '../prisma/generated/prisma/index.js';
+import { PrismaPg } from '@prisma/adapter-pg';
 import adm from 'adm-zip';
 import concat from 'concat-files';
 import { exec } from 'child_process';
@@ -19,8 +21,13 @@ import {
 
 import fs, { readdirSync, rmSync } from 'fs';
 
+console.log('DATABASE_URL:', process.env.DATABASE_URL); // sanity check
+
 const client = new S3Client({ region: 'us-east-1' });
-const prisma = new PrismaClient();
+const adapter = new PrismaPg({
+  connectionString: process.env.DATABASE_URL
+});
+const prisma = new PrismaClient({ adapter });
 
 const TMP_DIR = process.env.TMP_DIR;
 const BUCKET_NAME = 'tripdata';

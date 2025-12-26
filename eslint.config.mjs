@@ -21,6 +21,7 @@ export default defineConfig([
     'build/**',
     'next-env.d.ts',
     'out/**',
+    'prisma/generated',
   ]),
 
   {
