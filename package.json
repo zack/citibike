@@ -59,7 +59,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
-    "@next/eslint-plugin-next": "16.0.10",
+    "@next/eslint-plugin-next": "16.1.1",
     "@stylistic/eslint-plugin": "^5.6.1",
     "@stylistic/eslint-plugin-js": "^4.4.1",
     "@types/autosuggest-highlight": "^3.2.3",
