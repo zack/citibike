@@ -11,6 +11,6 @@ jobs:
     - uses: actions/checkout@v3
     - uses: actions/setup-node@v3
       with:
-        node-version: lts/jod
+        node-version: lts/krypton
     - run: npm ci --legacy-peer-deps
     - run: npm run lint
