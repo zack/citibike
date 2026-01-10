@@ -65,7 +65,7 @@
     "@types/autosuggest-highlight": "^3.2.3",
     "@types/node": "^24.10.1",
     "@typescript-eslint/eslint-plugin": "^8.51.0",
-    "@typescript-eslint/parser": "^8.49.0",
+    "@typescript-eslint/parser": "^8.52.0",
     "ascii-progress": "^2.0.0",
     "autoprefixer": "^10.4.22",
     "babel-plugin-react-compiler": "^19.0.0-beta-714736e-20250131",
