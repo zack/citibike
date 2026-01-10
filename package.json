@@ -63,7 +63,7 @@
     "@stylistic/eslint-plugin": "^5.6.1",
     "@stylistic/eslint-plugin-js": "^4.4.1",
     "@types/autosuggest-highlight": "^3.2.3",
-    "@types/node": "^24.10.1",
+    "@types/node": "^25.0.4",
     "@typescript-eslint/eslint-plugin": "^8.51.0",
     "@typescript-eslint/parser": "^8.52.0",
     "ascii-progress": "^2.0.0",
