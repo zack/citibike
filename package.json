@@ -48,7 +48,7 @@
     "concat-files": "^0.1.1",
     "cypress-real-events": "^1.15.0",
     "date-fns": "^4.1.0",
-    "immer": "^11.0.1",
+    "immer": "^11.1.3",
     "next": "16.1.1",
     "nuqs": "^2.8.6",
     "prisma-repl": "^1.4.0",
