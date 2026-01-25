@@ -5,6 +5,9 @@ const nextConfig: NextConfig = {
   experimental: {
     authInterrupts: true,
   },
+  outputFileTracingIncludes: {
+  '/api/*': ['./node_modules/.prisma/client/*.wasm']
+  },
 };
 
 module.exports = nextConfig;
