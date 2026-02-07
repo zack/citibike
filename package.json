@@ -39,7 +39,7 @@
     "@mui/x-data-grid": "^8.23.0",
     "@mui/x-date-pickers": "^8.24.0",
     "@prisma/adapter-pg": "^7.3.0",
-    "@prisma/client": "^7.2.0",
+    "@prisma/client": "^7.3.0",
     "@types/react": "19.2.4",
     "@types/react-dom": "19.2.3",
     "@vercel/analytics": "^1.6.1",
