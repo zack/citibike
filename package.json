@@ -67,7 +67,7 @@
     "@typescript-eslint/eslint-plugin": "^8.54.0",
     "@typescript-eslint/parser": "^8.56.1",
     "ascii-progress": "^2.0.0",
-    "autoprefixer": "^10.4.22",
+    "autoprefixer": "^10.4.27",
     "babel-plugin-react-compiler": "^19.0.0-beta-714736e-20250131",
     "csv-parse": "^6.2.1",
     "csv-stringify": "^6.7.0",
