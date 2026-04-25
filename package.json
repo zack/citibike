@@ -40,7 +40,7 @@
     "@mui/x-date-pickers": "^9.0.2",
     "@prisma/adapter-pg": "^7.3.0",
     "@prisma/client": "^7.5.0",
-    "@types/react": "19.2.4",
+    "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
     "@vercel/analytics": "^2.0.1",
     "adm-zip": "^0.5.17",
@@ -52,7 +52,7 @@
     "next": "16.2.3",
     "nuqs": "^2.8.9",
     "prisma-repl": "^1.4.0",
-    "react": "^19.2.1",
+    "react": "^19.2.5",
     "react-dom": "^19.2.4",
     "recharts": "^3.7.0",
     "redis": "^5.11.0"
@@ -89,7 +89,7 @@
     "typescript-eslint": "^8.54.0"
   },
   "overrides": {
-    "@types/react": "19.2.4",
+    "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3"
   }
 }
