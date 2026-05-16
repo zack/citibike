@@ -72,7 +72,7 @@
     "csv-parse": "^6.2.1",
     "csv-stringify": "^6.7.0",
     "cypress": "^15.14.2",
-    "eslint": "^9.39.2",
+    "eslint": "^10.4.0",
     "eslint-config-next": "^16.2.2",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-react": "^7.37.5",
