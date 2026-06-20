@@ -47,7 +47,7 @@
     "autosuggest-highlight": "^3.3.4",
     "concat-files": "^0.1.1",
     "cypress-real-events": "^1.15.0",
-    "date-fns": "^4.1.0",
+    "date-fns": "^4.4.0",
     "immer": "^11.1.8",
     "next": "16.2.6",
     "nuqs": "^2.8.9",
