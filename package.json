@@ -84,7 +84,7 @@
     "prettier": "npm:@btmills/prettier@^3.2.5",
     "prisma": "^7.8.0",
     "ts-node": "^10.9.2",
-    "tsx": "^4.22.4",
+    "tsx": "^4.23.1",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.54.0"
   },
