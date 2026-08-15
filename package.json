@@ -55,7 +55,7 @@
     "react": "^19.2.7",
     "react-dom": "^19.2.8",
     "recharts": "^3.7.0",
-    "redis": "^6.1.0"
+    "redis": "^6.2.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
