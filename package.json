@@ -37,7 +37,7 @@
     "@mui/icons-material": "^7.3.8",
     "@mui/material": "^7.3.7",
     "@mui/x-data-grid": "^9.10.1",
-    "@mui/x-date-pickers": "^9.0.2",
+    "@mui/x-date-pickers": "^9.11.0",
     "@prisma/adapter-pg": "^7.9.1",
     "@prisma/client": "^7.9.1",
     "@types/react": "19.2.17",
