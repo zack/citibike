@@ -66,6 +66,8 @@ export default function Topline({
   // The moment the parent starts loading, dump the data
   React.useEffect(() => {
     if (parentLoading) {
+      // clearing stale data when the parent starts loading, not a derived value
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setData(undefined);
     }
   }, [parentLoading]);
