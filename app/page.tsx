@@ -9,10 +9,8 @@ export default function Home() {
     <main>
       <Grid
         container
-        justifyContent='center'
         columns={{ xs: 6, sm: 8, md: 8, lg: 12 }}
-        height='90vh'
-        width='97vw'
+        sx={{ height: '90vh', justifyContent: 'center', width: '97vw' }}
       >
         <Grid
           size={{ xs: 6 }}

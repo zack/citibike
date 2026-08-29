@@ -65,7 +65,7 @@ export default function ChartControls({
   }
 
   return (
-    <Box display='block' width={'100%'}>
+    <Box sx={{ display: 'block', width: '100%' }}>
       {isError && (
         <Alert severity='error'>Start date cannot be after end date.</Alert>
       )}
@@ -116,7 +116,7 @@ export default function ChartControls({
           />
         </LocalizationProvider>
 
-        <Box width={'270px'}>
+        <Box sx={{ width: '270px' }}>
           <FormControl fullWidth>
             <InputLabel id='granularity-options-label'>Granularity</InputLabel>
             <Select

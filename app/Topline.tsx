@@ -1,4 +1,4 @@
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutlineOutlined';
 import React from 'react';
 import { ToplineData } from './types';
 import { format as formatDate } from 'date-fns';
@@ -30,8 +30,10 @@ function Bold({
   return (
     <Box
       component='span'
-      fontWeight='bold'
-      sx={{ background: highlight ? '#ED6C02' : 'white' }}
+      sx={{
+        background: highlight ? '#ED6C02' : 'white',
+        fontWeight: 'bold',
+      }}
     >
       {children}
     </Box>
@@ -149,7 +151,7 @@ export default function Topline({
   return (
     <>
       <Box sx={{ marginTop: 4, marginBottom: 2 }}>
-        <Typography fontSize='2rem'>
+        <Typography sx={{ fontSize: '2rem' }}>
           <>
             {stationName && (
               <>
@@ -228,7 +230,7 @@ export default function Topline({
         }}
       >
         <Box sx={{ textAlign: 'center' }}>
-          <Typography fontSize='4rem' fontWeight='bold'>
+          <Typography sx={{ fontSize: '4rem', fontWeight: 'bold' }}>
             {!loading && perMonth ? (
               perMonth.toLocaleString('en-US')
             ) : (
@@ -238,7 +240,7 @@ export default function Topline({
           <Typography sx={{ marginTop: '-1rem' }}>uses per month</Typography>
         </Box>
         <Box sx={{ textAlign: 'center' }}>
-          <Typography fontSize='4rem' fontWeight='bold'>
+          <Typography sx={{ fontSize: '4rem', fontWeight: 'bold' }}>
             {!loading && perDay ? (
               perDay.toLocaleString('en-US')
             ) : (
@@ -248,7 +250,7 @@ export default function Topline({
           <Typography sx={{ marginTop: '-1rem' }}> uses per day </Typography>
         </Box>
         <Box sx={{ textAlign: 'center' }}>
-          <Typography fontSize='4rem' fontWeight='bold'>
+          <Typography sx={{ fontSize: '4rem', fontWeight: 'bold' }}>
             {!loading && eBikes && eBikes > 0 ? `${eBikes}%` : null}
             {!loading && eBikes === 0 ? 'n/a' : null}
             {loading || eBikes === undefined ? (
