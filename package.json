@@ -65,7 +65,7 @@
     "@types/autosuggest-highlight": "^3.2.3",
     "@types/node": "^25.6.0",
     "@typescript-eslint/eslint-plugin": "^8.68.0",
-    "@typescript-eslint/parser": "^8.59.0",
+    "@typescript-eslint/parser": "^8.68.0",
     "ascii-progress": "^2.0.0",
     "autoprefixer": "^10.5.4",
     "babel-plugin-react-compiler": "^19.0.0-beta-714736e-20250131",
@@ -86,7 +86,7 @@
     "ts-node": "^10.9.2",
     "tsx": "^4.23.1",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.54.0"
+    "typescript-eslint": "^8.68.0"
   },
   "overrides": {
     "@types/react": "19.2.17",
