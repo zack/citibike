@@ -7,7 +7,6 @@ import {
   Alert,
   Autocomplete,
   Box,
-  Chip,
   FormControl,
   InputLabel,
   MenuItem,
@@ -23,7 +22,7 @@ import { parseAsString, useQueryState } from 'nuqs';
 
 function Bold({ children }: { children: string }) {
   return (
-    <Box component='span' fontWeight='bold'>
+    <Box component='span' sx={{ fontWeight: 'bold' }}>
       {children}
     </Box>
   );
@@ -210,11 +209,16 @@ export default function StationData() {
             <TextField
               {...p}
               label='Station'
-              InputProps={{
-                ...p.InputProps,
-                endAdornment: (
-                  <React.Fragment>{p.InputProps.endAdornment}</React.Fragment>
-                ),
+              slotProps={{
+                ...p.slotProps,
+                input: {
+                  ...p.slotProps.input,
+                  endAdornment: (
+                    <React.Fragment>
+                      {p.slotProps.input.endAdornment}
+                    </React.Fragment>
+                  ),
+                },
               }}
             />
           )}
@@ -239,11 +243,6 @@ export default function StationData() {
                 ))}
               </li>
             );
-          }}
-          renderTags={(tagValue, getTagProps) => {
-            return tagValue.map((option, index) => (
-              <Chip {...getTagProps({ index })} key={option} label={option} />
-            ));
           }}
         />
       </Box>
