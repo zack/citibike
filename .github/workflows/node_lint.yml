@@ -14,3 +14,4 @@ jobs:
           node-version-file: '.nvmrc'
       - run: npm ci --legacy-peer-deps
       - run: npm run lint
+      - run: npm run format:check
