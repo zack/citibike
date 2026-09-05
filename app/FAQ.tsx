@@ -1,8 +1,7 @@
+import { Box, Typography } from '@mui/material';
 import React from 'react';
 
 import { exoFontFamily } from './ThemeProvider';
-
-import { Box, Typography } from '@mui/material';
 
 export default function FAQ() {
   return (
@@ -71,12 +70,12 @@ export default function FAQ() {
       </Typography>
 
       <Typography>
-        I&apos;m counting each docking and undocking as an individual use.
-        That means most trips generate two uses, and usually at two different
+        I&apos;m counting each docking and undocking as an individual use. That
+        means most trips generate two uses, and usually at two different
         stations. This is the most useful number to present because it shows how
         many times a station is providing value to someone. If for whatever
-        reason you only care about docking or undocking, dividing by two
-        should get you pretty close.
+        reason you only care about docking or undocking, dividing by two should
+        get you pretty close.
       </Typography>
 
       <Typography

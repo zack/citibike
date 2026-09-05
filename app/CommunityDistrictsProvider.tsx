@@ -1,10 +1,9 @@
 'use client';
 
-import { CommunityDistrict } from './types';
-
 import React from 'react';
-
 import { createContext } from 'react';
+
+import { CommunityDistrict } from './types';
 
 export const CommunityDistrictsContext = createContext<CommunityDistrict[]>([]);
 

@@ -4,5 +4,11 @@
   "jsxSingleQuote": true,
   "experimentalOperatorPosition": "start",
   "sortImports": true,
-  "ignorePatterns": ["build/**", "dist/**", ".next/**", "out/**", "prisma/generated/**"]
+  "ignorePatterns": [
+    "build/**",
+    "dist/**",
+    ".next/**",
+    "out/**",
+    "prisma/generated/**"
+  ]
 }

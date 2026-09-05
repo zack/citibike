@@ -1,11 +1,6 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": [
-    "nextjs",
-    "typescript",
-    "unicorn",
-    "react"
-  ],
+  "plugins": ["nextjs", "typescript", "unicorn", "react"],
   "categories": {
     "correctness": "off"
   },
@@ -31,9 +26,7 @@
       }
     ],
     "no-unexpected-multiline": "error",
-    "no-console": [
-      "error"
-    ],
+    "no-console": ["error"],
     "constructor-super": "error",
     "for-direction": "error",
     "getter-return": "error",
@@ -131,9 +124,7 @@
   },
   "overrides": [
     {
-      "files": [
-        "**/*.{js,jsx,mjs,ts,tsx,mts,cts}"
-      ],
+      "files": ["**/*.{js,jsx,mjs,ts,tsx,mts,cts}"],
       "rules": {
         "react/display-name": "error",
         "react/jsx-key": "error",
@@ -156,12 +147,8 @@
         "jsx-a11y/alt-text": [
           "warn",
           {
-            "elements": [
-              "img"
-            ],
-            "img": [
-              "Image"
-            ]
+            "elements": ["img"],
+            "img": ["Image"]
           }
         ],
         "jsx-a11y/aria-props": "warn",
@@ -1280,22 +1267,13 @@
         "XRWebGLLayer": "readonly",
         "XSLTProcessor": "readonly"
       },
-      "plugins": [
-        "react",
-        "import",
-        "jsx-a11y"
-      ],
+      "plugins": ["react", "import", "jsx-a11y"],
       "env": {
         "node": true
       }
     },
     {
-      "files": [
-        "**/*.ts",
-        "**/*.tsx",
-        "**/*.mts",
-        "**/*.cts"
-      ],
+      "files": ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"],
       "rules": {
         "no-var": "error",
         "prefer-const": "error",

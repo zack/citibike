@@ -1,11 +1,12 @@
+import { Typography } from '@mui/material';
+import { Box, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { useQueryState } from 'nuqs';
+import React from 'react';
+
 import BoroughData from './BoroughData';
 import CommunityDistrictData from './CommunityDistrictData';
 import CouncilDistrictData from './CouncilDistrictData';
-import React from 'react';
 import StationData from './StationData';
-import { Typography } from '@mui/material';
-import { useQueryState } from 'nuqs';
-import { Box, ToggleButton, ToggleButtonGroup } from '@mui/material';
 
 const views = ['station', 'borough', 'community', 'council'];
 type View = (typeof views)[number];

@@ -1,6 +1,5 @@
-import { NamedChartData } from './DataContainer';
+import { Box, Paper, Typography } from '@mui/material';
 import React from 'react';
-
 import {
   Bar,
   BarChart,
@@ -12,8 +11,7 @@ import {
   YAxis,
 } from 'recharts';
 
-import { Box, Paper, Typography } from '@mui/material';
-
+import { NamedChartData } from './DataContainer';
 import { exoFontFamily, ubuntuMonoFontFamily } from './ThemeProvider';
 
 export default function Chart({
@@ -22,7 +20,7 @@ export default function Chart({
   chartData,
 }: {
   daily: boolean;
-  chartConfig: {type: boolean, direction: boolean};
+  chartConfig: { type: boolean; direction: boolean };
   chartData: NamedChartData[];
 }) {
   const getMaxValueInData = React.useCallback(() => {
@@ -61,10 +59,10 @@ export default function Chart({
       <Box
         sx={{
           display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: '100%',
-            marginY: '200px',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100%',
+          marginY: '200px',
         }}
       >
         <Typography>
@@ -95,9 +93,9 @@ export default function Chart({
         data={chartData}
         margin={{
           top: 10,
-            right: 10,
-            left: getBarChartLeftMargin(),
-            bottom: 10,
+          right: 10,
+          left: getBarChartLeftMargin(),
+          bottom: 10,
         }}
       >
         <CartesianGrid strokeDasharray='3 3' />
@@ -118,7 +116,10 @@ export default function Chart({
           cursor={{ fill: '#EEE' }}
           content={({ active, payload, label }) => {
             if (active && payload && payload.length) {
-              const total = payload.reduce((memo, val) => memo + parseInt(`${val.value}`, 10), 0);
+              const total = payload.reduce(
+                (memo, val) => memo + parseInt(`${val.value}`, 10),
+                0,
+              );
 
               return (
                 <Paper elevation={2} sx={{ p: 2 }}>
@@ -130,14 +131,27 @@ export default function Chart({
                     {label}
                   </Typography>
 
-                  { payload.length > 1 && payload.map((p, index) => (
-                    <div key={index}style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <Typography style={{ paddingRight: '36px' }}>{p.name}:</Typography>
-                        <Typography>{p.value?.toLocaleString('en-US')}</Typography>
-                    </div>
-                  ))}
+                  {payload.length > 1
+                    && payload.map((p, index) => (
+                      <div
+                        key={index}
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                        }}
+                      >
+                        <Typography style={{ paddingRight: '36px' }}>
+                          {p.name}:
+                        </Typography>
+                        <Typography>
+                          {p.value?.toLocaleString('en-US')}
+                        </Typography>
+                      </div>
+                    ))}
 
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <div
+                    style={{ display: 'flex', justifyContent: 'space-between' }}
+                  >
                     <Typography style={{ paddingRight: '36px' }}>
                       <b>Total:</b>
                     </Typography>
@@ -147,9 +161,9 @@ export default function Chart({
                   </div>
                 </Paper>
               );
-          }
+            }
           }}
-          />
+        />
 
         <Legend
           height={36}
@@ -162,41 +176,94 @@ export default function Chart({
         so using a helper function doesn't work */}
 
         {/* Break up bars by both type & direction */}
-        {chartConfig.type && chartConfig.direction &&
-          <Bar name="Acoustic Arrivals" dataKey='acousticArrive' stackId='a' fill='#0150B4' isAnimationActive={false} />
-        }
-        {chartConfig.type && chartConfig.direction &&
-          <Bar name="Acoustic Departures" dataKey='acousticDepart' stackId='a' fill='#01285A' isAnimationActive={false} />
-        }
-        {chartConfig.type && chartConfig.direction &&
-          <Bar name="Electric Departures" dataKey='electricDepart' stackId='a' fill='#61605E' isAnimationActive={false} />
-        }
-        {chartConfig.type && chartConfig.direction &&
-          <Bar name="Electric Arrivals" dataKey='electricArrive' stackId='a' fill='#C1BFBB' isAnimationActive={false} />
-        }
+        {chartConfig.type && chartConfig.direction && (
+          <Bar
+            name='Acoustic Arrivals'
+            dataKey='acousticArrive'
+            stackId='a'
+            fill='#0150B4'
+            isAnimationActive={false}
+          />
+        )}
+        {chartConfig.type && chartConfig.direction && (
+          <Bar
+            name='Acoustic Departures'
+            dataKey='acousticDepart'
+            stackId='a'
+            fill='#01285A'
+            isAnimationActive={false}
+          />
+        )}
+        {chartConfig.type && chartConfig.direction && (
+          <Bar
+            name='Electric Departures'
+            dataKey='electricDepart'
+            stackId='a'
+            fill='#61605E'
+            isAnimationActive={false}
+          />
+        )}
+        {chartConfig.type && chartConfig.direction && (
+          <Bar
+            name='Electric Arrivals'
+            dataKey='electricArrive'
+            stackId='a'
+            fill='#C1BFBB'
+            isAnimationActive={false}
+          />
+        )}
 
         {/* Break up bars by only type */}
-        {chartConfig.type && !chartConfig.direction &&
-          <Bar name="Acoustic" dataKey='acoustic' stackId='a' fill='#0150B4' isAnimationActive={false} />
-        }
-        {chartConfig.type && !chartConfig.direction &&
-          <Bar name="Electric" dataKey='electric' stackId='a' fill='#C1BFBB' isAnimationActive={false} />
-        }
+        {chartConfig.type && !chartConfig.direction && (
+          <Bar
+            name='Acoustic'
+            dataKey='acoustic'
+            stackId='a'
+            fill='#0150B4'
+            isAnimationActive={false}
+          />
+        )}
+        {chartConfig.type && !chartConfig.direction && (
+          <Bar
+            name='Electric'
+            dataKey='electric'
+            stackId='a'
+            fill='#C1BFBB'
+            isAnimationActive={false}
+          />
+        )}
 
         {/* Break up bars by only direction */}
-        {!chartConfig.type && chartConfig.direction &&
-          <Bar name="Arrivals" dataKey='arrive' stackId='a' fill='#309898' isAnimationActive={false} />
-        }
-        {!chartConfig.type && chartConfig.direction &&
-          <Bar name="Departures" dataKey='depart' stackId='a' fill='#F4631E' isAnimationActive={false} />
-        }
+        {!chartConfig.type && chartConfig.direction && (
+          <Bar
+            name='Arrivals'
+            dataKey='arrive'
+            stackId='a'
+            fill='#309898'
+            isAnimationActive={false}
+          />
+        )}
+        {!chartConfig.type && chartConfig.direction && (
+          <Bar
+            name='Departures'
+            dataKey='depart'
+            stackId='a'
+            fill='#F4631E'
+            isAnimationActive={false}
+          />
+        )}
 
         {/* Don't break up bars at all */}
-        {!chartConfig.type && !chartConfig.direction &&
-          <Bar name="Total uses" dataKey="total" stackId='a' fill='#0150B4' isAnimationActive={false} />
-        }
-
-        </BarChart>
-      </ResponsiveContainer>
+        {!chartConfig.type && !chartConfig.direction && (
+          <Bar
+            name='Total uses'
+            dataKey='total'
+            stackId='a'
+            fill='#0150B4'
+            isAnimationActive={false}
+          />
+        )}
+      </BarChart>
+    </ResponsiveContainer>
   );
 }

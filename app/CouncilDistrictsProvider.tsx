@@ -1,10 +1,9 @@
 'use client';
 
-import { CouncilDistrict } from './types';
-
 import React from 'react';
-
 import { createContext } from 'react';
+
+import { CouncilDistrict } from './types';
 
 export const CouncilDistrictsContext = createContext<CouncilDistrict[]>([]);
 

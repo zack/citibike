@@ -1,8 +1,3 @@
-import DataContainer from './DataContainer';
-import React from 'react';
-import Topline from './Topline';
-import { useQueryState } from 'nuqs';
-import { Borough, Timeframe } from './types';
 import {
   Box,
   FormControl,
@@ -12,6 +7,12 @@ import {
   SelectChangeEvent,
   Typography,
 } from '@mui/material';
+import { useQueryState } from 'nuqs';
+import React from 'react';
+
+import DataContainer from './DataContainer';
+import Topline from './Topline';
+import { Borough, Timeframe } from './types';
 import { isBorough, timeframeFetcher } from './utils';
 
 function parseBorough(input: string): Borough | '' {

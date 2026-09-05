@@ -1,12 +1,11 @@
 'use client';
 
+import styled from '@emotion/styled';
 import CancelIcon from '@mui/icons-material/Cancel';
 import HelpIcon from '@mui/icons-material/Help';
-import React from 'react';
 import { Typography } from '@mui/material';
-
-import styled from '@emotion/styled';
 import { useQueryState } from 'nuqs';
+import React from 'react';
 
 export default function FAQButton() {
   const [faq, setFaq] = useQueryState('faq');

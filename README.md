@@ -55,6 +55,7 @@ Oh, and I don't include stations in New Jersey or Canada.
    1. `SHADOW_DATABASE_URL='postgresql://citbike:citibike@localhost/stationdatashadow'`
 
 ## Redis
+
 1. Install redis
 1. Set the connection string in `.env` to `'redis://localhost:6379'`
 
@@ -68,6 +69,7 @@ Oh, and I don't include stations in New Jersey or Canada.
   website](https://www.prisma.io/docs/orm/tools/prisma-cli)
 
 # Special Thanks
+
 A huge thanks to the following people who helped make this possible:
 
 - [Aileen Zhou](https://ayleinee.com/)

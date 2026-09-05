@@ -1,11 +1,11 @@
 'use client';
 
 import { Box } from '@mui/material';
-import FAQ from './FAQ';
-import React from 'react';
-import ViewPicker from './ViewPicker';
-
 import { useQueryState } from 'nuqs';
+import React from 'react';
+
+import FAQ from './FAQ';
+import ViewPicker from './ViewPicker';
 
 export default function FAQContainer() {
   const [faqOpen, _] = useQueryState('faq');

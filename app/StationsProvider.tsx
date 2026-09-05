@@ -1,9 +1,9 @@
 'use client';
 
 import React from 'react';
-import { Stations } from './types';
-
 import { createContext } from 'react';
+
+import { Stations } from './types';
 
 export const StationsContext = createContext<Stations>({
   Bronx: [],

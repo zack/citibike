@@ -6,11 +6,8 @@
 // 3. Download and unzip newer data if it is available
 
 import 'dotenv/config';
-import { PrismaClient } from '../prisma/generated/prisma/index.js';
-import { PrismaPg } from '@prisma/adapter-pg';
-import adm from 'adm-zip';
-import concat from 'concat-files';
 import { exec } from 'child_process';
+import fs, { readdirSync, rmSync } from 'fs';
 import { writeFile } from 'node:fs/promises';
 
 import {
@@ -18,14 +15,17 @@ import {
   ListObjectsV2Command,
   S3Client,
 } from '@aws-sdk/client-s3';
+import { PrismaPg } from '@prisma/adapter-pg';
+import adm from 'adm-zip';
+import concat from 'concat-files';
 
-import fs, { readdirSync, rmSync } from 'fs';
+import { PrismaClient } from '../prisma/generated/prisma/index.js';
 
 console.log('DATABASE_URL:', process.env.DATABASE_URL); // sanity check
 
 const client = new S3Client({ region: 'us-east-1' });
 const adapter = new PrismaPg({
-  connectionString: process.env.DATABASE_URL
+  connectionString: process.env.DATABASE_URL,
 });
 const prisma = new PrismaClient({ adapter });
 
@@ -92,9 +92,7 @@ async function getFilesNewerThanNewestData(
       // A whole yearly rollup file of a year ahead of any data we have
       && ((fileIsYearly && fileYear > mostRecentYear)
         // A yearly file for a year that we haven't yet completed
-        || (fileIsYearly
-          && fileYear === mostRecentYear
-          && mostRecentMonth < 12)
+        || (fileIsYearly && fileYear === mostRecentYear && mostRecentMonth < 12)
         // A monthly file in a year for which we currently have no data
         || (fileIsMonthly && fileYear > mostRecentYear)
         // A monthly file for a year, but not a month, in which we have data
@@ -188,12 +186,7 @@ async function downloadAndUnzipFiles(
           const innerZip = new adm(innerZipName);
           const innerEntries = innerZip.getEntries();
           for (const innerEntry of innerEntries) {
-            innerZip.extractEntryTo(
-              innerEntry.entryName,
-              TMP_DIR,
-              false,
-              true,
-            );
+            innerZip.extractEntryTo(innerEntry.entryName, TMP_DIR, false, true);
           }
 
           fs.unlinkSync(`${TMP_DIR}/${fileName}`);
@@ -245,10 +238,6 @@ async function concatenateFiles() {
     mostRecentYear,
     mostRecentMonth,
   );
-  await downloadAndUnzipFiles(
-    newFileNames,
-    mostRecentYear,
-    mostRecentMonth,
-  );
+  await downloadAndUnzipFiles(newFileNames, mostRecentYear, mostRecentMonth);
   await concatenateFiles();
 })();

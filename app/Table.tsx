@@ -1,9 +1,9 @@
 import { Box } from '@mui/material';
-import { ChartData } from './types';
-import LoadingSpinner from './LoadingSpinner';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import React from 'react';
 
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import LoadingSpinner from './LoadingSpinner';
+import { ChartData } from './types';
 
 interface ChartDataRowBase {
   acousticArrive: string;
@@ -74,7 +74,12 @@ export default function Table({
       acousticDepart: row.acousticDepart.toLocaleString('en-US'),
       electricArrive: row.electricArrive.toLocaleString('en-US'),
       electricDepart: row.electricDepart.toLocaleString('en-US'),
-      total: (row.acousticArrive + row.acousticDepart + row.electricArrive + row.electricDepart).toLocaleString('en-US'),
+      total: (
+        row.acousticArrive
+        + row.acousticDepart
+        + row.electricArrive
+        + row.electricDepart
+      ).toLocaleString('en-US'),
     };
 
     if (daily) {

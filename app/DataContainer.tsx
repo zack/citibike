@@ -1,11 +1,4 @@
-import ChartContainer from './ChartContainer';
-import ChartControls from './ChartControls';
-import { ChartData } from './types';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Granularity } from './constants';
-import LoadingSpinner from './LoadingSpinner';
-import Table from './Table';
-import { getQueryString } from './utils';
 import {
   Accordion,
   AccordionDetails,
@@ -15,8 +8,16 @@ import {
   Tabs,
   Typography,
 } from '@mui/material';
-import React, { type JSX } from 'react';
 import { max as laterDate, sub as subDate } from 'date-fns';
+import React, { type JSX } from 'react';
+
+import ChartContainer from './ChartContainer';
+import ChartControls from './ChartControls';
+import { Granularity } from './constants';
+import LoadingSpinner from './LoadingSpinner';
+import Table from './Table';
+import { ChartData } from './types';
+import { getQueryString } from './utils';
 
 export enum View {
   Chart,

@@ -7,7 +7,7 @@ describe('Render', () => {
     cy.visit('http://localhost:3000/');
 
     cy.get('h1').contains('Citi Bike Station Data');
-  })
+  });
 
   it('should show the FAQ', () => {
     cy.visit('http://localhost:3000/');
@@ -55,7 +55,9 @@ describe('Render', () => {
       cy.url().should('include', '?view=borough&borough=Brooklyn');
 
       // topline
-      cy.contains('Stations in Brooklyn have been used 8,729,291 times between May 2020 and April 2025.');
+      cy.contains(
+        'Stations in Brooklyn have been used 8,729,291 times between May 2020 and April 2025.',
+      );
 
       cy.contains('145,488'); // uses per month
       cy.contains('4,796'); // uses per day
@@ -71,7 +73,6 @@ describe('Render', () => {
         .realClick()
         .get("ul > li[data-value='Brooklyn']")
         .realClick();
-
 
       // expand the advanced data
       // For some reason, 'realClick' doesn't work on this one

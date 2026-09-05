@@ -1,8 +1,10 @@
-import { ToplineData } from '../../types';
-import cache from '../../redis';
-import { getWhereSpecifier } from '../../utils';
-import prisma from '@/prisma/db';
 import { NextRequest, NextResponse } from 'next/server';
+
+import prisma from '@/prisma/db';
+
+import cache from '../../redis';
+import { ToplineData } from '../../types';
+import { getWhereSpecifier } from '../../utils';
 
 function JSONIsValid(json: unknown) {
   if (typeof json !== 'object' || json === null) {
@@ -75,17 +77,19 @@ export async function GET(
   const firstElectric = await prisma.stationDay.findFirst({
     where: {
       ...where,
-      OR: [
-        { electricArrive: { gt: 0 }},
-        { electricDepart: { gt: 0 }},
-      ],
+      OR: [{ electricArrive: { gt: 0 } }, { electricDepart: { gt: 0 } }],
     },
     orderBy: [{ year: 'asc' }, { month: 'asc' }, { day: 'asc' }],
   });
 
   const trips = await prisma.stationDay.aggregate({
     where,
-    _sum: { acousticArrive: true, acousticDepart: true, electricArrive: true, electricDepart: true },
+    _sum: {
+      acousticArrive: true,
+      acousticDepart: true,
+      electricArrive: true,
+      electricDepart: true,
+    },
   });
 
   const tripsSinceFirstElectric = firstElectric
@@ -102,14 +106,28 @@ export async function GET(
             },
           ],
         },
-      _sum: { acousticArrive: true, acousticDepart: true, electricArrive: true, electricDepart: true },
+        _sum: {
+          acousticArrive: true,
+          acousticDepart: true,
+          electricArrive: true,
+          electricDepart: true,
+        },
       })
-    : { _sum: { electricArrive: 0, electricDepart: 0, acousticArrive: 0, acousticDepart: 0 } };
+    : {
+        _sum: {
+          electricArrive: 0,
+          electricDepart: 0,
+          acousticArrive: 0,
+          acousticDepart: 0,
+        },
+      };
 
   const json = {
     trips: {
-      acoustic: (trips._sum.acousticArrive ?? 0) + (trips._sum.acousticDepart ?? 0),
-      electric: (trips._sum.electricArrive ?? 0) + (trips._sum.electricDepart ?? 0),
+      acoustic:
+        (trips._sum.acousticArrive ?? 0) + (trips._sum.acousticDepart ?? 0),
+      electric:
+        (trips._sum.electricArrive ?? 0) + (trips._sum.electricDepart ?? 0),
     },
     tripsSinceFirstElectric:
       (tripsSinceFirstElectric._sum.electricArrive ?? 0)

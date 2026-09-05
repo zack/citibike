@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+
 import { Borough, Timeframe, WhereSpecifier } from './types';
 
 export function isBorough(value: string): value is Borough {

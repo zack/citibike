@@ -1,8 +1,3 @@
-import { CouncilDistrictsContext } from './CouncilDistrictsProvider';
-import DataContainer from './DataContainer';
-import Topline from './Topline';
-import { useQueryState } from 'nuqs';
-import { Borough, Timeframe } from './types';
 import {
   Box,
   FormControl,
@@ -13,7 +8,13 @@ import {
   SelectChangeEvent,
   Typography,
 } from '@mui/material';
+import { useQueryState } from 'nuqs';
 import React, { useContext } from 'react';
+
+import { CouncilDistrictsContext } from './CouncilDistrictsProvider';
+import DataContainer from './DataContainer';
+import Topline from './Topline';
+import { Borough, Timeframe } from './types';
 import { isBorough, timeframeFetcher } from './utils';
 
 function parseBorough(input: string): Borough | '' {

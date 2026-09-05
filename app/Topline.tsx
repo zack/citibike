@@ -1,9 +1,10 @@
 import HelpOutlineIcon from '@mui/icons-material/HelpOutlineOutlined';
-import React from 'react';
-import { ToplineData } from './types';
-import { format as formatDate } from 'date-fns';
 import { Box, Skeleton, Tooltip, Typography } from '@mui/material';
+import { format as formatDate } from 'date-fns';
 import { differenceInCalendarDays, differenceInCalendarMonths } from 'date-fns';
+import React from 'react';
+
+import { ToplineData } from './types';
 
 const InlineSkeleton = ({
   width,

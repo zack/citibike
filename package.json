@@ -2,11 +2,6 @@
   "name": "citibike-station-data",
   "version": "0.1.0",
   "private": true,
-  "engines": {
-    "node": ">=24",
-    "pnpm": "please-use-npm",
-    "yarn": "please-use-npm"
-  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -72,5 +67,10 @@
   "overrides": {
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.4"
+  },
+  "engines": {
+    "node": ">=24",
+    "pnpm": "please-use-npm",
+    "yarn": "please-use-npm"
   }
 }
