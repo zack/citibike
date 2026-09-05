@@ -1,7 +1,9 @@
-import { Timeframe } from '../../types';
-import cache from '../../redis';
-import prisma from '@/prisma/db';
 import { NextRequest, NextResponse } from 'next/server';
+
+import prisma from '@/prisma/db';
+
+import cache from '../../redis';
+import { Timeframe } from '../../types';
 import { getWhereSpecifier, isTimeframe } from '../../utils';
 
 export async function GET(

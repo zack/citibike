@@ -1,8 +1,9 @@
 'use server';
 
-import { isBorough } from './utils';
 import prisma from '@/prisma/db';
+
 import { CommunityDistrict, CouncilDistrict, Station, Stations } from './types';
+import { isBorough } from './utils';
 
 export async function getStations(): Promise<Stations> {
   const stations: Stations = {

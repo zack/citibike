@@ -1,18 +1,18 @@
 import './globals.css';
 import { Analytics } from '@vercel/analytics/react';
-import CommunityDistrictsProvider from './CommunityDistrictsProvider';
-import CouncilDistrictsProvider from './CouncilDistrictsProvider';
 import type { Metadata } from 'next';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import React from 'react';
-import StationsProvider from './StationsProvider';
-import ThemeProvider from './ThemeProvider';
 
 import {
   getCommunityDistricts,
   getCouncilDistricts,
   getStations,
 } from './action';
+import CommunityDistrictsProvider from './CommunityDistrictsProvider';
+import CouncilDistrictsProvider from './CouncilDistrictsProvider';
+import StationsProvider from './StationsProvider';
+import ThemeProvider from './ThemeProvider';
 
 export const metadata: Metadata = {
   title: 'Citi Bike Station Data',

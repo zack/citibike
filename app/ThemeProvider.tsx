@@ -1,10 +1,8 @@
 'use client';
 
-import React from 'react';
-
-import { Exo, Ubuntu_Mono } from 'next/font/google';
-
 import { ThemeProvider as TP, createTheme } from '@mui/material/styles';
+import { Exo, Ubuntu_Mono } from 'next/font/google';
+import React from 'react';
 
 const ubuntuMono = Ubuntu_Mono({ subsets: ['latin'], weight: '400' });
 const exo = Exo({ subsets: ['latin'], weight: '700' });

@@ -1,8 +1,3 @@
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { DatePicker } from '@mui/x-date-pickers';
-import { Granularity } from './constants';
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import React from 'react';
 import {
   Alert,
   Box,
@@ -11,6 +6,12 @@ import {
   MenuItem,
   Select,
 } from '@mui/material';
+import { DatePicker } from '@mui/x-date-pickers';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import React from 'react';
+
+import { Granularity } from './constants';
 
 export default function ChartControls({
   granularity,

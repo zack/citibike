@@ -1,17 +1,19 @@
 /* eslint-disable no-console */
 
-import { PrismaClient } from './generated/prisma/client';
+import { exec } from 'child_process';
+import fs from 'fs';
+import util from 'node:util';
+import { finished } from 'stream/promises';
+
 import { PrismaPg } from '@prisma/adapter-pg';
 import { ProgressBar } from 'ascii-progress';
-import { exec } from 'child_process';
-import { finished } from 'stream/promises';
-import fs from 'fs';
 import { parse } from 'csv-parse';
 import { stringify } from 'csv-stringify';
-import util from 'node:util';
+
+import { PrismaClient } from './generated/prisma/client';
 
 const adapter = new PrismaPg({
-  connectionString: process.env.DATABASE_URL
+  connectionString: process.env.DATABASE_URL,
 });
 const prisma = new PrismaClient({ adapter });
 const TMP_DIR = process.env.TMP_DIR;

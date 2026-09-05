@@ -1,8 +1,3 @@
-import DataContainer from './DataContainer';
-import { StationsContext } from './StationsProvider';
-import Topline from './Topline';
-import match from 'autosuggest-highlight/match';
-import parse from 'autosuggest-highlight/parse';
 import {
   Alert,
   Autocomplete,
@@ -15,10 +10,16 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { Borough, Timeframe } from './types';
-import React, { SyntheticEvent, useContext } from 'react';
-import { isBorough, timeframeFetcher } from './utils';
+import match from 'autosuggest-highlight/match';
+import parse from 'autosuggest-highlight/parse';
 import { parseAsString, useQueryState } from 'nuqs';
+import React, { SyntheticEvent, useContext } from 'react';
+
+import DataContainer from './DataContainer';
+import { StationsContext } from './StationsProvider';
+import Topline from './Topline';
+import { Borough, Timeframe } from './types';
+import { isBorough, timeframeFetcher } from './utils';
 
 function Bold({ children }: { children: string }) {
   return (

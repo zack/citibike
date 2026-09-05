@@ -1,6 +1,5 @@
-import React from 'react';
-
 import { Box, Container, Paper } from '@mui/material';
+import React from 'react';
 
 export default function Data({ isLoading }: { isLoading: boolean }) {
   if (isLoading) {

@@ -1,8 +1,9 @@
+import { Box, Grid, Typography } from '@mui/material';
+import React from 'react';
+
 import FAQButton from './FAQButton';
 import FAQContainer from './FAQContainer';
-import React from 'react';
 import { exoFontFamily } from './ThemeProvider';
-import { Box, Grid, Typography } from '@mui/material';
 
 export default function Home() {
   return (

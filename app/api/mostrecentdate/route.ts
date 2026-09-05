@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
-import cache from '../../redis';
+
 import prisma from '@/prisma/db';
+
+import cache from '../../redis';
 
 function JSONIsValid(json: unknown) {
   if (typeof json !== 'object' || json === null) {

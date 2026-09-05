@@ -1,10 +1,11 @@
-import Chart from './Chart';
-import { ChartData } from './types';
-import LoadingSpinner from './LoadingSpinner';
-import { NamedChartData } from './DataContainer';
-import React from 'react';
-import { format as formatDate } from 'date-fns';
 import { Box, Checkbox, FormControlLabel } from '@mui/material';
+import { format as formatDate } from 'date-fns';
+import React from 'react';
+
+import Chart from './Chart';
+import { NamedChartData } from './DataContainer';
+import LoadingSpinner from './LoadingSpinner';
+import { ChartData } from './types';
 
 function pad(num: number | undefined) {
   if (num === undefined) {
@@ -78,13 +79,29 @@ export default function ChartContainer({
       </Box>
       {isLoading || !chartData ? null : (
         <>
-          <FormControlLabel control={
-          <Checkbox checked={splitByType} onChange={() => setSplitByType(!splitByType)} />
-            } label="Split by type" />
-          <FormControlLabel control={
-          <Checkbox checked={splitByDirection} onChange={() => setSplitByDirection(!splitByDirection)} />
-            } label="Split by direction" />
-          <Chart daily={daily} chartData={chartData} chartConfig={{type: splitByType, direction: splitByDirection}} />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={splitByType}
+                onChange={() => setSplitByType(!splitByType)}
+              />
+            }
+            label='Split by type'
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={splitByDirection}
+                onChange={() => setSplitByDirection(!splitByDirection)}
+              />
+            }
+            label='Split by direction'
+          />
+          <Chart
+            daily={daily}
+            chartData={chartData}
+            chartConfig={{ type: splitByType, direction: splitByDirection }}
+          />
         </>
       )}
     </>

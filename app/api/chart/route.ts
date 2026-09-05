@@ -1,7 +1,9 @@
+import { NextRequest, NextResponse } from 'next/server';
+
+import prisma from '@/prisma/db';
+
 import { ChartData } from '../../types';
 import { getWhereSpecifier } from '../../utils';
-import prisma from '@/prisma/db';
-import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
   request: NextRequest,
@@ -82,7 +84,11 @@ export async function GET(
       electricDepart: r._sum.electricDepart || 0,
       arrive: (r._sum.electricArrive || 0) + (r._sum.acousticArrive || 0),
       depart: (r._sum.electricDepart || 0) + (r._sum.acousticDepart || 0),
-      total: (r._sum.electricArrive || 0) + (r._sum.electricDepart || 0) + (r._sum.acousticArrive || 0) + (r._sum.acousticDepart || 0),
+      total:
+        (r._sum.electricArrive || 0)
+        + (r._sum.electricDepart || 0)
+        + (r._sum.acousticArrive || 0)
+        + (r._sum.acousticDepart || 0),
       month: r.month,
       year: r.year,
     })),
