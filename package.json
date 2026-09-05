@@ -15,20 +15,14 @@
     "update": "npm run download && npm run seed",
     "download": "node scripts/downloader.mjs",
     "postinstall": "prisma generate",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx,.mjs,.mts",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check",
+    "typecheck": "tsc",
     "prepare": "husky",
     "cypress": "cypress open",
     "cypress:cli": "cypress run"
-  },
-  "lint-staged": {
-    "**/*.js": [
-      "eslint",
-      "prettier --write --ignore-unknown"
-    ],
-    "**/*.jsx": [
-      "eslint",
-      "prettier --write --ignore-unknown"
-    ]
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1103.0",
@@ -58,41 +52,25 @@
     "redis": "^6.2.1"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.2",
-    "@next/eslint-plugin-next": "16.3.4",
-    "@stylistic/eslint-plugin": "^5.10.0",
-    "@stylistic/eslint-plugin-js": "^4.4.1",
     "@types/autosuggest-highlight": "^3.2.3",
     "@types/node": "^25.6.0",
-    "@typescript-eslint/eslint-plugin": "^8.68.0",
-    "@typescript-eslint/parser": "^8.68.0",
     "ascii-progress": "^2.0.0",
     "autoprefixer": "^10.5.4",
     "babel-plugin-react-compiler": "^19.0.0-beta-714736e-20250131",
     "csv-parse": "^7.0.2",
     "csv-stringify": "^6.8.2",
     "cypress": "^15.21.0",
-    "eslint": "^9.39.2",
-    "eslint-config-next": "^16.3.0",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-compiler": "^19.1.0-rc.2",
-    "eslint-plugin-react-hooks": "^7.1.1",
     "husky": "^9.1.7",
-    "lint-staged": "^17.3.0",
+    "oxfmt": "^0.66.0",
+    "oxlint": "^1.81.0",
     "postcss": "^8.5.26",
-    "prettier": "npm:@btmills/prettier@^3.2.5",
     "prisma": "^7.9.1",
     "ts-node": "^10.9.2",
     "tsx": "^4.23.1",
-    "typescript": "^6.0.3",
-    "typescript-eslint": "^8.68.0"
+    "typescript": "^6.0.3"
   },
   "overrides": {
     "@types/react": "19.2.18",
-    "@types/react-dom": "19.2.4",
-    "eslint-plugin-react-hooks": {
-      "zod-validation-error": "^4.0.0"
-    }
+    "@types/react-dom": "19.2.4"
   }
 }
