@@ -10,14 +10,14 @@ jobs:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
     runs-on: ubuntu-22.04
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: "lts/krypton"
+          node-version-file: '.nvmrc'
       - run: node -v
-
-      - name: Checkout
-        uses: actions/checkout@v4
 
       - name: Cypress run
         uses: cypress-io/github-action@v6.8.0
