@@ -1,0 +1,8 @@
+{
+  "printWidth": 80,
+  "singleQuote": true,
+  "jsxSingleQuote": true,
+  "experimentalOperatorPosition": "start",
+  "sortImports": true,
+  "ignorePatterns": ["build/**", "dist/**", ".next/**", "out/**", "prisma/generated/**"]
+}

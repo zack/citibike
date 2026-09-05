@@ -110,7 +110,7 @@ export default function DataContainer({
   // tightly coupled, but for now this works.
   React.useEffect(() => {
     // this is exactly the reset-on-selection-change tradeoff described above
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+    // eslint-disable-next-line react/set-state-in-effect
     setStartDate(undefined);
     setEndDate(undefined);
   }, [userSelection]);
@@ -119,7 +119,7 @@ export default function DataContainer({
   React.useEffect(() => {
     if (parentLoading) {
       // clearing stale data when the parent starts loading, not a derived value
-      // eslint-disable-next-line react-hooks/set-state-in-effect
+      // eslint-disable-next-line react/set-state-in-effect
       setData(undefined);
     }
   }, [parentLoading]);
@@ -135,10 +135,10 @@ export default function DataContainer({
       && endDate === undefined
     ) {
       // setting date-range defaults once minDate/maxDate arrive from the parent
-      /* eslint-disable react-hooks/set-state-in-effect */
+      /* eslint-disable react/set-state-in-effect */
       setStartDate(laterDate([minDate, subDate(maxDate, { years: 1 })]));
       setEndDate(maxDate);
-      /* eslint-enable react-hooks/set-state-in-effect */
+      /* eslint-enable react/set-state-in-effect */
     }
   }, [minDate, maxDate, startDate, endDate]);
 
