@@ -48,7 +48,7 @@
   },
   "devDependencies": {
     "@types/autosuggest-highlight": "^3.2.3",
-    "@types/node": "^25.6.0",
+    "@types/node": "^26.4.1",
     "ascii-progress": "^2.0.0",
     "autoprefixer": "^10.5.4",
     "babel-plugin-react-compiler": "^19.0.0-beta-714736e-20250131",
