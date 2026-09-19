@@ -32,7 +32,7 @@
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.7",
     "@vercel/analytics": "^2.0.1",
-    "adm-zip": "^0.6.0",
+    "adm-zip": "^0.6.1",
     "autosuggest-highlight": "^3.3.4",
     "concat-files": "^0.1.1",
     "cypress-real-events": "^1.15.0",
