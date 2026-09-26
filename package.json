@@ -35,7 +35,7 @@
     "adm-zip": "^0.6.1",
     "autosuggest-highlight": "^3.3.4",
     "concat-files": "^0.1.1",
-    "cypress-real-events": "^1.15.0",
+    "cypress-real-events": "^1.15.1",
     "date-fns": "^4.4.0",
     "immer": "^11.1.18",
     "next": "16.3.5",
