@@ -20,7 +20,7 @@ jobs:
       - run: node -v
 
       - name: Cypress run
-        uses: cypress-io/github-action@v6.8.0
+        uses: cypress-io/github-action@v7.4.6
         timeout-minutes: 10
         env:
           ELECTRONC_EXTRA_LAUNCH_ARGS: '--disable-gpu'
