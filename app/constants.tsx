@@ -1,6 +1,14 @@
+enum DateRange {
+  OneMonth,
+  ThreeMonths,
+  TwelveMonths,
+  AllTime,
+  Custom,
+}
+
 enum Granularity {
   Daily,
   Monthly,
 }
 
-export { Granularity };
+export { DateRange, Granularity };
