@@ -1,5 +1,7 @@
+import { max as laterDate } from 'date-fns';
 import { NextResponse } from 'next/server';
 
+import { DateRange } from './constants';
 import { Borough, Timeframe, WhereSpecifier } from './types';
 
 export function isBorough(value: string): value is Borough {
@@ -25,6 +27,31 @@ export function isTimeframe(input: unknown): input is Timeframe {
   }
 
   return obj.firstDate instanceof Date && obj.lastDate instanceof Date;
+}
+
+// Use the 15th of each month to avoid edge cases around month boundaries with
+// timezone nonsense
+export function getMonthDate(year: number, month: number): Date {
+  return new Date(Date.UTC(year, month, 15, 12));
+}
+
+export function getRangeStart(
+  range: DateRange,
+  minDate: Date,
+  maxDate: Date,
+): Date {
+  const year = maxDate.getUTCFullYear();
+  const month = maxDate.getUTCMonth();
+
+  if (range === DateRange.OneMonth) {
+    return maxDate;
+  } else if (range === DateRange.ThreeMonths) {
+    return laterDate([minDate, getMonthDate(year, month - 2)]);
+  } else if (range === DateRange.TwelveMonths) {
+    return laterDate([minDate, getMonthDate(year, month - 11)]);
+  } else {
+    return minDate;
+  }
 }
 
 export function getQueryString(params: Record<string, string>) {

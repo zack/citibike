@@ -8,16 +8,15 @@ import {
   Tabs,
   Typography,
 } from '@mui/material';
-import { max as laterDate, sub as subDate } from 'date-fns';
 import React, { type JSX } from 'react';
 
 import ChartContainer from './ChartContainer';
 import ChartControls from './ChartControls';
-import { Granularity } from './constants';
+import { DateRange, Granularity } from './constants';
 import LoadingSpinner from './LoadingSpinner';
 import Table from './Table';
 import { ChartData } from './types';
-import { getQueryString } from './utils';
+import { getQueryString, getRangeStart } from './utils';
 
 export enum View {
   Chart,
@@ -78,7 +77,7 @@ export default function DataContainer({
   const [endDate, setEndDate] = React.useState<Date | undefined>(maxDate);
   const [startDate, setStartDate] = React.useState<Date | undefined>(() => {
     if (minDate && maxDate) {
-      return laterDate([minDate, subDate(maxDate, { years: 1 })]);
+      return getRangeStart(DateRange.TwelveMonths, minDate, maxDate);
     } else {
       return undefined;
     }
@@ -137,7 +136,7 @@ export default function DataContainer({
     ) {
       // setting date-range defaults once minDate/maxDate arrive from the parent
       /* eslint-disable react/set-state-in-effect */
-      setStartDate(laterDate([minDate, subDate(maxDate, { years: 1 })]));
+      setStartDate(getRangeStart(DateRange.TwelveMonths, minDate, maxDate));
       setEndDate(maxDate);
       /* eslint-enable react/set-state-in-effect */
     }
