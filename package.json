@@ -42,7 +42,7 @@
     "nuqs": "^2.10.2",
     "prisma-repl": "^1.4.0",
     "react": "^19.3.0",
-    "react-dom": "^19.3.0",
+    "react-dom": "^19.3.1",
     "recharts": "^3.7.0",
     "redis": "^6.2.1"
   },
