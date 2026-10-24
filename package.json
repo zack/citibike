@@ -44,7 +44,7 @@
     "react": "^19.3.0",
     "react-dom": "^19.3.1",
     "recharts": "^3.7.0",
-    "redis": "^6.2.1"
+    "redis": "^6.3.0"
   },
   "devDependencies": {
     "@types/autosuggest-highlight": "^3.2.3",
