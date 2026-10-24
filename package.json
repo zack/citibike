@@ -27,7 +27,7 @@
     "@mui/material": "^9.5.0",
     "@mui/x-data-grid": "^9.15.0",
     "@mui/x-date-pickers": "^9.15.0",
-    "@prisma/adapter-pg": "^7.9.1",
+    "@prisma/adapter-pg": "^7.10.1",
     "@prisma/client": "^7.9.1",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
