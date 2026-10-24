@@ -38,7 +38,7 @@
     "cypress-real-events": "^1.15.1",
     "date-fns": "^4.4.0",
     "immer": "^11.1.18",
-    "next": "16.4.0",
+    "next": "16.4.3",
     "nuqs": "^2.10.2",
     "prisma-repl": "^1.4.0",
     "react": "^19.3.0",
