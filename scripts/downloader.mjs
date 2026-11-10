@@ -142,8 +142,14 @@ async function downloadAndUnzipFiles(
       .filter((entry) => !entry.entryName.includes('__MACOSX'))
       .filter((entry) => !entry.entryName.includes('.DS_Store'));
 
-    // Citi Bike maintains two different nested file structures
-    const oldFormat = zipEntries.some((entry) => entry.entryName.includes('_'));
+    // Citi Bike maintains two different nested file structures: either the zip
+    // holds the CSVs themselves, or it holds one more zip per month. The CSVs
+    // have been named _1.csv for years, but some months (April and October
+    // 2026) switched to -part1.csv, so we look for .csv entries instead of
+    // trusting the naming.
+    const holdsCsvs = zipEntries.some((entry) =>
+      entry.entryName.endsWith('.csv'),
+    );
     const oneFile = file.endsWith('.csv.zip');
 
     // When there's not enough data in the month to require multiple csvs, they
@@ -153,7 +159,7 @@ async function downloadAndUnzipFiles(
       for (const entry of zipEntries) {
         zip.extractEntryTo(entry.entryName, TMP_DIR, false, true);
       }
-    } else if (oldFormat) {
+    } else if (holdsCsvs) {
       for (const entry of zipEntries) {
         // Based on the filtering we did at the point of choosing which files to
         // download, the only CSVs here that we *don't* want are the ones with
@@ -195,6 +201,15 @@ async function downloadAndUnzipFiles(
     }
 
     fs.unlinkSync(zipLocation);
+  }
+
+  // If we downloaded something and got nothing out of it, Citi Bike changed
+  // their layout again. Fail loudly so the cron job shows up as failed instead
+  // of quietly seeding nothing every night.
+  if (fileNames.length > 0 && readdirSync(TMP_DIR).length === 0) {
+    throw Error(
+      `Downloaded ${fileNames.length} files but extracted nothing from them.`,
+    );
   }
 }
 
