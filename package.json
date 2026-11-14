@@ -20,7 +20,7 @@
     "cypress:cli": "cypress run"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1161.0",
+    "@aws-sdk/client-s3": "^3.1166.0",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^9.5.0",
