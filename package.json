@@ -56,7 +56,7 @@
     "csv-stringify": "^6.9.0",
     "cypress": "^16.3.0",
     "husky": "^9.1.7",
-    "oxfmt": "^0.78.0",
+    "oxfmt": "^0.80.0",
     "oxlint": "^1.94.0",
     "postcss": "^8.5.33",
     "prisma": "^7.10.1",
